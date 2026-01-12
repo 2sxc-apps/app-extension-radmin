@@ -3,13 +3,13 @@
   "name": "RADmin",
   "teaser": "",
   "description": "",
-  "createdBy": "2sic Internet Solutions GmbH",
-  "copyright": "2sic",
+  "createdBy": "2sic",
+  "copyright": "MIT",
   "linkMain": "",
   "linkDocs": "",
   "linkSource": "https://github.com/2sxc-dev/app-extension-radmin",
   "linkDemo": "",
-  "version": "00.04.12",
+  "version": "00.04.15",
   "releases": [],
   "isInstalled": false,
   "editionsSupported": true,
@@ -31,5 +31,6 @@
   "resourcesContentType": "2b70fb20-e734-46c8-b456-5b4e34ef4450",
   "settingsContentType": null,
   "inputFieldAssets": null,
-  "dataBundles": "5bad7589-d1d9-4edd-afa4-4adb92b59a55"
+  "dataBundles": "5bad7589-d1d9-4edd-afa4-4adb92b59a55",
+  "extensionsBundled": ""
 }

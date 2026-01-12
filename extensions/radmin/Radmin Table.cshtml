@@ -1,4 +1,4 @@
-@inherits AppCode.Razor.AppRazor
+@inherits Custom.Hybrid.RazorTyped
 @using AppCode
 @using AppCode.Extensions.Radmin
 @using AppCode.Extensions.Radmin.Data
@@ -29,7 +29,7 @@
   Show Switcher to toggle table configuration mode.
   ~admins only, and not for demo since that shouldn't be modified~
 *@
-@Html.Partial("./ToggleViewConfigMode.cshtml", new { item, resources })
+@Html.Partial("./Part Toggle ViewConfigMode.cshtml", new { item, resources })
 
 <div
   class="d-flex justify-content-between align-items-center mb-1"
@@ -40,11 +40,14 @@
 </div>
 
 @* Add error container before the table *@
-<div id="tosxc-table-error-@mid" class="mb-3"></div>
+<div id="tosxc-table-error-@mid" class="mb-3">
+</div>
 
 <div>
-  @* Tabulator ID *@
-  <div id="tosxc-table-@mid" />
+  @* Tabulator placeholder *@
+  <div id="tosxc-table-@mid">
+  @* it's important to have a separate close-div tag, otherwise the page starts to malfunction after tabulater *@
+  </div>
 </div>
 
 @Kit.Page.TurnOn("window.table.createTabulatorTable()", data: new {

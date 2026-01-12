@@ -1,15 +1,14 @@
-@inherits AppCode.Razor.AppRazor
-@using ToSic.Razor.Blade
+@inherits Custom.Hybrid.RazorTyped
 @using AppCode
 @using AppCode.Extensions.Radmin
 @using AppCode.Extensions.Radmin.Data
-@using ToSic.Sxc.Data;
+@using ToSic.Eav.Data
+@using ToSic.Razor.Blade
+@using ToSic.Sxc.Data
 
 @{
   var viewId = MyModel.Get<string>("viewId");
-  var entityId = MyPage.Parameters.Int(
-    SxcTablesConstants.UrlParamEntityId
-  );
+  var entityId = MyPage.Parameters.Int(SxcTablesConstants.UrlParamEntityId);
 
   if (!Text.Has(viewId) || entityId <= 0)
   {
@@ -21,20 +20,12 @@
 
   var backPageParameters = MyPage.Parameters.Flush();
 
-  var radminDetails = App.Data.GetAll<RadminDetails>()
+  var detailSpecs = App.Data.GetAll<RadminDetails>()
     .Where(d => d.ViewId == viewId)
     .FirstOrDefault();
 
-  var entitiyStream = App.Data.GetStream(
-    radminDetails.DataContentType
-  );
-
-  var entity = AsItems(entitiyStream)
-    .FirstOrDefault(e => e.Id == entityId);
-
-  var entityContentType = App.Data.GetContentType(
-    radminDetails.DataContentType
-  );
+  // Find the entity by ID
+  var entity = App.Data.GetOne<Custom.Data.CustomItem>(entityId);
 }
 
 @if (entity == null)
@@ -45,19 +36,35 @@
   return;
 }
 
+@* Verify that the entity has the same content type as specified in detailSpecs *@
+@if (entity.Type.Name != detailSpecs.DataContentType)
+{
+  <div class="alert alert-warning">
+    Error: Entity content type does not match the detail view configuration.
+  </div>
+  entity = null;
+  return;
+}
+
+@{
+  // Get the content type definition to list all attributes
+  var contentType = App.Data.GetContentType(detailSpecs.DataContentType);
+}
 <div @Kit.Toolbar.Empty().Edit(entity)>
-  <h2>@entity.Get("Title")</h2>
+  <h2>
+    Details of:
+    @entity.Title
+    (@entity.Id)
+  </h2>
 
   <table class="table table-bordered mt-4">
     <tbody>
-      @foreach (var attr in entityContentType.Attributes
-        .OrderBy(a => a.SortOrder)
-      )
+      @foreach (var attr in contentType.Attributes)
       {
         var key = attr.Name;
         var value = entity.Get(key);
         // Determine if current attr is a group title (starts with "Group" and has no value)
-        var isGroupTitle = key.StartsWith("Group") && !Text.Has(value);
+        var isGroupTitle = attr.IsEmpty();
         // Group titles should be rendered bold
         var groupTitleClass = isGroupTitle ? "fw-bold" : "fw-normal";
         
@@ -73,12 +80,7 @@
     </tbody>
   </table>
   
-  <a
-    href="@Link.To(
-      parameters: backPageParameters
-    )"
-    class="btn btn-primary mt-3"
-  >
+  <a href="@Link.To(parameters: backPageParameters)" class="btn btn-primary mt-3">
     Back to Table View
   </a>
 </div>

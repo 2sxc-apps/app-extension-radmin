@@ -8,15 +8,15 @@ This **2sxc Extension Radmin** app provides a powerful and flexible way to creat
 
 | Aspect              | Status | Comments or Version
 | ------------------- | :----: | -------------------
-| 2sxc                | ✅    | requires 2sxc v19.00.00+
-| Dnn                 | ✅    | For v9.6.1+
-| Oqtane              | ✅    | Requires v5.00+
-| No jQuery           | ✅    | Built with modern JavaScript
-| TypeScript          | ✅    | Full TypeScript support
-| Source & License    | ✅    | included, ISC/MIT
-| Bootstrap 4         | ✅    | compatible
-| Bootstrap 5         | ✅    | optimized
-| Work in Progress    | ⚠️    | API may change
+| 2sxc                | ✅     | requires 2sxc v19.00.00+
+| Dnn                 | ✅     | For v9.6.1+
+| Oqtane              | ✅     | Requires v5.00+
+| No jQuery           | ✅     | Built with modern JavaScript
+| TypeScript          | ✅     | Full TypeScript support
+| Source & License    | ✅     | included, ISC/MIT
+| Bootstrap 4         | ✅     | compatible
+| Bootstrap 5         | ✅     | optimized
+| Work in Progress    | ⚠️     | API may change
 
 This means that it
 
@@ -36,7 +36,7 @@ This app is only useful if you use DNN or Oqtane. So assuming you have a DNN ins
 
 * It probably helps to review the [Overview][overview] about how the parts play together by default, so you can then change as little as necessary to get it to do what you want
 
-3. Add the necessary HTML:
+1. Add the necessary HTML:
 
 ```html
 <div id="my-table"></div>
@@ -54,7 +54,22 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
+## TODO (2DM)
+
+1. fix tables linked by a column
+1. show date - default / automatic format is date only
+1. rename IDs and classes to use radmin... and not `tosxc-table`
+
 ## History
+
+### 2026-01-12
+
+1. 2dm: Start listing todos in readme
+1. 2dm: Rename part-files in extension/radmin to use spaces
+1. 2dm: Fix Detail View to show entity title and id in header
+1. 2dm: fix closing `div` in Radmin Table cshtml to avoid page malfunction
+1. 2dm: use `IsEmpty()` to check if a field is a title/group field
+1. 2dm: Change query to pick view to also list tables; note that ATM tables don't seem to work as expected
 
 ### 2025-12-12
 

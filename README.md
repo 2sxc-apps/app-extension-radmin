@@ -65,6 +65,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ### 2026-03-09
 
 1. 2dm: Move to better `app.csproj` structure
+1. 2dm: Add view-icon for the extension
 
 ### 2026-01-12
 

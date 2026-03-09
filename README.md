@@ -59,6 +59,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 1. fix tables linked by a column
 1. show date - default / automatic format is date only
 1. rename IDs and classes to use radmin... and not `tosxc-table`
+1. Show instructions on add-module
 
 ## History
 

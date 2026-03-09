@@ -39,6 +39,10 @@
   @* The filter input will be dynamically inserted here by JavaScript *@
 </div>
 
+@* 3. Show instructions *@
+@Html.Partial("./Razor Parts/Instructions New Module.cshtml", new { item, resources })
+
+
 @* 5. Add placeholder for errors before the final data table *@
 <div id="tosxc-table-error-@mid" class="mb-3">
 </div>

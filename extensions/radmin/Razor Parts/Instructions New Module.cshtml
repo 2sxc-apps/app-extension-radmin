@@ -1,0 +1,22 @@
+@inherits Custom.Hybrid.RazorTyped
+@using AppCode.Extensions.Radmin
+@using AppCode.Extensions.Radmin.Data
+@using ToSic.Razor.Blade
+
+@* Introduction for new module (admins only, shown for demo items) *@
+
+@{
+  // 1. Get all handed in parameters (best practice to do this in the beginning of the view)
+  var res = MyModel.Get<RadminResources>("resources");
+
+  var item = MyModel.Get<RadminTable>("item");
+
+  // 2. Check permissions and conditions for showing the introduction
+  // should only be shown to admins, and only if it's currently showing a demo-item
+  if (!MyUser.IsSiteAdmin || !item.IsDemoItem)
+    return;
+}
+
+<div class="alert alert-info">
+  @Html.Raw(res.InstructionsNewModule)
+</div>

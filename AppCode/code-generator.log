@@ -43,3 +43,4 @@
 2025-12-10 13:27:37Z: Code generated. Generator: CSharpDataModelsGenerator v20.00.09
 2025-12-11 07:34:02Z: Code generated. Generator: CSharpDataModelsGenerator v20.00.09
 2025-12-12 13:14:13Z: Code generated. Generator: CSharpDataModelsGenerator v20.00.10 FileGeneratorSpecs { AppId = 346, Edition = , DateTime = 12/12/2025 1:14:13 PM, Namespace = AppCode.Extensions.Radmin.Data, TargetPath = AppCode/Extensions/Radmin/Data, Scope = Extensions.Radmin, ContentTypes = System.Collections.Generic.List`1[System.String] }
+2026-03-09 18:08:42Z: Code generated. Generator: CSharpTypedDataModelsGenerator v21.05.00 FileGeneratorSpecs { Configuration = 33783 Export Radmin Resources, AppId = 346, Edition = , DateTime = 3/9/2026 6:08:42 PM, Namespace = AppCode.Extensions.Radmin.Data, TargetPath = AppCode/Extensions/Radmin/Data, ContentTypes = System.Collections.Generic.List`1[System.String], Prefix = , Suffix =  }

@@ -4,12 +4,10 @@
 @using AppCode.Extensions.Radmin.Data
 
 @{
+  // Activate JS Core features so edit-buttons would work
   Kit.Page.Activate("2sxc.JsCore");
 
-  var viewId = MyPage.Parameters.String(
-    SxcTablesConstants.UrlParamViewId,
-    fallback: null
-  );
+  var viewId = MyPage.Parameters.String(RadminConstants.UrlParamViewId, fallback: null);
 
   @if (!string.IsNullOrWhiteSpace(viewId))
   {

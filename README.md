@@ -66,6 +66,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 1. 2dm: Move to better `app.csproj` structure
 1. 2dm: Add view-icon for the extension
+1. 2dm: Rename `RadminConstants`
 
 ### 2026-01-12
 

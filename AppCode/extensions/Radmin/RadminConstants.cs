@@ -1,6 +1,6 @@
 namespace AppCode.Extensions.Radmin
 {
-  public class SxcTablesConstants
+  public class RadminConstants
   {
     public const string TableContentTypePrefix = "Sxc.Table.";
     public const string TableFieldPrefix = "SxcField_";

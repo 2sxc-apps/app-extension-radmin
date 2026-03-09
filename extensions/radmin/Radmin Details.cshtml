@@ -8,7 +8,7 @@
 
 @{
   var viewId = MyModel.Get<string>("viewId");
-  var entityId = MyPage.Parameters.Int(SxcTablesConstants.UrlParamEntityId);
+  var entityId = MyPage.Parameters.Int(RadminConstants.UrlParamEntityId);
 
   if (!Text.Has(viewId) || entityId <= 0)
   {

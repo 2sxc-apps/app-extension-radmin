@@ -16,13 +16,13 @@
     return;
 
   // The view config mode would enable the JS to show edit buttons to configure the table
-  var viewConfigMode = MyPage.Parameters.Bool(SxcTablesConstants.UrlParamConfigMode, fallback: false);
+  var viewConfigMode = MyPage.Parameters.Bool(RadminConstants.UrlParamConfigMode, fallback: false);
 
   // Preserve existing query parameters:
   var currentParams = MyPage.Parameters;
   var targetParams = viewConfigMode
-    ? currentParams.Remove(SxcTablesConstants.UrlParamConfigMode)
-    : currentParams.Add(SxcTablesConstants.UrlParamConfigMode, "true");
+    ? currentParams.Remove(RadminConstants.UrlParamConfigMode)
+    : currentParams.Add(RadminConstants.UrlParamConfigMode, "true");
 
   // Build final URL using Link.To with the parameters object (avoids string manipulation)
   var onChangeLink = Link.To(parameters: targetParams);

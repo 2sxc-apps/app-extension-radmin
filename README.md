@@ -62,6 +62,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## History
 
+### 2026-03-09
+
+1. 2dm: Move to better `app.csproj` structure
+
 ### 2026-01-12
 
 1. 2dm: Start listing todos in readme

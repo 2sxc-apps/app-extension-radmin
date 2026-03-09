@@ -1,34 +1,36 @@
 @inherits Custom.Hybrid.RazorTyped
-@using AppCode
 @using AppCode.Extensions.Radmin
 @using AppCode.Extensions.Radmin.Data
 
 @{
-  // Activate JS Core features so edit-buttons would work
-  Kit.Page.Activate("2sxc.JsCore");
-
+  // 1. Check if we should switch views
+  // 1.1. Get the viewId from the URL parameters to determine if we should switch views to another table or the details
   var viewId = MyPage.Parameters.String(RadminConstants.UrlParamViewId, fallback: null);
 
+  // 1.2. If viewId is present, switch to the details view for the corresponding viewId
+  // TODO: THIS IS NOT quite correct, as the viewId could also be for another table
   @if (!string.IsNullOrWhiteSpace(viewId))
   {
     @Html.Partial("Radmin Details.cshtml", new { viewId });
     return;
   }
 
+  // 2. Load Data and prepare some common variables
+  // 2.1. Load the table config based on the current context (moduleId, viewId, etc.)
   var item = As<RadminTable>(MyItem);
-  var appUrl = App.Folder.Url;
 
+  // 2.2. Load the resources for localization
   var resources = GetService<RadminHelper>().GetResources();
 
+  // 2.3. Prepare some common variables
+  var urlRoot = App.Folder.Url;
   var mid = MyContext.Module.Id;
 }
 
-@*  
-  Show Switcher to toggle table configuration mode.
-  ~admins only, and not for demo since that shouldn't be modified~
-*@
-@Html.Partial("./Part Toggle ViewConfigMode.cshtml", new { item, resources })
+@* 3. Show "toggle configuration mode" - admins only, and not on demo-configuration *@
+@Html.Partial("./Razor Parts/Toggle ViewConfigMode.cshtml", new { item, resources })
 
+@* 4. Show the Header which will also contain the search ? TODO: *@
 <div
   class="d-flex justify-content-between align-items-center mb-1"
   @Kit.Toolbar.Default(item)
@@ -37,17 +39,17 @@
   @* The filter input will be dynamically inserted here by JavaScript *@
 </div>
 
-@* Add error container before the table *@
+@* 5. Add placeholder for errors before the final data table *@
 <div id="tosxc-table-error-@mid" class="mb-3">
 </div>
 
+@* 6. Add placeholder which will contain the tabulator JS (must have a proper closing div-tag) *@
 <div>
-  @* Tabulator placeholder *@
-  <div id="tosxc-table-@mid">
-  @* it's important to have a separate close-div tag, otherwise the page starts to malfunction after tabulater *@
-  </div>
+  <div id="tosxc-table-@mid"></div>
 </div>
 
+@* 7. Initialize the Tabulator table using turnOn *@
+@* TODO: rename window.table to window.radmin *@
 @Kit.Page.TurnOn("window.table.createTabulatorTable()", data: new {
   tableName = "tosxc-table-" + mid,
   filterName = "tosxc-table-filter-" + mid,
@@ -58,9 +60,13 @@
   canEditData = MyUser.IsContentEditor && !item.IsDemoItem,
   customizerDistPath = item.IsEmpty(nameof(item.CustomizersDistPath))
     ? ""
-    : appUrl + item.CustomizersDistPath,
+    : urlRoot + item.CustomizersDistPath,
   resources = resources
 })
 
-<script src="@appUrl/extensions/radmin/dist/tables.js" @Kit.Page.AssetAttributes(position: "bottom")></script>
-<link href="@appUrl/extensions/radmin/dist/styles.min.css" rel="stylesheet" @Kit.Page.AssetAttributes(position: "bottom") />
+@* Activate 2sxc JS Core features so toolbars/edit-buttons will work *@
+@Kit.Page.Activate("2sxc.JsCore")
+
+@* Load Radmin Table scripts and styles *@
+<script src="@urlRoot/extensions/radmin/dist/tables.js" @Kit.Page.AssetAttributes(position: "bottom")></script>
+<link href="@urlRoot/extensions/radmin/dist/styles.min.css" rel="stylesheet" @Kit.Page.AssetAttributes(position: "bottom") />

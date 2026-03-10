@@ -1,7 +1,7 @@
 import { SchemaProperty } from "../models/json-schema-model";
 
 export class GroupPropertyIdentifier {
-  identify = (property: SchemaProperty | undefined, key: string) => {
+  static isGroup(property: SchemaProperty | undefined, key: string): boolean {
     if (!property)
       return false;
 
@@ -36,5 +36,5 @@ export class GroupPropertyIdentifier {
 
     // default: not considered a group
     return false;
-  };
+  }
 }

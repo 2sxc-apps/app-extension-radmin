@@ -23,15 +23,11 @@ export class TabulatorColumnAdapter extends ServiceBase {
     schema: JsonSchema
   ): TabulatorColumnConfig[] {
     this.log("convert called with", {
-        columnConfigLength: columnConfigs.length,
-        columnsAutoShowRemaining,
-        schemaProperties: Object.keys(schema.properties).length,
-        columnConfigs
-      }
-    );
-
-    // Helper to decide whether a schema property represents a "group" (should not be auto-added)
-    const isGroupProperty = new GroupPropertyIdentifier().identify;
+      columnConfigLength: columnConfigs.length,
+      columnsAutoShowRemaining,
+      schemaProperties: Object.keys(schema.properties).length,
+      columnConfigs
+    });
 
     // Process configured columns (explicit user config). If a configured column points to a group property,
     // skip it (group fields should not become visible columns).
@@ -41,7 +37,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
         const prop = schema.properties[fieldName];
         this.log(`configured column: '${col.valueSelector}' to '${fieldName}'`, { col }, `schemaProp:`, prop);
 
-        if (isGroupProperty(prop, fieldName)) {
+        if (GroupPropertyIdentifier.isGroup(prop, fieldName)) {
           // skip any configured column that references a group property
           this.log(`Skipping configured column because it references a group property: '${fieldName}'`, col);
           return null;
@@ -121,15 +117,13 @@ export class TabulatorColumnAdapter extends ServiceBase {
    * @returns An array of TabulatorColumnConfig for the remaining columns.
    */
   private defineRemainingColumns(schema: JsonSchema, configuredFields: Set<string>) {
-    // Helper to decide whether a schema property represents a "group" (should not be auto-added)
-    const isGroupProperty = new GroupPropertyIdentifier().identify;
-
+  
     const keysToUse = Object.keys(schema.properties)
       .filter((key) => !configuredFields.has(key))
       .filter((key) => {
         const prop = schema.properties[key];
         // do not auto-add group properties
-        const isGroup = isGroupProperty(prop, key);
+        const isGroup = GroupPropertyIdentifier.isGroup(prop, key);
         if (isGroup)
           this.log("Skipping auto-add of group property:", key);
         return !isGroup;
@@ -172,20 +166,29 @@ export class TabulatorColumnAdapter extends ServiceBase {
         url: (cell: CellComponent) => {
           const cellData = cell.getData();
           const valLookup = new ValueLookup(schema, cellData);
-          const entityId = valLookup.resolveValue(col.valueSelector)[0]?.Id
-            || cellData.id;
           const params = valLookup.resolveTemplate(col.linkParameters);
+
+          const expectedParams = col.linkViewRef?.expectedParameters;
+          this.log(`Expected parameters for link: '${expectedParams}'`, { col });
+          const addParams = expectedParams
+            ? valLookup.resolveTemplate(expectedParams)
+            : '';
+
 
           // The view ID can be one of:
           // 1. Directly referencing another view via linkViewRef
           // 2. Directly referencing another value (view-key) via the viewId - such as 'tags-list'
           // 3. The viewId can also have a string such as '[viewId]' to reuse a value in the data
           const viewId = col.linkViewRef?.viewId
-            || (col.linkViewId
-              ? valLookup.resolveTemplate(col.linkViewId || "")
-              : "unknown"
-          );
-          const url = `?viewid=${viewId}&entityid=${entityId}${params ? "&" + params : ""}`;
+            || valLookup.resolveTemplate(col.linkViewId || "")
+            || "unknown";
+
+          const url = '?' + this.combineUrlParams({
+            viewId: viewId,
+            ...Object.fromEntries(new URLSearchParams(addParams)),
+            ...Object.fromEntries(new URLSearchParams(params)),
+          })
+
           this.log(`Generated link url for cell '${normalizedField}' to: '${url}'`);
           return url;
         },
@@ -195,5 +198,10 @@ export class TabulatorColumnAdapter extends ServiceBase {
     };
   }
 
+  private combineUrlParams(params: Record<string, string>): string {
+    const url = new URL("", window.location.origin);
+    Object.entries(params).forEach(([key, value]) => url.searchParams.append(key, value));
+    return url.searchParams.toString();
+  }
 }
 

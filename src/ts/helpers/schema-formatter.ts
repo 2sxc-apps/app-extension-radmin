@@ -2,7 +2,7 @@ import { JsonSchema, SchemaProperty } from "../models/json-schema-model";
 import { CellComponent } from "tabulator-tables";
 import { ParamMatcher } from "./param-matcher";
 
-export class ShemaFormatter {
+export class SchemaFormatter {
   /** Maps JSON schema type/format → internal format key */
   static mapSchemaTypeToFormat(
     property: SchemaProperty,
@@ -39,7 +39,7 @@ export class ShemaFormatter {
     const property = schema.properties[normalized];
 
     const format = property
-      ? ShemaFormatter.mapSchemaTypeToFormat(property, log)
+      ? SchemaFormatter.mapSchemaTypeToFormat(property, log)
       : "";
 
     log?.("getFormatFromSchema", { field, normalized, format });

@@ -2,16 +2,16 @@ import { TabulatorColumnConfig } from "../models/tabulator-config-models";
 import { formatConfigs } from "./tabulator-column-formats";
 import { RadminColumnConfig } from "../configs/radmin-column-config";
 import { CellComponent } from "tabulator-tables";
-import { JsonSchema, SchemaProperty } from "../models/json-schema-model";
+import { JsonSchema } from "../models/json-schema-model";
 import { GroupPropertyIdentifier } from "../helpers/group-property-identifier";
 import HtmlStripper from "../helpers/html-stripper";
 import { ParamMatcher } from "../helpers/param-matcher";
-import { ShemaFormatter } from "../helpers/shema-formatter";
+import { SchemaFormatter } from "../helpers/schema-formatter";
 import { ServiceBase } from '../shared/service-base';
 
 export class TabulatorColumnAdapter extends ServiceBase {
   constructor() {
-    super("TabulatorColumnAdapter", true);
+    super("TabulatorColumnAdapter", false);
   }
 
   convert(
@@ -59,7 +59,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
 
         const chosenFormat =
           col.valueFormat ||
-          ShemaFormatter.getFormatFromSchema(col.valueSelector, schema);
+          SchemaFormatter.getFormatFromSchema(col.valueSelector, schema);
         const formatConfig = formatConfigs[chosenFormat] || {};
         this.log("chosenFormat:", chosenFormat, "formatConfig:", formatConfig);
 
@@ -72,7 +72,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
           !col.linkEnable
         ) {
           this.log("Using objectTitleFormatter for", normalizedField);
-          formatter = ShemaFormatter.objectTitleFormatter;
+          formatter = SchemaFormatter.objectTitleFormatter;
           // Use the registered custom object sorter
           sorter = "object";
         }
@@ -144,7 +144,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
             },
             target: "_self",
             label: (cell: CellComponent) =>
-              ShemaFormatter.objectTitleFormatter(cell),
+              SchemaFormatter.objectTitleFormatter(cell),
           };
 
           // When link is enabled we don't want the object formatter/sorter interfering
@@ -208,7 +208,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
       })
       .map((key) => {
         const property = schema.properties[key];
-        const format = ShemaFormatter.mapSchemaTypeToFormat(property);
+        const format = SchemaFormatter.mapSchemaTypeToFormat(property);
         const formatConfig = formatConfigs[format] || {};
         this.log("Auto-adding column for key:", key, { format, formatConfig });
 
@@ -218,7 +218,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
           ...formatConfig,
           formatter:
             property.type === "object" || property.type === "array"
-              ? ShemaFormatter.objectTitleFormatter
+              ? SchemaFormatter.objectTitleFormatter
               : formatConfig.formatter,
           // Use custom sorter for objects/arrays
           sorter:

@@ -25,6 +25,7 @@ import { SetupObjectSorter } from "../helpers/setup-object-sorter";
 import { ErrorMessageGenerator } from "../helpers/error-message-generator";
 import { TabulatorToolbars } from "./tabulator-toolbars/tabulator-toolbar";
 import { ServiceBase } from '../shared/service-base';
+import { TableServices } from './table-services';
 
 // Register required modules for Tabulator
 Tabulator.registerModule([
@@ -77,12 +78,13 @@ export class TabulatorAdapter extends ServiceBase {
   }
 
   async createTable(
+    services: TableServices,
     tableName: string,
     tableConfigData: RadminTableConfig,
     dataProvider: DataProvider,
-    schemaProvider: SchemaProvider,
+    // schemaProvider: SchemaProvider,
     filterName: string | undefined,
-    customizeManager: CustomizeManager,
+    // customizeManager: CustomizeManager,
     canEditConfig: boolean,
     canEditData: boolean,
     viewId: string
@@ -92,7 +94,7 @@ export class TabulatorAdapter extends ServiceBase {
 
       let schema;
       try {
-        schema = await schemaProvider.getSchema(
+        schema = await services.schemaProvider.getSchema(
           tableConfigData.dataContentType,
           viewId
         );
@@ -138,7 +140,7 @@ export class TabulatorAdapter extends ServiceBase {
       };
       this.log("tabulatorOptionsRaw", tabulatorOptionsRaw);
 
-      const tabulatorOptions = customizeManager.customizeTabulator(
+      const tabulatorOptions = services.customizeManager.customizeTabulator(
         tabulatorOptionsRaw,
         tableConfigData.guid
       );

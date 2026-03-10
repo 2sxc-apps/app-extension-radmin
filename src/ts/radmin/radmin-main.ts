@@ -1,15 +1,12 @@
 import { TabulatorAdapter } from "../tabulator/tabulator-adapter";
 import { ConfigurationLoader } from "../loaders/table-configuration-loader";
 import { DataProvider } from "../providers/data-provider";
-import { QueryDataProvider } from "../providers/query-data-provider";
 import { TabulatorSearchFilter } from "../tabulator/tabulator-search-filter";
-import { SchemaProvider } from "../providers/schema-provider";
-import { CustomizeManager } from "../customizers/customize-manager";
 import { ErrorMessageGenerator } from "../helpers/error-message-generator";
-import { SetupParams } from './SetupParams';
-import { RadminTableConfig } from '../configs/radmin-table-config';
-import { Sxc } from '@2sic.com/2sxc-typings';
+import { SetupParams } from './setup-params';
 import { ServiceBase } from '../shared/service-base';
+import { TableServices } from '../tabulator/table-services';
+import { DataProviderFactory } from '../providers/data-provider-factory';
 
 
 export class RadminMain extends ServiceBase {
@@ -30,27 +27,19 @@ export class RadminMain extends ServiceBase {
     try {
       // Initialize SXC context
       const sxc = $2sxc(data.moduleId);
-      this.log("SXC context initialized for moduleId:", data.moduleId);
+      this.log(`SXC context initialized for moduleId: ${data.moduleId}; viewId: ${data.viewId}`);
 
-      // Get the CustomizeManager instance early
-      const customizeManager = CustomizeManager.getInstance();
-      this.log("CustomizeManager instance retrieved");
+      // get shared services
+      const services = new TableServices(sxc);
 
       // Try to load customizers if customizerDistPath is provided
-      await customizeManager.load(data.customizerDistPath);
-
-      // Use viewid from URL if available, otherwise use the one provided by the Razor file
-      // TODO: always use razor file
-      const urlParams = new URLSearchParams(window.location.search);
-      const viewIdFromParams = urlParams.get("viewid");
-      const viewId = viewIdFromParams ? viewIdFromParams : data.viewId;
-      this.log("Using view ID:", viewId);
+      await services.customizeManager.load(data.customizerDistPath);
 
       // Load table configuration with ConfigurationLoader
-      const configLoader = new ConfigurationLoader(sxc);
+      // const configLoader = new ConfigurationLoader(sxc);
       let tableConfigDataRaw;
       try {
-        tableConfigDataRaw = await configLoader.loadConfig(viewId);
+        tableConfigDataRaw = await new ConfigurationLoader(sxc).loadConfig(data.viewId);
         this.log("Loaded raw table config:", tableConfigDataRaw);
       } catch (error) {
         this.log(
@@ -63,7 +52,7 @@ export class RadminMain extends ServiceBase {
 
       // Apply customizations to the config
       this.log("Applying customizations to config");
-      const tableConfigData = customizeManager.customizeConfig(tableConfigDataRaw);
+      const tableConfigData = services.customizeManager.customizeConfig(tableConfigDataRaw);
       this.log("Config after customization:", tableConfigData);
 
       // Check for differences to see if customizations were applied
@@ -72,6 +61,7 @@ export class RadminMain extends ServiceBase {
 
       // Handle link parameters
       let linkParameters: string | undefined;
+      const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.has("viewconfigmode")) {
         linkParameters = undefined;
       } else {
@@ -95,27 +85,19 @@ export class RadminMain extends ServiceBase {
       }
 
       // Create the appropriate DataProvider based on the configuration
-      const dataProvider: DataProvider = this.getDataProvider(tableConfigData, sxc, linkParameters);
-
-      // Create the Tabulator adapter and SchemaProvider, then create the table
-      const tabulatorAdapter = new TabulatorAdapter();
-      this.log("Created TabulatorAdapter");
-
-      const schemaProvider = new SchemaProvider(sxc);
-      this.log("Created SchemaProvider");
+      const dataProvider: DataProvider = new DataProviderFactory().getDataProvider(tableConfigData, sxc, linkParameters);
 
       try {
         this.log("Creating table with TabulatorAdapter.createTable");
-        await tabulatorAdapter.createTable(
+        await new TabulatorAdapter().createTable(
+          services,
           data.tableName,
           tableConfigData,
           dataProvider,
-          schemaProvider,
           data.filterName,
-          customizeManager,
           data.canEditConfig,
           data.canEditData,
-          viewId
+          data.viewId
         );
         this.log("Table creation complete");
       } catch (error) {
@@ -131,30 +113,6 @@ export class RadminMain extends ServiceBase {
         data.tableName,
         "Unexpected Error",
         "An unexpected error occurred while creating the table. Please check the browser console for details."
-      );
-    }
-  }
-
-
-  private getDataProvider(tableConfigData: RadminTableConfig, sxc: Sxc, linkParameters: string | undefined): DataProvider {
-    if (tableConfigData.dataQuery === "") {
-      const apiUrl = sxc.webApi.url(
-        `app/auto/data/${tableConfigData.dataContentType}`
-      );
-      const headers = sxc.webApi.headers("GET");
-
-      this.log("Created standard DataProvider");
-      return new DataProvider(
-        apiUrl,
-        headers,
-        tableConfigData.dataContentType
-      );
-    } else {
-      this.log("Created QueryDataProvider");
-      return new QueryDataProvider(
-        sxc,
-        tableConfigData.dataQuery,
-        linkParameters
       );
     }
   }

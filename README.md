@@ -56,18 +56,20 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## TODO (2DM)
 
+1. make sure views can also be tables again
 1. fix tables linked by a column
 1. show date - default / automatic format is date only
 1. rename IDs and classes to use radmin... and not `tosxc-table`
-1. Show instructions on add-module
 
 ## History
 
-### 2026-03-09
+### 2026-03-09 / 03-10
 
 1. 2dm: Move to better `app.csproj` structure
 1. 2dm: Add view-icon for the extension
 1. 2dm: Rename `RadminConstants`
+1. 2dm: Show instructions on add-module
+1. 2dm: change `window.table` to `window.radmin`
 
 ### 2026-01-12
 

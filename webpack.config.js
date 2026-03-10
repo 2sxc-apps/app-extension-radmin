@@ -4,7 +4,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = (env = {}) => {
   const entry = {
-    tables: "./src/ts/tables.ts",
+    tables: "./src/ts/index.ts",
     styles: "./src/styles/styles.scss"
   };
   const outDir = 'extensions/radmin/dist';

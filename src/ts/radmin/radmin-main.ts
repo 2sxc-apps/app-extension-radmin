@@ -1,21 +1,22 @@
-import { TabulatorAdapter } from "./tabulator-adapter";
+import { TabulatorAdapter } from "../tabulator/tabulator-adapter";
 import { ConfigurationLoader } from "../loaders/table-configuration-loader";
 import { DataProvider } from "../providers/data-provider";
 import { QueryDataProvider } from "../providers/query-data-provider";
-import { TabulatorSearchFilter } from "./tabulator-search-filter";
+import { TabulatorSearchFilter } from "../tabulator/tabulator-search-filter";
 import { SchemaProvider } from "../providers/schema-provider";
 import { CustomizeManager } from "../customizers/customize-manager";
 import { ErrorMessageGenerator } from "../helpers/error-message-generator";
-import { Resources } from '../models/resources';
+import { SetupParams } from './SetupParams';
 
-export class TabulatorTable {
+
+export class RadminMain {
   debug = false;
 
   /**
    * Helper method for logging when debug is enabled
    */
   private log(...args: any[]) {
-    if (this.debug) console.log("[TabulatorTable]", ...args);
+    if (this.debug) console.log("[RadminMain]", ...args);
   }
 
   /**
@@ -25,16 +26,7 @@ export class TabulatorTable {
    * The ErrorMessageGenerator will attempt to render alerts into this element or into
    * the corresponding error container ("tosxc-table-error-123").
    */
-  async createTabulatorTable(data: {
-    tableName: string;
-    filterName: string;
-    moduleId: number;
-    viewId: string;
-    canEditConfig: boolean;
-    canEditData: boolean;
-    customizerDistPath?: string; // Optional app URL for dynamic imports
-    resources: Resources;
-  }) {
+  async setupTable(data: SetupParams): Promise<void> {
     this.log("Creating tabulator table with data:", data);
 
     try {
@@ -119,6 +111,7 @@ export class TabulatorTable {
       }
 
       // Use viewid from URL if available, otherwise use the one provided by the Razor file
+      // TODO: always use razor file
       const urlParams = new URLSearchParams(window.location.search);
       const viewIdFromParams = urlParams.get("viewid");
       const viewId = viewIdFromParams ? viewIdFromParams : data.viewId;
@@ -228,7 +221,7 @@ export class TabulatorTable {
       }
     } catch (error) {
       this.log(
-        "Unhandled error in createTabulatorTable:",
+        "Unhandled error in setupTable:",
         ErrorMessageGenerator.toErrorString(error)
       );
       ErrorMessageGenerator.showAlert(

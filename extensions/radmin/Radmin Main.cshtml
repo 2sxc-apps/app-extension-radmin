@@ -68,6 +68,10 @@
   <div id="radmin-id-@mid"></div>
 </div>
 
+@if (tableSpecs.IsNotEmpty(nameof(tableSpecs.Outro))){
+  @Html.Raw(tableSpecs.Outro)
+}
+
 @* 7. Initialize the Tabulator table using turnOn *@
 @* TODO: rename window.table to window.radmin *@
 @Kit.Page.TurnOn("window.radmin.setup()", data: new {

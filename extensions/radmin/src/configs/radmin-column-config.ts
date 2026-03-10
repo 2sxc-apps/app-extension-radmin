@@ -24,6 +24,7 @@ export interface RadminColumnConfig {
   linkViewId: string | undefined;
   linkParameters: string;
   linkUrl: string;
+  linkTarget: "_self" | "_blank";
 
 }  
 

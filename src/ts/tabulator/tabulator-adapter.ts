@@ -15,17 +15,14 @@ import {
 import { DateTime } from "luxon";
 import { TabulatorConfig } from "../models/tabulator-config-models";
 import { TabulatorConfigService } from "./tabulator-config-service";
-import { DataProvider } from "../providers/data-provider";
 import { RadminTableConfig } from "../configs/radmin-table-config";
 import { TabulatorSearchFilter } from "./tabulator-search-filter";
 import { JsonSchema } from "../models/json-schema-model";
-import { SchemaProvider } from "../providers/schema-provider";
-import { CustomizeManager } from "../customizers/customize-manager";
 import { SetupObjectSorter } from "../helpers/setup-object-sorter";
 import { ErrorHelper } from "../helpers/error-helper";
 import { TabulatorToolbars } from "./tabulator-toolbars/tabulator-toolbar";
 import { ServiceBase } from '../shared/service-base';
-import { TableServices, TableServicesComplete } from './table-services';
+import { TableServicesComplete } from './table-services';
 import { SearchSpecs, TableSpecs } from '../radmin/setup-params';
 
 // Register required modules for Tabulator

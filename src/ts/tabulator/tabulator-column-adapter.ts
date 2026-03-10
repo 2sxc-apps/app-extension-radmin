@@ -2,7 +2,7 @@ import { TabulatorColumnConfig } from "../models/tabulator-config-models";
 import { RadminColumnConfig } from "../configs/radmin-column-config";
 import { CellComponent } from "tabulator-tables";
 import { JsonSchema, SchemaProperty } from "../models/json-schema-model";
-import { GroupPropertyIdentifier } from "../helpers/group-property-identifier";
+import { PropertyDefHelper } from "../helpers/property-def.helper";
 import { ValueLookup } from "../helpers/value-lookup.helper";
 import { SchemaHelper } from '../helpers/schema-helper';
 import { SchemaFormatter } from "../helpers/schema-formatter";
@@ -37,7 +37,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
         const prop = schema.properties[fieldName];
         this.log(`configured column: '${col.fieldValue}' to '${fieldName}'`, { col }, `schemaProp:`, prop);
 
-        if (GroupPropertyIdentifier.isGroup(prop, fieldName)) {
+        if (PropertyDefHelper.isGroup(prop, fieldName)) {
           // skip any configured column that references a group property
           this.log(`Skipping configured column because it references a group property: '${fieldName}'`, col);
           return null;
@@ -55,6 +55,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
         const column: TabulatorColumnConfig = {
           title: col.title,
           field: fieldName,
+          headerTooltip: col.headerTooltip || false,
           ...formatAndSort,
           // Only set alignment if explicitly specified
           hozAlign: hAlign,
@@ -123,7 +124,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
       .filter((key) => {
         const prop = schema.properties[key];
         // do not auto-add group properties
-        const isGroup = GroupPropertyIdentifier.isGroup(prop, key);
+        const isGroup = PropertyDefHelper.isGroup(prop, key);
         if (isGroup)
           this.log("Skipping auto-add of group property:", key);
         return !isGroup;
@@ -203,7 +204,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
           this.log(`Generated link url for cell '${normalizedField}' to: '${url}'`);
           return url;
         },
-        target: "_self",
+        target: col.linkTarget || "_self",
         label: (cell: CellComponent) => SchemaFormatter.objectTitleFormatter(cell),
       }
     };

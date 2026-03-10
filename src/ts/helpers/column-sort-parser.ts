@@ -29,9 +29,9 @@ export class ColumnSortParser extends ServiceBase {
       (input.startsWith("'") && input.endsWith("'"))
     ) {
       input = input.slice(1, -1).trim();
-      this.log("[ColumnSortParser] stripped outer quotes from input:", input);
+      this.log("stripped outer quotes from input:", input);
     } else {
-      this.log("[ColumnSortParser] parse called with:", input);
+      this.log("parse called with:", input);
     }
 
     const normalize = (s = "") => s.replace(/^["']|["']$/g, "").trim();
@@ -43,7 +43,7 @@ export class ColumnSortParser extends ServiceBase {
         ?.map((t) => t.trim())
         .filter(Boolean) || [];
 
-    this.log("[ColumnSortParser] initial tokens:", tokens);
+    this.log("initial tokens:", tokens);
 
     // If input used only colons (e.g. "A:desc:B:asc") without commas, split into pairs
     if (tokens.length === 1 && tokens[0].includes(":")) {
@@ -58,15 +58,9 @@ export class ColumnSortParser extends ServiceBase {
           rebuilt.push(`${parts[i]}:${parts[i + 1]}`);
         }
         tokens = rebuilt;
-        this.log(
-          "[ColumnSortParser] rebuilt tokens from colon-only input:",
-          tokens
-        );
+        this.log("rebuilt tokens from colon-only input:", tokens);
       } else {
-        this.log(
-          "[ColumnSortParser] colon-only token present but parts are not even - parts:",
-          parts
-        );
+        this.log("colon-only token present but parts are not even - parts:", parts);
       }
     }
 
@@ -76,7 +70,8 @@ export class ColumnSortParser extends ServiceBase {
     const colTitleByNormalized = new Map<string, string>();
 
     (columns || []).forEach((c) => {
-      if (c.field) colFieldByLower.set(c.field.toLowerCase(), c.field);
+      if (c.field)
+        colFieldByLower.set(c.field.toLowerCase(), c.field);
       if (c.title) {
         const titleStr = c.title.toString();
         colTitleByLower.set(titleStr.toLowerCase(), c.field ?? titleStr);
@@ -87,7 +82,7 @@ export class ColumnSortParser extends ServiceBase {
       }
     });
 
-    this.log("[ColumnSortParser] column lookup sizes:", {
+    this.log("column lookup sizes:", {
       fields: colFieldByLower.size,
       titles: colTitleByLower.size,
       titlesNormalized: colTitleByNormalized.size,
@@ -108,7 +103,7 @@ export class ColumnSortParser extends ServiceBase {
       }
     });
 
-    this.log("[ColumnSortParser] schema lookup sizes:", {
+    this.log("schema lookup sizes:", {
       keys: schemaKeyByLower.size,
       titles: schemaTitleByLower.size,
       titlesNormalized: schemaTitleByNormalized.size,
@@ -122,10 +117,7 @@ export class ColumnSortParser extends ServiceBase {
       // configured column.field (case-insensitive)
       const byField = colFieldByLower.get(lower);
       if (byField) {
-        this.log(
-          `[ColumnSortParser] resolved "${rawName}" => column.field (by field):`,
-          byField
-        );
+        this.log(`resolved "${rawName}" => column.field (by field):`, byField);
         return byField;
       }
 
@@ -133,20 +125,14 @@ export class ColumnSortParser extends ServiceBase {
       const byTitle =
         colTitleByLower.get(lower) ?? colTitleByNormalized.get(normalized);
       if (byTitle) {
-        this.log(
-          `[ColumnSortParser] resolved "${rawName}" => column.field (by title):`,
-          byTitle
-        );
+        this.log(`resolved "${rawName}" => column.field (by title):`, byTitle);
         return byTitle;
       }
 
       // schema property key (case-insensitive)
       const bySchemaKey = schemaKeyByLower.get(lower);
       if (bySchemaKey) {
-        this.log(
-          `[ColumnSortParser] resolved "${rawName}" => schema key:`,
-          bySchemaKey
-        );
+        this.log(`resolved "${rawName}" => schema key:`, bySchemaKey);
         return bySchemaKey;
       }
 
@@ -155,18 +141,12 @@ export class ColumnSortParser extends ServiceBase {
         schemaTitleByLower.get(lower) ??
         schemaTitleByNormalized.get(normalized);
       if (bySchemaTitle) {
-        this.log(
-          `[ColumnSortParser] resolved "${rawName}" => schema title:`,
-          bySchemaTitle
-        );
+        this.log(`resolved "${rawName}" => schema title:`, bySchemaTitle);
         return bySchemaTitle;
       }
 
       // fallback to cleaned token (Tabulator will attempt to match)
-      this.log(
-        `[ColumnSortParser] fallback resolution for "${rawName}" =>`,
-        cleaned
-      );
+      this.log(`fallback resolution for "${rawName}" =>`, cleaned);
       return cleaned;
     };
 
@@ -193,7 +173,7 @@ export class ColumnSortParser extends ServiceBase {
         dir,
       };
 
-      this.log("[ColumnSortParser] parsed segment:", {
+      this.log("parsed segment:", {
         raw: segment,
         token,
         nameToken,
@@ -204,7 +184,7 @@ export class ColumnSortParser extends ServiceBase {
       return resolved;
     });
 
-    this.log("[ColumnSortParser] final parsed sorters:", result);
+    this.log("final parsed sorters:", result);
     return result;
   }
 }

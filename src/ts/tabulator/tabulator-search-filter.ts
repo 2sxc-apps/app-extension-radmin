@@ -59,9 +59,7 @@ export class TabulatorSearchFilter {
    * Get the filter function for Tabulator
    */
   getFilterFunction(filterName: string) {
-    const filterInput = document.querySelector<HTMLInputElement>(
-      `#${filterName}`
-    );
+    const filterInput = document.querySelector<HTMLInputElement>(`#${filterName}`);
 
     if (!filterInput) {
       console.warn(`Filter input with ID ${filterName} not found`);

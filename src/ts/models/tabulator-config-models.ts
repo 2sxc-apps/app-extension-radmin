@@ -32,6 +32,7 @@ export interface TabulatorConfig extends RadminTableConfig {
 export interface TabulatorColumnConfig {
   title: string;
   field: string;
+  headerTooltip?: string | boolean;
   tooltip?:
     | boolean
     | string

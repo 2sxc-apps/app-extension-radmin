@@ -77,6 +77,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 1. 2dm: Improve schema endpoint to also return schema of query
 1. 2dm: Improve js to get query (was not working, was missing `/`)
 1. 2dm: fix `id` and `guid` casing
+1. 2dm: add feature 'url' / page
+1. 2dm: link - add target option `_blank`
+1. 2dm: add `headerTooltip`
 
 ### 2026-01-12
 

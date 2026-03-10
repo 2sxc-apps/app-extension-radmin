@@ -11,7 +11,7 @@ namespace AppCode.Extensions.Radmin.Data
 }
 */
 
-// Generator:   CSharpDataModelsGenerator
+// Generator:   CSharpTypedDataModelsGenerator
 // App/Edition: App Ext Radmin/
 // User:        2sic Web-Developer
 using System.Collections.Generic;

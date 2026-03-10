@@ -11,7 +11,7 @@ import { ServiceBase } from '../shared/service-base';
 
 export class TabulatorColumnAdapter extends ServiceBase {
   constructor() {
-    super("TabulatorColumnAdapter", false);
+    super("TabulatorColumnAdapter", true);
   }
 
   convert(
@@ -107,7 +107,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
         // Configure link if enabled
         if (col.linkEnable) {
           this.log("Link enabled for column", normalizedField, {
-            linkViewId: col.linkViewId,
+            linkViewRef: col.linkViewRef,
             linkParameters: col.linkParameters,
           });
           column.formatter = "link";
@@ -122,7 +122,18 @@ export class TabulatorColumnAdapter extends ServiceBase {
                 cell.getData(),
                 schema
               );
-              const url = `?viewid=${col.linkViewId.viewId}&entityid=${entityId}${params ? "&" + params : ""}`;
+
+              // The view ID can be one of:
+              // 1. Directly referencing another view via linkViewRef
+              // 2. Directly referencing another value (view-key) via the viewId - such as 'tags-list'
+              // 3. The viewId can also have a string such as '[viewId]' to reuse a value in the data
+              const viewId = col.linkViewRef?.viewId
+                || ParamMatcher.replaceParameters(
+                  col.linkViewId || "",
+                  cell.getData(),
+                  schema
+                );
+              const url = `?viewid=${viewId}&entityid=${entityId}${params ? "&" + params : ""}`;
               this.log("Generated link url for cell", {
                 field: normalizedField,
                 url,

@@ -6,7 +6,8 @@ export interface RadminColumnConfig {
   id: number;
   linkEnable: boolean;
   linkParameters: string
-  linkViewId: RadminDetailsViewConfig;
+  linkViewId: string | undefined;
+  linkViewRef: RadminDetailsViewConfig;
   title: string;
   horizontalAlignment: "automatic" | "left" | "center" | "right";
   width: number | "automatic";

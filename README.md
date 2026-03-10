@@ -71,6 +71,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 1. 2dm: Rename `RadminConstants`
 1. 2dm: Show instructions on add-module
 1. 2dm: change `window.table` to `window.radmin`
+1. 2dm: lots of js refactoring / SoC
+1. 2dm: restore ability to link to both views and tables
 
 ### 2026-01-12
 

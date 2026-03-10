@@ -9,14 +9,14 @@ import { ServiceBase } from '../shared/service-base';
  */
 export class DataProviderFactory extends ServiceBase {
   constructor() {
-    super("DataProviderFactory", false);
+    super("DataProviderFactory", true);
   }
 
   public getDataProvider(tableConfigData: RadminTableConfig, sxc: Sxc, linkParameters: string | undefined): DataProvider {
-    if (tableConfigData.dataQuery === "") {
-      const apiUrl = sxc.webApi.url(
-        `app/auto/data/${tableConfigData.dataContentType}`
-      );
+    const query = tableConfigData.dataQuery;
+    this.log("Creating data provider for config. Query:", query, "Link parameters:", linkParameters);
+    if (query === "") {
+      const apiUrl = sxc.webApi.url(`app/auto/data/${tableConfigData.dataContentType}`);
       const headers = sxc.webApi.headers("GET");
 
       this.log("Created standard DataProvider");
@@ -25,14 +25,14 @@ export class DataProviderFactory extends ServiceBase {
         headers,
         tableConfigData.dataContentType
       );
-    } else {
-      this.log("Created QueryDataProvider");
-      return new QueryDataProvider(
-        sxc,
-        tableConfigData.dataQuery,
-        linkParameters
-      );
     }
+    
+    this.log("Created QueryDataProvider");
+    return new QueryDataProvider(
+      sxc,
+      tableConfigData.dataQuery,
+      linkParameters
+    );
   }
 
 }

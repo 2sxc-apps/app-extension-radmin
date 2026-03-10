@@ -1,14 +1,14 @@
+
 import { Sxc } from "@2sic.com/2sxc-typings";
 import { DataProviderBase } from './data-provider-base';
 
 export class QueryDataProvider extends DataProviderBase {
   private sxc: Sxc;
   private query: string;
-  private linkParameters?: string;
 
   constructor(sxc: Sxc, query: string, linkParameters?: string) {
     // Build the full API URL
-    const endpoint = `app/auto/query/${query}${
+    const endpoint = `app/auto/query/${query}/${
       linkParameters ? `?${linkParameters}` : ""
     }`;
     const apiUrl = sxc.webApi.url(endpoint);
@@ -19,7 +19,6 @@ export class QueryDataProvider extends DataProviderBase {
     // Store references for later use
     this.sxc = sxc;
     this.query = query;
-    this.linkParameters = linkParameters;
   }
 
   /**
@@ -27,13 +26,8 @@ export class QueryDataProvider extends DataProviderBase {
    */
   async getInitialData(): Promise<unknown[]> {
     try {
-      // Build endpoint URL including linkParameters if provided
-      let endpoint = `app/auto/query/${this.query}${
-        this.linkParameters ? this.linkParameters : ""
-      }`;
-
       // Fetch data from the endpoint
-      const data = await this.sxc.webApi.fetchJson(endpoint);
+      const data = await this.sxc.webApi.fetchJson(this.apiUrl);
 
       // Process the data using our method
       return this.processQueryData(data, this.query);
@@ -57,7 +51,8 @@ export class QueryDataProvider extends DataProviderBase {
     let mainKey = queryName;
     let mainItems = data[mainKey] || data["Default"];
 
-    if (!Array.isArray(mainItems)) return [];
+    if (!Array.isArray(mainItems))
+      return [];
 
     const lookupMaps: Record<string, Record<number, any>> = {};
     Object.keys(data).forEach((key) => {

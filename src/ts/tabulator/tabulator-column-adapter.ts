@@ -11,7 +11,7 @@ import { ServiceBase } from '../shared/service-base';
 
 export class TabulatorColumnAdapter extends ServiceBase {
   constructor() {
-    super("TabulatorColumnAdapter", true);
+    super("TabulatorColumnAdapter", false);
   }
 
   convert(

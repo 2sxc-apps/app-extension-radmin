@@ -75,6 +75,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 1. 2dm: lots of js refactoring / SoC
 1. 2dm: restore ability to link to both views and tables
 1. 2dm: move schema-infos into own folder/namespace
+1. 2dm: Improve controller to use `IActionResult`
+1. 2dm: Improve schema endpoint to also return schema of query
+1. 2dm: Improve js to get query (was not working, was missing `/`)
 
 ### 2026-01-12
 

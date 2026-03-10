@@ -33,9 +33,9 @@ export class TabulatorColumnAdapter extends ServiceBase {
     // skip it (group fields should not become visible columns).
     const configuredColumns = columnConfigs
       .map((col) => {
-        const fieldName = new SchemaHelper(schema).findCasing(col.valueSelector);
+        const fieldName = new SchemaHelper(schema).findCasing(col.fieldValue);
         const prop = schema.properties[fieldName];
-        this.log(`configured column: '${col.valueSelector}' to '${fieldName}'`, { col }, `schemaProp:`, prop);
+        this.log(`configured column: '${col.fieldValue}' to '${fieldName}'`, { col }, `schemaProp:`, prop);
 
         if (GroupPropertyIdentifier.isGroup(prop, fieldName)) {
           // skip any configured column that references a group property
@@ -43,8 +43,8 @@ export class TabulatorColumnAdapter extends ServiceBase {
           return null;
         }
 
-        const chosenFormat = col.valueFormat
-          || SchemaFormatter.getFormatFromSchema(col.valueSelector, schema);
+        const chosenFormat = col.fieldFormat
+          || SchemaFormatter.getFormatFromSchema(col.fieldValue, schema);
 
         const formatAndSort = this.#formatAndSortHelper.getFormatAndSort(chosenFormat, fieldName, prop || { type: "string" } as SchemaProperty, !!col.linkEnable);
 
@@ -64,8 +64,8 @@ export class TabulatorColumnAdapter extends ServiceBase {
           // Handle tooltip configuration
           tooltip: !col.tooltipEnabled
             ? false
-            : col.tooltipSelector
-              ? (e, cell) => new ValueLookup(schema, cell.getData()).resolveTemplate(col.tooltipSelector)
+            : col.fieldTooltip
+              ? (e, cell) => new ValueLookup(schema, cell.getData()).resolveTemplate(col.fieldTooltip)
               : true,
           ...this.linkFormatter(schema, col, fieldName)
         };
@@ -117,7 +117,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
    * @returns An array of TabulatorColumnConfig for the remaining columns.
    */
   private defineRemainingColumns(schema: JsonSchema, configuredFields: Set<string>) {
-  
+    this.log("Defining remaining columns from schema. Total properties:", { schema, configuredFields });
     const keysToUse = Object.keys(schema.properties)
       .filter((key) => !configuredFields.has(key))
       .filter((key) => {
@@ -164,8 +164,8 @@ export class TabulatorColumnAdapter extends ServiceBase {
       formatter: "link",
       formatterParams: {
         url: (cell: CellComponent) => {
-          const cellData = cell.getData();
-          const valLookup = new ValueLookup(schema, cellData);
+          // Prepare lookup and parameters
+          const valLookup = new ValueLookup(schema, cell.getData());
           const params = valLookup.resolveTemplate(col.linkParameters);
 
           const expectedParams = col.linkViewRef?.expectedParameters;
@@ -173,7 +173,19 @@ export class TabulatorColumnAdapter extends ServiceBase {
           const addParams = expectedParams
             ? valLookup.resolveTemplate(expectedParams)
             : '';
+          
+          const allParams = {
+            // Requested params goes first
+            ...Object.fromEntries(new URLSearchParams(addParams)),
+            // Added by current view configuration last, has precedence over any conflicting keys in the requested params
+            ...Object.fromEntries(new URLSearchParams(params)),
+          }
 
+          if (col.linkType == 'url') {
+            const urlParams = this.combineUrlParams(allParams);
+            this.log(`Generated URL for cell '${normalizedField}': '${urlParams}'`, { addParams, params });
+            return `${col.linkUrl}${urlParams ? '?' + urlParams : ''}`;
+          }
 
           // The view ID can be one of:
           // 1. Directly referencing another view via linkViewRef
@@ -185,8 +197,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
 
           const url = '?' + this.combineUrlParams({
             viewId: viewId,
-            ...Object.fromEntries(new URLSearchParams(addParams)),
-            ...Object.fromEntries(new URLSearchParams(params)),
+            ...allParams,
           })
 
           this.log(`Generated link url for cell '${normalizedField}' to: '${url}'`);

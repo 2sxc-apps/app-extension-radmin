@@ -4,20 +4,28 @@
  */
 export interface RadminColumnConfig {
   id: number;
-  linkEnable: boolean;
-  linkParameters: string
-  linkViewId: string | undefined;
-  linkViewRef: RadminDetailsViewConfig;
+  guid: string;
   title: string;
+
+  fieldValue: string;
+  fieldFormat: string;
+
   horizontalAlignment: "automatic" | "left" | "center" | "right";
   width: number | "automatic";
-  DataContentType: string;
+  // dataContentType: string;
+  
   tooltipEnabled: boolean;
-  guid: string;
-  tooltipSelector: string;
-  valueFormat: string;
-  valueSelector: string;
-}
+  fieldTooltip: string;
+  headerTooltip: string;
+  
+  linkEnable: boolean;
+  linkType: '' | 'page' | 'url' | 'view' | 'view-dynamic';
+  linkViewRef: RadminDetailsViewConfig;
+  linkViewId: string | undefined;
+  linkParameters: string;
+  linkUrl: string;
+
+}  
 
 export interface RadminDetailsViewConfig {
   id: number;

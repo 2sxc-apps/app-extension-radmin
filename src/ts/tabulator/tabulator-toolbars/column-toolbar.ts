@@ -78,7 +78,7 @@ export function showColumnToolbar(
       action: "edit",
     });
   } else {
-    const valueSelector =
+    const fieldValue =
       colField && colField.trim() !== ""
         ? colField
         : colTitle.replace(/\s+/g, "");
@@ -90,7 +90,7 @@ export function showColumnToolbar(
         Title: colTitle,
         linkEnable: false,
         tooltipEnabled: false,
-        ValueSelector: valueSelector,
+        FieldValue: fieldValue,
       },
       fields: "ColumnConfigs",
       parent: tableConfigData.guid,

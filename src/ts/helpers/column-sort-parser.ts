@@ -8,12 +8,11 @@
 import { ColumnDef } from "../models/column-def-model";
 import { JsonSchema } from "../models/json-schema-model";
 import { TabulatorSort } from "../models/tabulator-config-models";
+import { ServiceBase } from '../shared/service-base';
 
-export class ColumnSortParser {
-  debug = false;
-
-  private log(...args: any[]) {
-    if (this.debug) console.log("[ColumnSortParser]", ...args);
+export class ColumnSortParser extends ServiceBase {
+  constructor() {
+    super("ColumnSortParser", true);
   }
 
   parse(

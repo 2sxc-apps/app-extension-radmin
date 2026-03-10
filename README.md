@@ -57,6 +57,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## TODO (2DM)
 
 1. make sure views can also be tables again
+1. Customizers - there are no samples, so it can't be verified ATM!
 1. fix tables linked by a column
 1. show date - default / automatic format is date only
 1. rename IDs and classes to use radmin... and not `tosxc-table`

@@ -1,25 +1,22 @@
 import { Options } from "tabulator-tables";
 import { TableCustomizer } from "./table-customizer";
 import { RadminTableConfig } from "../configs/radmin-table-config";
+import { ServiceBase } from '../shared/service-base';
+import { CustomizerLoader } from './customizer-loader';
 
-export class CustomizeManager {
+export class CustomizeManager extends ServiceBase {
   private static instance: CustomizeManager | undefined;
   private customizers: TableCustomizer[] = [];
   private activeCustomizers: Map<string, TableCustomizer[]> = new Map();
   private registeredIds: Set<string> = new Set();
+
+  // #region Construction and singleton access
+
   // debug id to detect duplicates
   private _instanceId: string;
 
-  debug = false;
-
-  /**
-   * Helper method for logging when debug is enabled
-   */
-  private log(...args: any[]) {
-    if (this.debug) console.log("[CustomizeManager]", ...args);
-  }
-
   private constructor() {
+    super("CustomizeManager", true);
     this._instanceId = Math.random().toString(36).slice(2, 9);
     this.log(`CustomizeManager initialized with instance ID: ${this._instanceId}`);
   }
@@ -29,10 +26,15 @@ export class CustomizeManager {
    * This is a plain static singleton (does not use window).
    */
   public static getInstance(): CustomizeManager {
-    if (!CustomizeManager.instance) {
+    if (!CustomizeManager.instance)
       CustomizeManager.instance = new CustomizeManager();
-    }
     return CustomizeManager.instance!;
+  }
+
+  // #endregion
+
+  public async load(customizerDistPath: string | undefined) {
+    return new CustomizerLoader(this).load(customizerDistPath);
   }
 
   /**

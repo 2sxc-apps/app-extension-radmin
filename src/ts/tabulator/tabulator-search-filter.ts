@@ -1,86 +1,25 @@
-import { Resources } from '../models/resources';
+import { SearchSpecs } from '../radmin/setup-params';
 
 export class TabulatorSearchFilter {
   /**
    * Create filter input element and place it next to the table heading
    * Uses module ID to ensure targeting the correct instance
    */
-  createFilterInput(
-    tableName: string,
-    filterName: string,
-    moduleId: number,
-    resources: Resources,
-  ): void {
-    const tableElement = document.getElementById(tableName);
-    if (!tableElement)
-      return;
-
-    // Find module container (parent element that contains the table)
-    // TODO: @2pp this looks fishy, I believe there should only be one clear option for the container
-    const moduleContainer =
-      tableElement.closest(
-        `[data-block-instance="${moduleId}"], [data-block-settings="${moduleId}"], [data-cb-instance="${moduleId}"]`
-      ) ||
-      tableElement.closest(
-        `.tabulator-container[data-module-id="${moduleId}"]`
-      ) ||
-      tableElement.parentElement;
-
-    if (!moduleContainer)
+  createFilterInput(specs: SearchSpecs): void {
+    // Find container for the filter or exit
+    const filterContainer = document.getElementById(specs.searchContainerDomId);
+    if (!filterContainer)
       return;
 
     // Create search input
     const filterInput = document.createElement("input");
     filterInput.className = "form-control";
     filterInput.type = "text";
-    filterInput.placeholder = resources.SearchLabel || "Search...";
-    filterInput.id = filterName;
+    filterInput.placeholder = specs.resources.SearchLabel || "Search...";
+    filterInput.id = specs.searchDomId;
 
-    // Create container for the filter
-    const filterContainer = document.createElement("div");
-    filterContainer.className = "w-25";
+    // Append to DOM
     filterContainer.appendChild(filterInput);
-
-    // Add data attribute to identify this component
-    filterContainer.setAttribute("data-module-id", moduleId.toString());
-
-    // Try to find existing flex container within this specific module
-    const flexContainer = moduleContainer.querySelector(
-      // TODO: @2pp this is extremely specific, and looks fishy - can we simplify?
-      `.d-flex.justify-content-between.align-items-center.mb-1[data-module-id="${moduleId}"], .d-flex.justify-content-between.align-items-center.mb-1`
-    );
-
-    if (flexContainer) {
-      // Add filter to existing flex container
-      flexContainer.appendChild(filterContainer);
-      return;
-    }
-
-    // If no flex container exists, create one
-    // TODO: EXPLAIN when this happens
-    const newFlexContainer = document.createElement("div");
-    newFlexContainer.className = "d-flex justify-content-between align-items-center mb-1";
-    newFlexContainer.setAttribute("data-module-id", moduleId.toString());
-
-    // Try to find a heading to pair with the filter, specific to this module
-    const headingElement = moduleContainer.querySelector(
-      `h1[data-module-id="${moduleId}"], h1`
-    );
-
-    if (headingElement && headingElement.parentElement) {
-      // Insert new container and move heading into it
-      headingElement.parentElement.insertBefore(
-        newFlexContainer,
-        headingElement
-      );
-      newFlexContainer.appendChild(headingElement);
-      newFlexContainer.appendChild(filterContainer);
-    } else {
-      // No heading found, just add filter before table
-      newFlexContainer.className = "d-flex justify-content-end align-items-center mb-1";
-      newFlexContainer.appendChild(filterContainer);
-      tableElement.parentElement?.insertBefore(newFlexContainer, tableElement);
-    }
   }
 
   /**

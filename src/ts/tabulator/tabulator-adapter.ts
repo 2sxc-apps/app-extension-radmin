@@ -26,6 +26,7 @@ import { ErrorMessageGenerator } from "../helpers/error-message-generator";
 import { TabulatorToolbars } from "./tabulator-toolbars/tabulator-toolbar";
 import { ServiceBase } from '../shared/service-base';
 import { TableServices } from './table-services';
+import { SearchSpecs } from '../radmin/setup-params';
 
 // Register required modules for Tabulator
 Tabulator.registerModule([
@@ -78,11 +79,11 @@ export class TabulatorAdapter extends ServiceBase {
   }
 
   async createTable(
+    data: SearchSpecs,
     services: TableServices,
     tableName: string,
     tableConfigData: RadminTableConfig,
     dataProvider: DataProvider,
-    filterName: string | undefined,
     canEditConfig: boolean,
     canEditData: boolean,
     viewId: string
@@ -201,9 +202,9 @@ export class TabulatorAdapter extends ServiceBase {
         );
       }
 
-      if (filterName && tableConfigData.searchEnabled) {
-        this.log("setting up filter input", filterName);
-        this.setupFilterInput(table, filterName);
+      if (data.searchDomId && tableConfigData.searchEnabled) {
+        this.log("setting up filter input", data.searchDomId);
+        this.setupFilterInput(table, data.searchDomId);
       }
 
       if (this.isViewConfigMode() && canEditConfig) {

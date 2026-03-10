@@ -3,7 +3,7 @@ import { ConfigurationLoader } from "../loaders/table-configuration-loader";
 import { DataProvider } from "../providers/data-provider";
 import { TabulatorSearchFilter } from "../tabulator/tabulator-search-filter";
 import { ErrorMessageGenerator } from "../helpers/error-message-generator";
-import { SetupParams } from './setup-params';
+import { SearchSpecs, SetupParams } from './setup-params';
 import { ServiceBase } from '../shared/service-base';
 import { TableServices } from '../tabulator/table-services';
 import { DataProviderFactory } from '../providers/data-provider-factory';
@@ -76,12 +76,7 @@ export class RadminMain extends ServiceBase {
 
       // Create the filter UI element if search is enabled
       if (tableConfigData.searchEnabled) {
-        new TabulatorSearchFilter().createFilterInput(
-          data.tableName,
-          data.filterName,
-          data.moduleId,
-          data.resources
-        );
+        new TabulatorSearchFilter().createFilterInput(data as SearchSpecs);
       }
 
       // Create the appropriate DataProvider based on the configuration
@@ -90,11 +85,11 @@ export class RadminMain extends ServiceBase {
       try {
         this.log("Creating table with TabulatorAdapter.createTable");
         await new TabulatorAdapter().createTable(
+          data as SearchSpecs,
           services,
           data.tableName,
           tableConfigData,
           dataProvider,
-          data.filterName,
           data.canEditConfig,
           data.canEditData,
           data.viewId

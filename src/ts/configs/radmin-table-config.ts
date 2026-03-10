@@ -5,7 +5,7 @@ import { RadminColumnConfig } from "./radmin-column-config";
  */
 export interface RadminTableConfig {
   title: string;
-  viewId: number;
+  viewId: string;
   id: number;
   dataContentType: string;
   columnsAutoShowRemaining: boolean;

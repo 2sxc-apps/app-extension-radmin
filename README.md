@@ -8,9 +8,9 @@ This **2sxc Extension Radmin** app provides a powerful and flexible way to creat
 
 | Aspect              | Status | Comments or Version
 | ------------------- | :----: | -------------------
-| 2sxc                | ✅     | requires 2sxc v19.00.00+
-| Dnn                 | ✅     | For v9.6.1+
-| Oqtane              | ✅     | Requires v5.00+
+| 2sxc                | ✅     | requires 2sxc v21.04.00+
+| Dnn                 | ✅     | For v9.11.2+
+| Oqtane              | ✅     | Requires v10.00+
 | No jQuery           | ✅     | Built with modern JavaScript
 | TypeScript          | ✅     | Full TypeScript support
 | Source & License    | ✅     | included, ISC/MIT
@@ -23,30 +23,14 @@ This means that it
 1. can be used to create a simple and advanced tables in minutes
 2. can be modified to fit any needs
 
-The app is built with the [pattern **Don't be DAFT**][daft] (DAFT = Densely Abstract Features for Techies), aka the **Anti-Abstraction** pattern.
-So customizing it is mostly done using common technologies like HTML, JS and some C#.
-
 ## Get Started
 
-This app is only useful if you use DNN or Oqtane. So assuming you have a DNN installation, all you need to do is install 2sxc and this app.
-
-* Here's how to [install 2sxc and an App of your Choice](https://2sxc.org/en/apps/app/mobius-forms-v5-with-mailchimp-recaptcha-polymorph-weback-and-more-hybrid-for-dnn-and-oqtane)
-
-* Now you can use this app as-is, or customize it to be whatever you need it to be.
-
-* It probably helps to review the [Overview][overview] about how the parts play together by default, so you can then change as little as necessary to get it to do what you want
-
-1. Add the necessary HTML:
-
-```html
-<div id="my-table"></div>
-```
-
-## Customize the App
-
-The Source Code is all here - so you can easily customize to your hearts desire!
+This is an extension.
+Normally you'll want to install THE EXTENSION in your app, and start using it.
 
 ## Contributing
+
+If you want to make contributions, then you should install _this App_, make changes, and then submit a PR.
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 

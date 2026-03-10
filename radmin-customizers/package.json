@@ -4,15 +4,15 @@
   "description": "",
   "main": "(none)",
   "scripts": {
-    "build:customizers": "webpack",
-    "watch:customizers": "webpack --watch"
+    "customizers:build": "webpack",
+    "customizers:watch": "webpack --watch"
   },
   "author": "2sic internet solutions 2025",
   "license": "ISC",
   "devDependencies": {
     "@types/luxon": "^3.4.2",
     "@types/node": "^22.9.0",
-    "@types/tabulator-tables": "^6.3.0",
+    "@types/tabulator-tables": "^6.3.1",
     "@types/webpack": "^5.28.5",
     "@types/webpack-env": "^1.18.5",
     "autoprefixer": "^10.4.19",

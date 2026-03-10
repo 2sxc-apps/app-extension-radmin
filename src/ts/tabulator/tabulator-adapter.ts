@@ -103,6 +103,9 @@ export class TabulatorAdapter extends ServiceBase {
 
       const dataProvider = services.dataProvider; // Use the data provider from servicesComplete, which may have customizations
       const tabulatorOptionsRaw: ExtendedOptions = {
+        columnDefaults: {
+          maxWidth: 300,
+        },
         ajaxURL: dataProvider.getApiUrl(),
         ajaxConfig: {
           method: "GET",

@@ -7,12 +7,11 @@ import { GroupPropertyIdentifier } from "../helpers/group-property-identifier";
 import HtmlStripper from "../helpers/html-stripper";
 import { ParamMatcher } from "../helpers/param-matcher";
 import { ShemaFormatter } from "../helpers/shema-formatter";
+import { ServiceBase } from '../shared/service-base';
 
-export class TabulatorColumnAdapter {
-  debug = false;
-
-  private log(...args: any[]) {
-    if (this.debug) console.log("[Adapter]", ...args);
+export class TabulatorColumnAdapter extends ServiceBase {
+  constructor() {
+    super("TabulatorColumnAdapter", true);
   }
 
   convert(

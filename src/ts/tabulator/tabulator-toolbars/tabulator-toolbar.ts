@@ -7,20 +7,20 @@ import { RadminTableConfig } from "../../configs/radmin-table-config";
 import { createRowActionToolbar } from "./row-toolbar";
 import { showColumnToolbar } from "./column-toolbar";
 import { showAddButton } from "./add-button";
+import { ServiceBase } from '../../shared/service-base';
 
 /**
  * Facade class kept for backward compatibility.
  * Methods delegate to smaller modules to keep code readable.
  */
-export class TabulatorToolbars {
+export class TabulatorToolbars extends ServiceBase {
   private baseButtonSize = 32;
   private zIndex = 1000;
 
-  debug = false;
-
-  private log(...args: any[]) {
-    if (this.debug) console.log("[tabulatorToolbars]", ...args);
+  constructor() {
+    super("TabulatorToolbars", true);
   }
+
 
   public showAddButton(table: Tabulator, tableConfigData: RadminTableConfig) {
     showAddButton(

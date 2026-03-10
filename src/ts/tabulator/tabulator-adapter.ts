@@ -24,6 +24,7 @@ import { CustomizeManager } from "../customizers/customize-manager";
 import { SetupObjectSorter } from "../helpers/setup-object-sorter";
 import { ErrorMessageGenerator } from "../helpers/error-message-generator";
 import { TabulatorToolbars } from "./tabulator-toolbars/tabulator-toolbar";
+import { ServiceBase } from '../shared/service-base';
 
 // Register required modules for Tabulator
 Tabulator.registerModule([
@@ -41,15 +42,14 @@ interface ExtendedOptions extends Options {
   dependencies?: { DateTime: typeof DateTime };
 }
 
-export class TabulatorAdapter {
+export class TabulatorAdapter extends ServiceBase {
   private tabulatorToolbars = new TabulatorToolbars();
   private configService = new TabulatorConfigService();
 
-  debug = false;
-
-  private log(...args: any[]) {
-    if (this.debug) console.log("[Adapter]", ...args);
+  constructor() {
+    super("TabulatorAdapter", true);
   }
+
 
   private async createTabulatorConfig(
     tableConfigData: RadminTableConfig,

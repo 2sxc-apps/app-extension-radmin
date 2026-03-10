@@ -82,9 +82,7 @@ export class TabulatorAdapter extends ServiceBase {
     tableName: string,
     tableConfigData: RadminTableConfig,
     dataProvider: DataProvider,
-    // schemaProvider: SchemaProvider,
     filterName: string | undefined,
-    // customizeManager: CustomizeManager,
     canEditConfig: boolean,
     canEditData: boolean,
     viewId: string

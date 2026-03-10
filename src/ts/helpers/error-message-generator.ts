@@ -57,9 +57,9 @@ export class ErrorMessageGenerator {
   /**
    * Render a Bootstrap alert into the target container.
    *
-   * containerId: typically the table id (e.g. 'tosxc-table-123'). If an element with that id isn't found
+   * containerId: typically the table id (e.g. 'radmin-id-123'). If an element with that id isn't found
    * the helper will attempt to use an error container id variant by replacing the prefix:
-   *  tosxc-table-123 -> tosxc-table-error-123
+   *  radmin-id-123 -> radmin-id-error-123
    */
   static showAlert(
     containerId: string,
@@ -69,7 +69,7 @@ export class ErrorMessageGenerator {
   ): void {
     try {
       const container = document.getElementById(containerId);
-      const errorContainerId = containerId.replace(/^tosxc-table-/, "tosxc-table-error-");
+      const errorContainerId = containerId.replace(/^radmin-id-/, "radmin-id-error-");
       const errorContainer = document.getElementById(errorContainerId);
       const target = errorContainer || container;
       if (!target) {
@@ -98,7 +98,7 @@ export class ErrorMessageGenerator {
 
   /**
    * Show a friendly message for configuration load failures (e.g. 401s).
-   * containerId should be the table container id (e.g. 'tosxc-table-123').
+   * containerId should be the table container id (e.g. 'radmin-id-123').
    */
   static handleLoadConfigError(containerId: string, err: unknown) {
     const errStr = ErrorMessageGenerator.toErrorString(err);

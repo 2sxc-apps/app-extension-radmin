@@ -17,11 +17,11 @@ export class RadminMain extends ServiceBase {
   /**
    * Create a Tabulator table based on configuration
    *
-   * Note: containerId is the table element id (e.g. "tosxc-table-123").
+   * Note: containerId is the table element id (e.g. "radmin-id-123").
    * The ErrorMessageGenerator will attempt to render alerts into this element or into
-   * the corresponding error container ("tosxc-table-error-123").
+   * the corresponding error container ("radmin-id-error-123").
    */
-  async setupTable(data: SetupParams): Promise<void> {
+  async setup(data: SetupParams): Promise<void> {
     this.log("Creating tabulator table with data:", data);
 
     try {

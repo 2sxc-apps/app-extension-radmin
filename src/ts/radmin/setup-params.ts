@@ -1,14 +1,19 @@
 import { Resources } from '../models/resources';
 
 
-export interface SetupParams {
-  tableName: string;
-  filterName: string;
+export interface SetupParams extends TableSetupSpecs {
   moduleId: number;
-  viewId: string;
   errorContainerId?: string;
-  canEditConfig: boolean;
-  canEditData: boolean;
   customizerDistPath?: string; // Optional app URL for dynamic imports
   resources: Resources;
+}
+
+export interface TableSetupSpecs {
+  tableName: string;
+  filterName: string;
+  canEditConfig: boolean;
+  canEditData: boolean;
+
+  /** The view ID (GUID) */
+  viewId: string;
 }

@@ -44,20 +44,20 @@
 
 
 @* 5. Add placeholder for errors before the final data table *@
-<div id="tosxc-table-error-@mid" class="mb-3">
+<div id="radmin-id-error-@mid" class="mb-3">
 </div>
 
 @* 6. Add placeholder which will contain the tabulator JS (must have a proper closing div-tag) *@
 <div>
-  <div id="tosxc-table-@mid"></div>
+  <div id="radmin-id-@mid"></div>
 </div>
 
 @* 7. Initialize the Tabulator table using turnOn *@
 @* TODO: rename window.table to window.radmin *@
-@Kit.Page.TurnOn("window.radmin.setupTable()", data: new {
-  tableName = "tosxc-table-" + mid,
-  filterName = "tosxc-table-filter-" + mid,
-  errorContainerId = "tosxc-table-error-" + mid,
+@Kit.Page.TurnOn("window.radmin.setup()", data: new {
+  tableName = "radmin-id-" + mid,
+  filterName = "radmin-id-filter-" + mid,
+  errorContainerId = "radmin-id-error-" + mid,
   moduleId = mid,
   viewId = item.Guid,
   canEditConfig = MyUser.IsSiteAdmin && !item.IsDemoItem,

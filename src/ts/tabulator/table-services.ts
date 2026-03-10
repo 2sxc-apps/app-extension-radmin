@@ -7,7 +7,7 @@ import { RadminTableConfig } from '../configs/radmin-table-config';
 import { DataProvider } from '../providers/data-provider';
 import { DataProviderFactory } from '../providers/data-provider-factory';
 import { JsonSchema } from '../models/json-schema-model';
-import { ErrorMessageGenerator } from '../helpers/error-message-generator';
+import { ErrorHelper } from '../helpers/error-helper';
 
 
 abstract class TableServicesBase extends ServiceBase {
@@ -54,7 +54,7 @@ export class TableServices extends TableServicesBase {
       }
       return schema;
     } catch (error: unknown) {
-      const errStr = ErrorMessageGenerator.toErrorString(error);
+      const errStr = ErrorHelper.toErrorString(error);
       this.log("Error loading schema:", errStr);
       throw new Error(`Schema loading failed: ${errStr}`);
     }

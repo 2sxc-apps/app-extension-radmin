@@ -1,4 +1,4 @@
-import { ErrorMessageGenerator } from '../helpers/error-message-generator';
+import { ErrorHelper } from '../helpers/error-helper';
 import { ServiceBase } from '../shared/service-base';
 import { CustomizeManager } from './customize-manager';
 
@@ -60,7 +60,7 @@ export class CustomizerLoader extends ServiceBase {
     } catch (error) {
       this.log(
         `Error during dynamic import:`,
-        ErrorMessageGenerator.toErrorString(error)
+        ErrorHelper.toErrorString(error)
       );
     }
   }

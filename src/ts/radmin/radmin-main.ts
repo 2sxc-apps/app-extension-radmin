@@ -1,7 +1,7 @@
 import { TabulatorAdapter } from "../tabulator/tabulator-adapter";
 import { ConfigurationLoader } from "../loaders/table-configuration-loader";
 import { TabulatorSearchFilter } from "../tabulator/tabulator-search-filter";
-import { ErrorMessageGenerator } from "../helpers/error-message-generator";
+import { ErrorHelper } from "../helpers/error-helper";
 import { SearchSpecs, SetupParams, TableSpecs } from './setup-params';
 import { ServiceBase } from '../shared/service-base';
 import { TableServices } from '../tabulator/table-services';
@@ -16,7 +16,7 @@ export class RadminMain extends ServiceBase {
    * Create a Tabulator table based on configuration
    *
    * Note: containerId is the table element id (e.g. "radmin-id-123").
-   * The ErrorMessageGenerator will attempt to render alerts into this element or into
+   * The ErrorHelper will attempt to render alerts into this element or into
    * the corresponding error container ("radmin-id-error-123").
    */
   async setup(data: SetupParams): Promise<void> {
@@ -39,8 +39,8 @@ export class RadminMain extends ServiceBase {
         tableConfigDataRaw = await new ConfigurationLoader(sxc).loadConfig(data.viewId);
         this.log("Loaded raw table config:", tableConfigDataRaw);
       } catch (error) {
-        this.log("Failed to load table configuration:", ErrorMessageGenerator.toErrorString(error));
-        ErrorMessageGenerator.handleLoadConfigError(data.tableName, error);
+        this.log("Failed to load table configuration:", ErrorHelper.toErrorString(error));
+        ErrorHelper.handleLoadConfigError(data.tableName, error);
         return;
       }
 
@@ -83,15 +83,12 @@ export class RadminMain extends ServiceBase {
         );
         this.log("Table creation complete");
       } catch (error) {
-        this.log(
-          "Error creating table:",
-          ErrorMessageGenerator.toErrorString(error)
-        );
-        ErrorMessageGenerator.handleCreateTableError(data.tableName, error);
+        this.log("Error creating table:", ErrorHelper.toErrorString(error));
+        ErrorHelper.handleCreateTableError(data.tableName, error);
       }
     } catch (error) {
-      this.log("Unhandled error in setupTable:", ErrorMessageGenerator.toErrorString(error));
-      ErrorMessageGenerator.showAlert(
+      this.log("Unhandled error in setupTable:", ErrorHelper.toErrorString(error));
+      ErrorHelper.showAlert(
         data.tableName,
         "Unexpected Error",
         "An unexpected error occurred while creating the table. Please check the browser console for details."

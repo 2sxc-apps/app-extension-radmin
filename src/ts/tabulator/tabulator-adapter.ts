@@ -22,7 +22,7 @@ import { JsonSchema } from "../models/json-schema-model";
 import { SchemaProvider } from "../providers/schema-provider";
 import { CustomizeManager } from "../customizers/customize-manager";
 import { SetupObjectSorter } from "../helpers/setup-object-sorter";
-import { ErrorMessageGenerator } from "../helpers/error-message-generator";
+import { ErrorHelper } from "../helpers/error-helper";
 import { TabulatorToolbars } from "./tabulator-toolbars/tabulator-toolbar";
 import { ServiceBase } from '../shared/service-base';
 import { TableServices, TableServicesComplete } from './table-services';
@@ -153,7 +153,7 @@ export class TabulatorAdapter extends ServiceBase {
             try {
               table.setSort(initialSort);
             } catch (error) {
-              this.log("setSort on dataLoaded failed:", ErrorMessageGenerator.toErrorString(error));
+              this.log("setSort on dataLoaded failed:", ErrorHelper.toErrorString(error));
             }
 
             table.on("dataSorted", function (sorters, rows) {
@@ -175,7 +175,7 @@ export class TabulatorAdapter extends ServiceBase {
       } catch (error) {
         this.log(
           "error scheduling initialSort application:",
-          ErrorMessageGenerator.toErrorString(error)
+          ErrorHelper.toErrorString(error)
         );
       }
 
@@ -204,7 +204,7 @@ export class TabulatorAdapter extends ServiceBase {
     } catch (error) {
       console.error(
         "Failed to create Tabulator table:",
-        ErrorMessageGenerator.toErrorString(error)
+        ErrorHelper.toErrorString(error)
       );
       throw error; // Re-throw to allow parent to handle specific errors
     }
@@ -247,7 +247,7 @@ export class TabulatorAdapter extends ServiceBase {
     } catch (error) {
       console.error(
         "Failed to unbind rowMouseEnter",
-        ErrorMessageGenerator.toErrorString(error)
+        ErrorHelper.toErrorString(error)
       );
     }
 
@@ -282,7 +282,7 @@ export class TabulatorAdapter extends ServiceBase {
     } catch (error) {
       this.log(
         "immediate add button failed",
-        ErrorMessageGenerator.toErrorString(error)
+        ErrorHelper.toErrorString(error)
       );
     }
   }

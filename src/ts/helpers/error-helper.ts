@@ -5,7 +5,7 @@
  * - showAlert renders a bootstrap alert into the table's container (or error container)
  * - convenience handlers for config/load/create errors
  */
-export class ErrorMessageGenerator {
+export class ErrorHelper {
   /**
    * Convert unknown error into a safe string for logging and UI.
    */
@@ -47,7 +47,7 @@ export class ErrorMessageGenerator {
       }
 
       // string includes 401
-      const s = ErrorMessageGenerator.toErrorString(err);
+      const s = ErrorHelper.toErrorString(err);
       return s.includes("401") || /unauthori(s|z)ed/i.test(s);
     } catch {
       return false;
@@ -74,7 +74,7 @@ export class ErrorMessageGenerator {
       const target = errorContainer || container;
       if (!target) {
         // nothing to render into — fallback to console
-        console.warn("ErrorMessageGenerator.showAlert: no target container found for", containerId, errorContainerId);
+        console.warn("ErrorHelper.showAlert: no target container found for", containerId, errorContainerId);
         console.warn(`${title}: ${message}`);
         return;
       }
@@ -92,7 +92,7 @@ export class ErrorMessageGenerator {
       `;
       target.appendChild(alert);
     } catch (e) {
-      console.error("ErrorMessageGenerator.showAlert failed:", e);
+      console.error("ErrorHelper.showAlert failed:", e);
     }
   }
 
@@ -101,16 +101,16 @@ export class ErrorMessageGenerator {
    * containerId should be the table container id (e.g. 'radmin-id-123').
    */
   static handleLoadConfigError(containerId: string, err: unknown) {
-    const errStr = ErrorMessageGenerator.toErrorString(err);
-    if (ErrorMessageGenerator.isAuthError(err)) {
-      ErrorMessageGenerator.showAlert(
+    const errStr = ErrorHelper.toErrorString(err);
+    if (ErrorHelper.isAuthError(err)) {
+      ErrorHelper.showAlert(
         containerId,
         "Authentication Required",
         "You need to be logged in to view this table.",
         "warning"
       );
     } else {
-      ErrorMessageGenerator.showAlert(
+      ErrorHelper.showAlert(
         containerId,
         "Configuration Error",
         `Failed to load table configuration. ${errStr}`
@@ -122,11 +122,11 @@ export class ErrorMessageGenerator {
    * Show a friendly message for table creation / data/schema errors.
    */
   static handleCreateTableError(containerId: string, err: unknown) {
-    const errStr = ErrorMessageGenerator.toErrorString(err);
+    const errStr = ErrorHelper.toErrorString(err);
 
     // Specific detection for missing/invalid schema payloads
     if (/schema/i.test(errStr) || errStr.includes("Cannot read properties of undefined")) {
-      ErrorMessageGenerator.showAlert(
+      ErrorHelper.showAlert(
         containerId,
         "Schema Error",
         "Failed to load schema data. This often happens when you're not logged in or don't have appropriate permissions."
@@ -134,8 +134,8 @@ export class ErrorMessageGenerator {
       return;
     }
 
-    if (ErrorMessageGenerator.isAuthError(err)) {
-      ErrorMessageGenerator.showAlert(
+    if (ErrorHelper.isAuthError(err)) {
+      ErrorHelper.showAlert(
         containerId,
         "Authentication Required",
         "You need to be logged in to access this data.",
@@ -145,7 +145,7 @@ export class ErrorMessageGenerator {
     }
 
     // generic fallback
-    ErrorMessageGenerator.showAlert(
+    ErrorHelper.showAlert(
       containerId,
       "Table Creation Error",
       `There was a problem creating the table. ${errStr}`

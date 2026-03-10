@@ -38,14 +38,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
           schema
         );
         const prop = schema.properties[normalizedField];
-        this.log(
-          "configured column:",
-          { col },
-          "normalizedField:",
-          normalizedField,
-          "schemaProp:",
-          prop
-        );
+        this.log('configured column:', { col }, 'normalizedField:', normalizedField, 'schemaProp:', prop);
 
         if (isGroupProperty(prop, normalizedField)) {
           // skip any configured column that references a group property
@@ -67,10 +60,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
         let formatter = formatConfig.formatter;
         let sorter = formatConfig.sorter;
 
-        if (
-          (prop?.type === "object" || prop?.type === "array") &&
-          !col.linkEnable
-        ) {
+        if ((prop?.type === "object" || prop?.type === "array") && !col.linkEnable) {
           this.log("Using objectTitleFormatter for", normalizedField);
           formatter = SchemaFormatter.objectTitleFormatter;
           // Use the registered custom object sorter
@@ -123,19 +113,16 @@ export class TabulatorColumnAdapter extends ServiceBase {
           column.formatter = "link";
           column.formatterParams = {
             url: (cell: CellComponent) => {
-              const entityId =
-                ParamMatcher.getNestedValue(
-                  cell.getData(),
-                  col.valueSelector
-                )[0].Id || cell.getData().id;
+              const entityId = ParamMatcher.getNestedValue(
+                cell.getData(),
+                col.valueSelector
+              )[0].Id || cell.getData().id;
               const params = ParamMatcher.replaceParameters(
                 col.linkParameters,
                 cell.getData(),
                 schema
               );
-              const url = `?viewid=${
-                col.linkViewId.viewId
-              }&entityid=${entityId}${params ? "&" + params : ""}`;
+              const url = `?viewid=${col.linkViewId.viewId}&entityid=${entityId}${params ? "&" + params : ""}`;
               this.log("Generated link url for cell", {
                 field: normalizedField,
                 url,

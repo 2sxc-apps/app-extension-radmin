@@ -9,7 +9,7 @@ import { TableServices } from '../tabulator/table-services';
 
 export class RadminMain extends ServiceBase {
   constructor() {
-    super({ name: "RadminMain", enableDebug: true });
+    super({ name: "RadminMain", enableDebug: false });
   }
 
   /**

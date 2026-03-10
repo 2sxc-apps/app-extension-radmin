@@ -56,12 +56,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## TODO (2DM)
 
-1. column names (in config) are case-sensitive, but should be case-insensitive
-1. data from query broken - schema not working
 1. Customizers - there are no samples, so it can't be verified ATM!
 1. fix tables linked by a column
 1. show date - default / automatic format is date only
-1. rename IDs and classes to use radmin... and not `tosxc-table`
+1. Big: Re-review handling of details, with permissions etc.
 
 ## History
 
@@ -78,6 +76,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 1. 2dm: Improve controller to use `IActionResult`
 1. 2dm: Improve schema endpoint to also return schema of query
 1. 2dm: Improve js to get query (was not working, was missing `/`)
+1. 2dm: fix `id` and `guid` casing
 
 ### 2026-01-12
 

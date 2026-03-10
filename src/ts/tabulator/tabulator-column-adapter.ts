@@ -1,30 +1,32 @@
 import { TabulatorColumnConfig } from "../models/tabulator-config-models";
-import { formatConfigs } from "./tabulator-column-formats";
 import { RadminColumnConfig } from "../configs/radmin-column-config";
 import { CellComponent } from "tabulator-tables";
-import { JsonSchema } from "../models/json-schema-model";
+import { JsonSchema, SchemaProperty } from "../models/json-schema-model";
 import { GroupPropertyIdentifier } from "../helpers/group-property-identifier";
-import HtmlStripper from "../helpers/html-stripper";
-import { ParamMatcher } from "../helpers/param-matcher";
+import { ValueLookup } from "../helpers/value-lookup.helper";
+import { SchemaHelper } from '../helpers/schema-helper';
 import { SchemaFormatter } from "../helpers/schema-formatter";
 import { ServiceBase } from '../shared/service-base';
+import { FormatAndSortHelper } from './format-and-sort.helper';
 
 export class TabulatorColumnAdapter extends ServiceBase {
 
   constructor() {
-    super({ name: "TabulatorColumnAdapter", enableDebug: false });
+    super({ name: "TabulatorColumnAdapter", enableDebug: true });
   }
+
+  #formatAndSortHelper = new FormatAndSortHelper();
 
   convert(
     columnConfigs: RadminColumnConfig[],
     columnsAutoShowRemaining: boolean,
     schema: JsonSchema
   ): TabulatorColumnConfig[] {
-    this.log("convert called with",
-      {
+    this.log("convert called with", {
         columnConfigLength: columnConfigs.length,
         columnsAutoShowRemaining,
-        schemaProperties: Object.keys(schema.properties).length
+        schemaProperties: Object.keys(schema.properties).length,
+        columnConfigs
       }
     );
 
@@ -35,222 +37,163 @@ export class TabulatorColumnAdapter extends ServiceBase {
     // skip it (group fields should not become visible columns).
     const configuredColumns = columnConfigs
       .map((col) => {
-        const normalizedField = ParamMatcher.normalizeFieldName(
-          col.valueSelector,
-          schema
-        );
-        const prop = schema.properties[normalizedField];
-        this.log('configured column:', { col }, 'normalizedField:', normalizedField, 'schemaProp:', prop);
+        const fieldName = new SchemaHelper(schema).findCasing(col.valueSelector);
+        const prop = schema.properties[fieldName];
+        this.log(`configured column: '${col.valueSelector}' to '${fieldName}'`, { col }, `schemaProp:`, prop);
 
-        if (isGroupProperty(prop, normalizedField)) {
+        if (isGroupProperty(prop, fieldName)) {
           // skip any configured column that references a group property
-          this.log(
-            "Skipping configured column because it references a group property:",
-            normalizedField,
-            col
-          );
+          this.log(`Skipping configured column because it references a group property: '${fieldName}'`, col);
           return null;
         }
 
-        const chosenFormat =
-          col.valueFormat ||
-          SchemaFormatter.getFormatFromSchema(col.valueSelector, schema);
-        const formatConfig = formatConfigs[chosenFormat] || {};
-        this.log("chosenFormat:", chosenFormat, "formatConfig:", formatConfig);
+        const chosenFormat = col.valueFormat
+          || SchemaFormatter.getFormatFromSchema(col.valueSelector, schema);
 
-        // Determine formatter based on field type and configuration
-        let formatter = formatConfig.formatter;
-        let sorter = formatConfig.sorter;
+        const formatAndSort = this.#formatAndSortHelper.getFormatAndSort(chosenFormat, fieldName, prop || { type: "string" } as SchemaProperty, !!col.linkEnable);
 
-        if ((prop?.type === "object" || prop?.type === "array") && !col.linkEnable) {
-          this.log("Using objectTitleFormatter for", normalizedField);
-          formatter = SchemaFormatter.objectTitleFormatter;
-          // Use the registered custom object sorter
-          sorter = "object";
-        }
+        const hAlign = col.horizontalAlignment !== "automatic"
+          ? col.horizontalAlignment
+          : undefined;
 
         const column: TabulatorColumnConfig = {
           title: col.title,
-          field: normalizedField,
-          formatter,
-          sorter,
-          ...formatConfig,
+          field: fieldName,
+          ...formatAndSort,
           // Only set alignment if explicitly specified
-          hozAlign:
-            col.horizontalAlignment !== "automatic"
-              ? col.horizontalAlignment
-              : undefined,
-          headerHozAlign:
-            col.horizontalAlignment !== "automatic"
-              ? col.horizontalAlignment
-              : undefined,
+          hozAlign: hAlign,
+          headerHozAlign: hAlign,
           // Only set width if explicitly specified
           width: col.width !== "automatic" ? col.width : undefined,
           // Handle tooltip configuration
           tooltip: !col.tooltipEnabled
             ? false
             : col.tooltipSelector
-            ? (e, cell) =>
-                ParamMatcher.replaceParameters(
-                  col.tooltipSelector,
-                  cell.getData(),
-                  schema,
-                  (...a) => this.log(...a)
-                )
-            : true,
+              ? (e, cell) => new ValueLookup(schema, cell.getData()).resolveTemplate(col.tooltipSelector)
+              : true,
+          ...this.linkFormatter(schema, col, fieldName)
         };
 
-        this.log(
-          "Built preliminary column config for field",
-          normalizedField,
-          column
-        );
-
-        // Configure link if enabled
-        if (col.linkEnable) {
-          this.log("Link enabled for column", normalizedField, {
-            linkViewRef: col.linkViewRef,
-            linkParameters: col.linkParameters,
-          });
-          column.formatter = "link";
-          column.formatterParams = {
-            url: (cell: CellComponent) => {
-              const entityId = ParamMatcher.getNestedValue(
-                cell.getData(),
-                col.valueSelector
-              )[0].Id || cell.getData().id;
-              const params = ParamMatcher.replaceParameters(
-                col.linkParameters,
-                cell.getData(),
-                schema
-              );
-
-              // The view ID can be one of:
-              // 1. Directly referencing another view via linkViewRef
-              // 2. Directly referencing another value (view-key) via the viewId - such as 'tags-list'
-              // 3. The viewId can also have a string such as '[viewId]' to reuse a value in the data
-              const viewId = col.linkViewRef?.viewId
-                || (col.linkViewId
-                  ? ParamMatcher.replaceParameters(
-                      col.linkViewId || "",
-                      cell.getData(),
-                      schema
-                    )
-                  : "unknown"
-              );
-              const url = `?viewid=${viewId}&entityid=${entityId}${params ? "&" + params : ""}`;
-              this.log("Generated link url for cell", {
-                field: normalizedField,
-                url,
-              });
-              return url;
-            },
-            target: "_self",
-            label: (cell: CellComponent) =>
-              SchemaFormatter.objectTitleFormatter(cell),
-          };
-
-          // When link is enabled we don't want the object formatter/sorter interfering
-          // (link formatter will produce a string)
-          if (prop?.type === "object" || prop?.type === "array") {
-            this.log(
-              "Overriding sorter to 'string' for linked object/array field",
-              normalizedField
-            );
-            column.sorter = "string";
-          }
-        }
-
-        // If schema indicates this is a WYSIWYG/html field (or format says html),
-        // and the column does not already have an explicit formatter (and it's not a link),
-        // inject the safe plain-text formatter that decodes and strips HTML.
-        const hasExplicitFormatter = !!column.formatter;
-        if (
-          !col.linkEnable &&
-          !hasExplicitFormatter &&
-          HtmlStripper.schemaPropertyIndicatesHtml(prop)
-        ) {
-          this.log(
-            "Injecting plainTextFormatter for column (schema indicates html):",
-            col,
-            normalizedField
-          );
-          column.formatter = HtmlStripper.plainTextFormatter;
-        }
-
-        this.log("Final column config for field", normalizedField, column);
+        this.log(`Final column config for field '${fieldName}'`, column);
         return column;
       })
       .filter((c): c is TabulatorColumnConfig => !!c); // remove nulls (skipped group columns)
 
-    this.log("Configured columns built", {
-      configuredCount: configuredColumns.length,
-    });
+    this.log(`Configured columns built: ${configuredColumns.length}`);
 
     // Add remaining columns from schema if configured
     if (!columnsAutoShowRemaining) {
-      this.log(
-        "columnsAutoShowRemaining is false — returning configured columns only"
-      );
+      this.log("columnsAutoShowRemaining is false — returning configured columns only");
       return configuredColumns;
     }
 
+    // Check any remaining fields that may have to be auto-added as well
+    return this.tryAddRemainingColumns(schema, configuredColumns);
+  }
+
+
+
+  /**
+   * Try to add remaining columns from the schema that are not already configured.
+   * @param schema The JSON schema defining the properties.
+   * @param configuredColumns The columns that have already been configured.
+   * @returns An array of TabulatorColumnConfig including the newly added columns.
+   */
+  private tryAddRemainingColumns(schema: JsonSchema, configuredColumns: TabulatorColumnConfig[]) {
     // Get fields that are already configured
     const configuredFields = new Set(configuredColumns.map((col) => col.field));
     this.log("Configured fields set:", Array.from(configuredFields));
 
     // Create columns for remaining schema properties, skipping group properties
-    const remainingColumns = Object.keys(schema.properties)
+    const remainingColumns = this.defineRemainingColumns(schema, configuredFields);
+
+    this.log(`Remaining columns built: ${remainingColumns.length}`);
+
+    return [...configuredColumns, ...remainingColumns];
+  }
+
+
+
+  /**
+   * Define remaining columns from the schema that are not already configured.
+   * @param schema The JSON schema defining the properties.
+   * @param configuredFields The set of fields that have already been configured.
+   * @returns An array of TabulatorColumnConfig for the remaining columns.
+   */
+  private defineRemainingColumns(schema: JsonSchema, configuredFields: Set<string>) {
+    // Helper to decide whether a schema property represents a "group" (should not be auto-added)
+    const isGroupProperty = new GroupPropertyIdentifier().identify;
+
+    const keysToUse = Object.keys(schema.properties)
       .filter((key) => !configuredFields.has(key))
       .filter((key) => {
         const prop = schema.properties[key];
         // do not auto-add group properties
         const isGroup = isGroupProperty(prop, key);
-        if (isGroup) this.log("Skipping auto-add of group property:", key);
+        if (isGroup)
+          this.log("Skipping auto-add of group property:", key);
         return !isGroup;
-      })
+      });
+
+    return keysToUse
       .map((key) => {
         const property = schema.properties[key];
-        const format = SchemaFormatter.mapSchemaTypeToFormat(property);
-        const formatConfig = formatConfigs[format] || {};
-        this.log("Auto-adding column for key:", key, { format, formatConfig });
+        const formatAndSort = this.#formatAndSortHelper.getFormatAndSortOfPropertyUnspecified(schema, key);
 
         const col: TabulatorColumnConfig = {
           title: property.title || key,
           field: key,
-          ...formatConfig,
-          formatter:
-            property.type === "object" || property.type === "array"
-              ? SchemaFormatter.objectTitleFormatter
-              : formatConfig.formatter,
-          // Use custom sorter for objects/arrays
-          sorter:
-            property.type === "object" || property.type === "array"
-              ? "object"
-              : formatConfig.sorter,
+          ...formatAndSort
         } as TabulatorColumnConfig;
-
-        // If schema explicitly indicates html/wysiwyg, and no explicit formatter was provided,
-        // set the safe plain-text formatter (do not override objectTitleFormatter).
-        if (
-          !col.formatter &&
-          HtmlStripper.schemaPropertyIndicatesHtml(property)
-        ) {
-          this.log(
-            "Auto-injecting plainTextFormatter for auto-added html field:",
-            key
-          );
-          col.formatter = HtmlStripper.plainTextFormatter;
-        }
 
         this.log("Built auto column config for key:", key, col);
         return col;
       });
+  }
 
-    this.log("Remaining columns built", {
-      remainingCount: remainingColumns.length,
+
+
+  /**
+   * Configure link if enabled
+   */
+  linkFormatter(schema: JsonSchema, col: RadminColumnConfig, normalizedField: string): Partial<TabulatorColumnConfig> {
+    // if not enabled, just return empty config
+    if (!col.linkEnable)
+      return {};
+
+    this.log(`Link enabled for column '${normalizedField}'`, {
+      linkViewRef: col.linkViewRef,
+      linkParameters: col.linkParameters,
     });
 
-    return [...configuredColumns, ...remainingColumns];
+    return {
+      formatter: "link",
+      formatterParams: {
+        url: (cell: CellComponent) => {
+          const cellData = cell.getData();
+          const valLookup = new ValueLookup(schema, cellData);
+          const entityId = valLookup.resolveValue(col.valueSelector)[0]?.Id
+            || cellData.id;
+          const params = valLookup.resolveTemplate(col.linkParameters);
+
+          // The view ID can be one of:
+          // 1. Directly referencing another view via linkViewRef
+          // 2. Directly referencing another value (view-key) via the viewId - such as 'tags-list'
+          // 3. The viewId can also have a string such as '[viewId]' to reuse a value in the data
+          const viewId = col.linkViewRef?.viewId
+            || (col.linkViewId
+              ? valLookup.resolveTemplate(col.linkViewId || "")
+              : "unknown"
+          );
+          const url = `?viewid=${viewId}&entityid=${entityId}${params ? "&" + params : ""}`;
+          this.log(`Generated link url for cell '${normalizedField}' to: '${url}'`);
+          return url;
+        },
+        target: "_self",
+        label: (cell: CellComponent) => SchemaFormatter.objectTitleFormatter(cell),
+      }
+    };
   }
+
 }
+

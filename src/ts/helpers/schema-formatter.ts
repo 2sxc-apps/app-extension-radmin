@@ -1,6 +1,6 @@
 import { JsonSchema, SchemaProperty } from "../models/json-schema-model";
 import { CellComponent } from "tabulator-tables";
-import { ParamMatcher } from "./param-matcher";
+import { SchemaHelper } from './schema-helper';
 
 export class SchemaFormatter {
   /** Maps JSON schema type/format → internal format key */
@@ -35,7 +35,7 @@ export class SchemaFormatter {
     schema: JsonSchema,
     log?: (...args: any[]) => void
   ): string {
-    const normalized = ParamMatcher.normalizeFieldName(field, schema);
+    const normalized = new SchemaHelper(schema).findCasing(field);
     const property = schema.properties[normalized];
 
     const format = property

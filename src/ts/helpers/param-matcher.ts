@@ -67,15 +67,18 @@ export class ParamMatcher {
 
   /** Normalize field names against schema property keys. */
   static normalizeFieldName(field: string, schema: JsonSchema): string {
-    if (!field || !schema?.properties) return field;
+    if (!field || !schema?.properties)
+      return field;
 
     const keys = Object.keys(schema.properties);
 
     const exact = keys.find(k => k === field);
-    if (exact) return exact;
+    if (exact)
+      return exact;
 
     const ci = keys.find(k => k.toLowerCase() === field.toLowerCase());
-    if (ci) return ci;
+    if (ci)
+      return ci;
 
     const lcFirst = field.charAt(0).toLowerCase() + field.slice(1);
     const lc = keys.find(

@@ -4,7 +4,7 @@ import { CustomizeManager } from './customize-manager';
 
 export class CustomizerLoader extends ServiceBase {
   constructor(private manager: CustomizeManager) {
-    super("CustomizerLoader", false);
+    super({ name: "CustomizerLoader", enableDebug: false });
   }
   
   // TODO: Move to another class, as soon as we can test it!

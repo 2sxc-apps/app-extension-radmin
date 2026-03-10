@@ -9,7 +9,7 @@ import { ServiceBase } from '../shared/service-base';
  */
 export class DataProviderFactory extends ServiceBase {
   constructor() {
-    super("DataProviderFactory", true);
+    super({ name: "DataProviderFactory", enableDebug: true });
   }
 
   public getDataProvider(tableConfigData: RadminTableConfig, sxc: Sxc, linkParameters: string | undefined): DataProvider {

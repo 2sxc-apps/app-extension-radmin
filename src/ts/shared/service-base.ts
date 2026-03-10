@@ -1,8 +1,12 @@
 
 export class ServiceBase {
   debugAll = false; // todo: enable on development builds
+  private name: string;
+  private enableDebug: boolean;
 
-  constructor(private name: string, private enableDebug: boolean = false) {
+  constructor({ name, enableDebug }: { name: string; enableDebug?: boolean; }) {
+    this.name = name;
+    this.enableDebug = enableDebug ?? false;
   }
 
   /**

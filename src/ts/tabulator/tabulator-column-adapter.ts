@@ -10,8 +10,9 @@ import { SchemaFormatter } from "../helpers/schema-formatter";
 import { ServiceBase } from '../shared/service-base';
 
 export class TabulatorColumnAdapter extends ServiceBase {
+
   constructor() {
-    super("TabulatorColumnAdapter", false);
+    super({ name: "TabulatorColumnAdapter", enableDebug: false });
   }
 
   convert(
@@ -19,11 +20,12 @@ export class TabulatorColumnAdapter extends ServiceBase {
     columnsAutoShowRemaining: boolean,
     schema: JsonSchema
   ): TabulatorColumnConfig[] {
-    this.log(
-      "convert called with",
-      { columnConfigLength: columnConfigs.length },
-      { columnsAutoShowRemaining },
-      { schemaProperties: Object.keys(schema.properties).length }
+    this.log("convert called with",
+      {
+        columnConfigLength: columnConfigs.length,
+        columnsAutoShowRemaining,
+        schemaProperties: Object.keys(schema.properties).length
+      }
     );
 
     // Helper to decide whether a schema property represents a "group" (should not be auto-added)

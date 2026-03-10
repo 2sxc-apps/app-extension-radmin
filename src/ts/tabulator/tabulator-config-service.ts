@@ -9,6 +9,7 @@ import { ColumnSortParser } from "../helpers/column-sort-parser";
  * Is used to convert the configuration from 2sxc into a format that Tabulator can understand.
  */
 export class TabulatorConfigService {
+  
   createTabulatorConfig(
     data: RadminTableConfig,
     schema: JsonSchema

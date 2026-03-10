@@ -49,7 +49,7 @@ export class TabulatorAdapter extends ServiceBase {
   private configService = new TabulatorConfigService();
 
   constructor() {
-    super("TabulatorAdapter", false);
+    super({ name: "TabulatorAdapter", enableDebug: false });
   }
 
 

@@ -18,7 +18,7 @@ abstract class TableServicesBase extends ServiceBase {
     public schemaProvider: SchemaProvider,
     public customizeManager: CustomizeManager,
   ) {
-    super(name, logEnabled);
+    super({ name, enableDebug: logEnabled });
   }
 }
 

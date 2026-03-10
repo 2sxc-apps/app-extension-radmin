@@ -18,7 +18,7 @@ export class TabulatorToolbars extends ServiceBase {
   private zIndex = 1000;
 
   constructor() {
-    super("TabulatorToolbars", false);
+    super({ name: "TabulatorToolbars", enableDebug: false });
   }
 
 

@@ -16,7 +16,7 @@ export class CustomizeManager extends ServiceBase {
   private _instanceId: string;
 
   private constructor() {
-    super("CustomizeManager", false);
+    super({ name: "CustomizeManager", enableDebug: false });
     this._instanceId = Math.random().toString(36).slice(2, 9);
     this.log(`CustomizeManager initialized with instance ID: ${this._instanceId}`);
   }

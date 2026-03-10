@@ -56,7 +56,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## TODO (2DM)
 
-1. make sure views can also be tables again
+1. column names (in config) are case-sensitive, but should be case-insensitive
+1. data from query broken - schema not working
 1. Customizers - there are no samples, so it can't be verified ATM!
 1. fix tables linked by a column
 1. show date - default / automatic format is date only
@@ -73,6 +74,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 1. 2dm: change `window.table` to `window.radmin`
 1. 2dm: lots of js refactoring / SoC
 1. 2dm: restore ability to link to both views and tables
+1. 2dm: move schema-infos into own folder/namespace
 
 ### 2026-01-12
 

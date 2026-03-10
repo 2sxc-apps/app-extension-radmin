@@ -3,11 +3,11 @@ using System.Linq;
 using ToSic.Eav.Data;
 using System.Web;
 
-namespace AppCode.Extensions.Radmin.Api
+namespace AppCode.Extensions.Radmin.Schemas
 {
   public class RadminSchemaHelper
   {
-    public JsonSchema ConvertToJsonSchema(IContentType contentType)
+    public JsonSchemaMain ConvertToJsonSchema(IContentType contentType)
     {
       var portalSettings = HttpContext.Current.Items["PortalSettings"];
       var portalCulture = portalSettings?
@@ -43,11 +43,11 @@ namespace AppCode.Extensions.Radmin.Api
             .Get<string>("InputType");
 
           // Create schema property based on determined type, format, description and inputType
-          return new SchemaProperty(attribute.Name, title, schemaType, format, description, inputType);
+          return new JsonSchemaProperty(attribute.Name, title, schemaType, format, description, inputType);
         })
         .ToDictionary(p => p.Name, p => p);
 
-      var schema = new JsonSchema
+      var schema = new JsonSchemaMain
       {
         Id = contentType.NameId.ToString(),
         Title = contentType.Name,

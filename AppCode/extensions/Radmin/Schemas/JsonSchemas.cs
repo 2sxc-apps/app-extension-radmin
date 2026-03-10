@@ -1,9 +1,12 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace AppCode.Extensions.Radmin.Api
+namespace AppCode.Extensions.Radmin.Schemas
 {
-  public class JsonSchema
+  /// <summary>
+  /// Main Schema / entry point for JSON Schema definition.
+  /// </summary>
+  public class JsonSchemaMain
   {
     [JsonPropertyName("$schema")]
     public string Schema { get; set; } = "https://json-schema.org/draft/2020-12/schema";
@@ -14,13 +17,16 @@ namespace AppCode.Extensions.Radmin.Api
     public string Title { get; set; }
     public string Description { get; set; }
     public string Type { get; set; }
-    public Dictionary<string, SchemaProperty> Properties { get; set; }
+    public Dictionary<string, JsonSchemaProperty> Properties { get; set; }
     public List<string> Required { get; set; }
   }
 
-  public class SchemaProperty
+  /// <summary>
+  /// Describes a single property in the JSON Schema, including its type, format, and other metadata.
+  /// </summary>
+  public class JsonSchemaProperty
   {
-    public SchemaProperty(string name, string title, string type, string format = null, string description = null, string inputType = null)
+    public JsonSchemaProperty(string name, string title, string type, string format = null, string description = null, string inputType = null)
     {
       Name = name;
       Title = title;

@@ -9,6 +9,7 @@
 #endif
 using System;
 using AppCode.Extensions.Radmin.Data;
+using AppCode.Extensions.Radmin.Schemas;
 // Note: since this DLL is not included by default, you must have the compile.json set to include System.Net.Http
 using HttpResponseMessage = System.Net.Http.HttpResponseMessage;
 
@@ -25,7 +26,7 @@ namespace AppCode.Extensions.Radmin.Api
     /// <returns></returns>
     [HttpGet]
     [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
-    public JsonSchema Schema(string typename, Guid viewId)
+    public JsonSchemaMain Schema(string typename, Guid viewId)
     {
       var contentType = App.Data.GetContentType(typename);
       var view = App.Data.GetOne<RadminTable>(viewId);

@@ -128,11 +128,14 @@ export class TabulatorColumnAdapter extends ServiceBase {
               // 2. Directly referencing another value (view-key) via the viewId - such as 'tags-list'
               // 3. The viewId can also have a string such as '[viewId]' to reuse a value in the data
               const viewId = col.linkViewRef?.viewId
-                || ParamMatcher.replaceParameters(
-                  col.linkViewId || "",
-                  cell.getData(),
-                  schema
-                );
+                || (col.linkViewId
+                  ? ParamMatcher.replaceParameters(
+                      col.linkViewId || "",
+                      cell.getData(),
+                      schema
+                    )
+                  : "unknown"
+              );
               const url = `?viewid=${viewId}&entityid=${entityId}${params ? "&" + params : ""}`;
               this.log("Generated link url for cell", {
                 field: normalizedField,

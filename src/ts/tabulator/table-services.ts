@@ -42,10 +42,7 @@ export class TableServices extends TableServicesBase {
 
   private async loadSchema(schemaProvider: SchemaProvider, tableConfigData: RadminTableConfig, viewId: string): Promise<JsonSchema> {
     try {
-      const schema = await schemaProvider.getSchema(
-        tableConfigData.dataContentType,
-        viewId
-      );
+      const schema = await schemaProvider.getSchema(viewId);
       this.log("schema loaded", schema);
 
       // Check if schema is valid

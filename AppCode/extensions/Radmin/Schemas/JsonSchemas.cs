@@ -6,7 +6,7 @@ namespace AppCode.Extensions.Radmin.Schemas
   /// <summary>
   /// Main Schema / entry point for JSON Schema definition.
   /// </summary>
-  public class JsonSchemaMain
+  public class JsonSchema
   {
     [JsonPropertyName("$schema")]
     public string Schema { get; set; } = "https://json-schema.org/draft/2020-12/schema";

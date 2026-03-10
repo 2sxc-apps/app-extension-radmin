@@ -10,14 +10,12 @@ export class SchemaProvider {
 
   /**
    * Fetches the schema for a given content type
-   * @param typeName The name of the content type
+   * @param viewId The ID of the view
    * @returns A promise that resolves to the schema
    */
-  async getSchema(typeName: string, viewId: string): Promise<JsonSchema> {
+  async getSchema(viewId: string): Promise<JsonSchema> {
     try {
-      return await this.sxc.webApi.fetchJson(
-        `app/auto/api/radmin/schema?typename=${encodeURIComponent(typeName)}&viewid=${viewId}`
-      );
+      return await this.sxc.webApi.fetchJson(`app/auto/api/radmin/schema?viewid=${viewId}`);
     } catch (error) {
       console.error("Error fetching schema:", error);
       throw error;

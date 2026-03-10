@@ -1,50 +1,19 @@
-export class DataProvider {
-  protected apiUrl: string;
-  protected headers: Record<string, string>;
-  protected dataContentType?: string;
+import { DataProviderBase } from './data-provider-base';
+
+export class DataProvider extends DataProviderBase {
 
   constructor(
     apiUrl: string,
     headers: Record<string, string>,
     dataContentType?: string
   ) {
-    this.apiUrl = apiUrl;
-    this.headers = headers;
-    this.dataContentType = dataContentType;
-  }
-
-  /**
-   * Get the API URL
-   */
-  getApiUrl(): string {
-    return this.apiUrl;
-  }
-
-  /**
-   * Update the API URL
-   */
-  updateApiUrl(url: string): void {
-    this.apiUrl = url;
-  }
-
-  /**
-   * Get the headers for AJAX requests
-   */
-  getHeaders(): Record<string, string> {
-    return this.headers;
-  }
-
-  /**
-   * Update headers
-   */
-  updateHeaders(headers: Record<string, string>): void {
-    this.headers = headers;
+    super(apiUrl, headers, dataContentType);
   }
 
   /**
    * Process raw data without fetching it - can be used by ajaxResponse
    */
-  processData(data: any): any {
+  processData(data: any): unknown {
     // For arrays (normal content-type data), normalize keys to lowerCamelCase
     if (Array.isArray(data)) {
       return data.map((row: any) => {
@@ -60,15 +29,6 @@ export class DataProvider {
     return data;
   }
 
-  /**
-   * Get the AJAX configuration
-   */
-  getAjaxConfig() {
-    return {
-      method: "GET",
-      headers: this.headers,
-    };
-  }
 
   /**
    * Get initial data for table setup

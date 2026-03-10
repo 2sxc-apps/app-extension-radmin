@@ -1,7 +1,7 @@
-import { DataProvider } from "./data-provider";
 import { Sxc } from "@2sic.com/2sxc-typings";
+import { DataProviderBase } from './data-provider-base';
 
-export class QueryDataProvider extends DataProvider {
+export class QueryDataProvider extends DataProviderBase {
   private sxc: Sxc;
   private query: string;
   private linkParameters?: string;
@@ -25,7 +25,7 @@ export class QueryDataProvider extends DataProvider {
   /**
    * Override getInitialData to include relationship processing
    */
-  async getInitialData(): Promise<any[]> {
+  async getInitialData(): Promise<unknown[]> {
     try {
       // Build endpoint URL including linkParameters if provided
       let endpoint = `app/auto/query/${this.query}${

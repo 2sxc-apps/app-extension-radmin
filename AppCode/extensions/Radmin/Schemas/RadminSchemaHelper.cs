@@ -7,7 +7,7 @@ namespace AppCode.Extensions.Radmin.Schemas
 {
   public class RadminSchemaHelper
   {
-    public JsonSchemaMain ConvertToJsonSchema(IContentType contentType)
+    public JsonSchema ConvertToJsonSchema(IContentType contentType)
     {
       var portalSettings = HttpContext.Current.Items["PortalSettings"];
       var portalCulture = portalSettings?
@@ -47,7 +47,7 @@ namespace AppCode.Extensions.Radmin.Schemas
         })
         .ToDictionary(p => p.Name, p => p);
 
-      var schema = new JsonSchemaMain
+      var schema = new JsonSchema
       {
         Id = contentType.NameId.ToString(),
         Title = contentType.Name,

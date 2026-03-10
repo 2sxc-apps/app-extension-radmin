@@ -4,7 +4,9 @@ import { DataProvider } from './data-provider';
 import { QueryDataProvider } from './query-data-provider';
 import { ServiceBase } from '../shared/service-base';
 
-
+/**
+ * Helper to decide if the data factory should get data from a query or from the direct REST API.
+ */
 export class DataProviderFactory extends ServiceBase {
   constructor() {
     super("DataProviderFactory", false);

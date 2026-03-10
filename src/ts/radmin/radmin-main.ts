@@ -1,6 +1,6 @@
 import { TabulatorAdapter } from "../tabulator/tabulator-adapter";
 import { ConfigurationLoader } from "../loaders/table-configuration-loader";
-import { TabulatorSearchFilter } from "../tabulator/tabulator-search-filter";
+import { RadTabSetupSearch } from "../tabulator/features/radtab-setup-search";
 import { ErrorHelper } from "../helpers/error-helper";
 import { SearchSpecs, SetupParams, TableSpecs } from './setup-params';
 import { ServiceBase } from '../shared/service-base';
@@ -70,7 +70,7 @@ export class RadminMain extends ServiceBase {
 
       // Create the filter UI element if search is enabled
       if (tableConfigData.searchEnabled)
-        new TabulatorSearchFilter().createFilterInput(data as SearchSpecs);
+        new RadTabSetupSearch().createSearchInput(data as SearchSpecs);
 
       const servicesComplete = await services.getComplete(tableConfigData, data.viewId, linkParameters);
 

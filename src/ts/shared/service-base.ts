@@ -17,4 +17,9 @@ export class ServiceBase {
       console.log(`[${this.name}]`, ...args);
   }
 
+  public retLog<T>(value: T, ...args: any[]): T {
+    this.log(...args);
+    return value;
+  }
+
 }

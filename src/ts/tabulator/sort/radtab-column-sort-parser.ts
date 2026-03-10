@@ -1,6 +1,6 @@
 import { ColumnDefinition, Sorter } from 'tabulator-tables';
-import { JsonSchema } from "../models/json-schema-model";
-import { ServiceBase } from '../shared/service-base';
+import { JsonSchema } from "../../models/json-schema-model";
+import { ServiceBase } from '../../shared/service-base';
 
 /**
  * Parses a CSV-style sort string (e.g. "Subject:desc,SubSubject:desc")
@@ -9,12 +9,31 @@ import { ServiceBase } from '../shared/service-base';
  * Matching against configured column.field, column.title and schema property keys/titles
  * is done case-insensitively and with whitespace-normalization where appropriate.
  */
-export class ColumnSortParser extends ServiceBase {
+export class RadTabColumnSortParser extends ServiceBase {
   constructor() {
-    super({ name: "ColumnSortParser", enableDebug: false });
+    super({ name: "RadTabColumnSortParser", enableDebug: false });
   }
 
-  parse(
+  loadFromSettings(schema: JsonSchema, columns: ColumnDefinition[], sortString?: string): Sorter[] | undefined {
+
+    const parsedInitialSort = this.#parse(
+      sortString,
+      columns,
+      schema
+    );
+
+    // Tabulator treats the last entry in the initialSort array as the highest-priority
+    // sort. The user expects left→right priority, so reverse here to present Tabulator
+    // with the order it will apply (last = primary).
+    const initialSortForTabulator =
+      parsedInitialSort.length > 0
+        ? [...parsedInitialSort].reverse()
+        : undefined;
+
+    return initialSortForTabulator;
+  }
+
+  #parse(
     sortString?: string,
     columns?: ColumnDefinition[],
     schema?: JsonSchema

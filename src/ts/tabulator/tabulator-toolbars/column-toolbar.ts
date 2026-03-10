@@ -1,12 +1,9 @@
-import type { ColumnComponent, Tabulator } from "tabulator-tables";
-import {
-  createVirtualElFromRects,
-  positionToolbarElement,
-  cleanupToolbars,
-} from "./utils/toolbar-positioning";
+import type { ColumnComponent } from "tabulator-tables";
+import { createVirtualElFromRects, positionToolbarElement, cleanupToolbars } from "./utils/toolbar-positioning";
 import { RadminTableConfig } from "../../configs/radmin-table-config";
+import { SxcGlobal } from '@2sic.com/2sxc-typings';
 
-declare const $2sxc: any;
+declare const $2sxc: SxcGlobal;
 
 /**
  * Create and show a column header toolbar. This mirrors the row toolbar approach:
@@ -56,55 +53,11 @@ export function showColumnToolbar(
     pointerEvents: "auto",
   });
 
-  const configuredColumns = Array.isArray(tableConfigData.columnConfigs)
-    ? tableConfigData.columnConfigs
-    : [];
-  const colDef = column.getDefinition() || {};
-  const colField = (column.getField && column.getField()) ?? "";
-  const colTitle = (colDef.title ?? colField) || "";
-
-  const colConfig = configuredColumns.find((cfg: any) => {
-    const cfgTitle = String(cfg.Title ?? cfg.title ?? "");
-    return cfgTitle === colTitle || cfgTitle === colField;
-  });
-
-  const alreadyConfigured = !!colConfig;
-  const entityId = colConfig ? (colConfig.id as number) : 0;
-
-  let toolbarHtml: string;
-  if (alreadyConfigured) {
-    toolbarHtml = sxc.manage.getToolbar({
-      entityId,
-      action: "edit",
-    });
-  } else {
-    const fieldValue =
-      colField && colField.trim() !== ""
-        ? colField
-        : colTitle.replace(/\s+/g, "");
-
-    toolbarHtml = sxc.manage.getToolbar({
-      contentType: "f58eaa8e-88c0-403a-a996-9afc01ec14be",
-      action: "new",
-      prefill: {
-        Title: colTitle,
-        linkEnable: false,
-        tooltipEnabled: false,
-        FieldValue: fieldValue,
-      },
-      fields: "ColumnConfigs",
-      parent: tableConfigData.guid,
-    });
-  }
-
-  toolbarEl.innerHTML = toolbarHtml;
+  toolbarEl.innerHTML = getToolbar(sxc, column, tableConfigData);
   document.body.appendChild(toolbarEl);
 
-  positionToolbarElement(virtualEl, toolbarEl, () => -baseButtonSize).then(
-    ({ x, y }) => {
-      log("Computed column toolbar position", { x, y });
-    }
-  );
+  positionToolbarElement(virtualEl, toolbarEl, () => -baseButtonSize)
+    .then(({ x, y }) => log("Computed column toolbar position", { x, y }));
 
   // simple hover removal (same pattern as rows)
   let isHovered = false;
@@ -128,3 +81,49 @@ export function showColumnToolbar(
     }, 100);
   });
 }
+
+function getToolbar(sxc: any, column: ColumnComponent, tableConfigData: RadminTableConfig): string {
+  const configuredColumns = Array.isArray(tableConfigData.columnConfigs)
+    ? tableConfigData.columnConfigs
+    : [];
+  const colDef = column.getDefinition() || {};
+  const colField = (column.getField && column.getField()) ?? "";
+  const colTitle = (colDef.title ?? colField) || "";
+
+  const colConfig = configuredColumns.find((cfg: any) => {
+    const cfgTitle = String(cfg.Title ?? cfg.title ?? "");
+    return cfgTitle === colTitle || cfgTitle === colField;
+  });
+
+  const alreadyConfigured = !!colConfig;
+  const entityId = colConfig ? (colConfig.id as number) : 0;
+
+  let toolbarHtml: string;
+  if (alreadyConfigured) {
+    toolbarHtml = sxc.manage.getToolbar({
+      entityId,
+      action: "edit",
+    });
+  } else {
+    const fieldValue = colField && colField.trim() !== ""
+      ? colField
+      : colTitle.replace(/\s+/g, "");
+
+
+
+    toolbarHtml = sxc.manage.getToolbar({
+      contentType: "f58eaa8e-88c0-403a-a996-9afc01ec14be",
+      action: "new",
+      prefill: {
+        Title: colTitle,
+        linkEnable: false,
+        tooltipEnabled: false,
+        FieldValue: fieldValue,
+      },
+      fields: "ColumnConfigs",
+      parent: tableConfigData.guid,
+    });
+  }
+  return toolbarHtml;
+}
+

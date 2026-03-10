@@ -56,7 +56,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## TODO (2DM)
 
-1. Bug: add column doesn't respect prefill
 1. Customizers - there are no samples, so it can't be verified ATM!
 1. show date - default / automatic format is date only
 1. Big: Re-review handling of details, with permissions etc.

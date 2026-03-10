@@ -9,10 +9,10 @@
   // 1. Get all handed in parameters (best practice to do this in the beginning of the view)
   var res = MyModel.Get<RadminResources>("resources");
 
-  var item = MyModel.Get<RadminTable>("item");
+  var tableSpecs = MyModel.Get<RadminTable>("tableSpecs");
 
   // 2. Check permissions and conditions for showing the toggle
-  if (!MyUser.IsSiteAdmin || item.IsDemoItem)
+  if (!MyUser.IsSiteAdmin || tableSpecs.IsDemoItem)
     return;
 
   // 3. Figure out if we're in config-mode

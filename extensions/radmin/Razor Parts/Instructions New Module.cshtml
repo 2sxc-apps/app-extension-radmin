@@ -9,11 +9,11 @@
   // 1. Get all handed in parameters (best practice to do this in the beginning of the view)
   var res = MyModel.Get<RadminResources>("resources");
 
-  var item = MyModel.Get<RadminTable>("item");
+  var tableSpecs = MyModel.Get<RadminTable>("tableSpecs");
 
   // 2. Check permissions and conditions for showing the introduction
   // should only be shown to admins, and only if it's currently showing a demo-item
-  if (!MyUser.IsSiteAdmin || !item.IsDemoItem)
+  if (!MyUser.IsSiteAdmin || !tableSpecs.IsDemoItem)
     return;
 }
 

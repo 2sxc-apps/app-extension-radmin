@@ -6,7 +6,7 @@ namespace AppCode.Extensions.Radmin
     public const string TableFieldPrefix = "SxcField_";
 
     public const string UrlParamViewId = "viewid";
-    public const string UrlParamEntityId = "entityid";
+    public const string UrlParamEntityGuid = "guid";
     public const string UrlParamConfigMode = "viewconfigmode";
   }
 }

@@ -7,10 +7,10 @@
 @using ToSic.Sxc.Data
 
 @{
-  var viewId = MyModel.Get<string>("viewId");
-  var entityId = MyPage.Parameters.Int(RadminConstants.UrlParamEntityId);
+  var viewId = MyModel.String("viewId");
+  var entityId = MyPage.Parameters.Get<Guid>(RadminConstants.UrlParamEntityGuid);
 
-  if (!Text.Has(viewId) || entityId <= 0)
+  if (!Text.Has(viewId) || entityId == Guid.Empty)
   {
     <div class="alert alert-warning">
       Missing parameters.

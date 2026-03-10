@@ -2,7 +2,7 @@
 import { Sxc } from "@2sic.com/2sxc-typings";
 import { DataProviderBase } from './data-provider-base';
 
-export class QueryDataProvider extends DataProviderBase {
+export class DataProviderQuery extends DataProviderBase {
   private sxc: Sxc;
   private query: string;
 

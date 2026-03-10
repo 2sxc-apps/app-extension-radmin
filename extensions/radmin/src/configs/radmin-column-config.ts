@@ -12,7 +12,6 @@ export interface RadminColumnConfig {
 
   horizontalAlignment: "automatic" | "left" | "center" | "right";
   width: number | "automatic";
-  // dataContentType: string;
   
   tooltipEnabled: boolean;
   fieldTooltip: string;
@@ -26,7 +25,7 @@ export interface RadminColumnConfig {
   linkUrl: string;
   linkTarget: "_self" | "_blank";
 
-}  
+}
 
 export interface RadminDetailsViewConfig {
   id: number;

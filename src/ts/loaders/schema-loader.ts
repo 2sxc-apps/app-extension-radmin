@@ -1,7 +1,7 @@
 import { Sxc } from "@2sic.com/2sxc-typings";
 import { JsonSchema } from "../models/json-schema-model";
 
-export class SchemaProvider {
+export class SchemaLoader {
   private sxc: Sxc;
 
   constructor(sxc: Sxc) {

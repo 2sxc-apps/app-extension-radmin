@@ -1,10 +1,10 @@
 import { Sxc } from '@2sic.com/2sxc-typings';
 import { CustomizeManager } from '../customizers/customize-manager';
-import { SchemaProvider } from '../providers/schema-provider';
+import { SchemaLoader } from '../loaders/schema-loader';
 import { ServiceBase } from '../shared/service-base';
 import { TabulatorAdapter } from './tabulator-adapter';
 import { RadminTableConfig } from '../configs/radmin-table-config';
-import { DataProvider } from '../providers/data-provider';
+import { DataProviderEntities } from '../providers/data-provider-entities';
 import { DataProviderFactory } from '../providers/data-provider-factory';
 import { JsonSchema } from '../models/json-schema-model';
 import { ErrorHelper } from '../helpers/error-helper';
@@ -15,7 +15,7 @@ abstract class TableServicesBase extends ServiceBase {
     name: string,
     public sxc: Sxc,
     public adapter: TabulatorAdapter,
-    public schemaProvider: SchemaProvider,
+    public schemaProvider: SchemaLoader,
     public customizeManager: CustomizeManager,
   ) {
     super({ name, enableDebug: logEnabled });
@@ -27,7 +27,7 @@ export class TableServices extends TableServicesBase {
     super(false, "TableServices",
       sxc,
       new TabulatorAdapter(),
-      new SchemaProvider(sxc),
+      new SchemaLoader(sxc),
       CustomizeManager.getInstance(),
     );
   }
@@ -40,7 +40,7 @@ export class TableServices extends TableServicesBase {
     return new TableServicesComplete(this, dataProvider, schema);
   }
 
-  private async loadSchema(schemaProvider: SchemaProvider, tableConfigData: RadminTableConfig, viewId: string): Promise<JsonSchema> {
+  private async loadSchema(schemaProvider: SchemaLoader, tableConfigData: RadminTableConfig, viewId: string): Promise<JsonSchema> {
     try {
       const schema = await schemaProvider.getSchema(viewId);
       this.log("schema loaded", schema);
@@ -62,7 +62,7 @@ export class TableServices extends TableServicesBase {
 export class TableServicesComplete extends TableServicesBase {
   constructor(
     services: TableServicesBase,
-    public dataProvider: DataProvider,
+    public dataProvider: DataProviderEntities,
     public schema: JsonSchema,
   ) {
     super(true, "TableServicesComplete",

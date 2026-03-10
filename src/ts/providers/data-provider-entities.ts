@@ -1,6 +1,6 @@
 import { DataProviderBase } from './data-provider-base';
 
-export class DataProvider extends DataProviderBase {
+export class DataProviderEntities extends DataProviderBase {
 
   constructor(
     apiUrl: string,

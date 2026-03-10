@@ -1,7 +1,7 @@
 import { Sxc } from '@2sic.com/2sxc-typings';
 import { RadminTableConfig } from '../configs/radmin-table-config';
-import { DataProvider } from './data-provider';
-import { QueryDataProvider } from './query-data-provider';
+import { DataProviderEntities } from './data-provider-entities';
+import { DataProviderQuery } from './data-provider-query';
 import { ServiceBase } from '../shared/service-base';
 
 /**
@@ -12,7 +12,7 @@ export class DataProviderFactory extends ServiceBase {
     super({ name: "DataProviderFactory", enableDebug: false });
   }
 
-  public getDataProvider(tableConfigData: RadminTableConfig, sxc: Sxc, linkParameters: string | undefined): DataProvider {
+  public getDataProvider(tableConfigData: RadminTableConfig, sxc: Sxc, linkParameters: string | undefined): DataProviderEntities {
     const query = tableConfigData.dataQuery;
     this.log("Creating data provider for config. Query:", query, "Link parameters:", linkParameters);
     if (query === "") {
@@ -20,7 +20,7 @@ export class DataProviderFactory extends ServiceBase {
       const headers = sxc.webApi.headers("GET");
 
       this.log("Created standard DataProvider");
-      return new DataProvider(
+      return new DataProviderEntities(
         apiUrl,
         headers,
         tableConfigData.dataContentType
@@ -28,7 +28,7 @@ export class DataProviderFactory extends ServiceBase {
     }
     
     this.log("Created QueryDataProvider");
-    return new QueryDataProvider(
+    return new DataProviderQuery(
       sxc,
       tableConfigData.dataQuery,
       linkParameters

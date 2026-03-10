@@ -4,8 +4,8 @@
   "description": "",
   "main": "(none)",
   "scripts": {
-    "build:radmin": "webpack",
-    "watch:radmin": "webpack --watch"
+    "radmin:build": "webpack",
+    "radmin:watch": "webpack --watch"
   },
   "author": "2sic internet solutions 2025",
   "license": "ISC",

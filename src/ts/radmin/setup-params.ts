@@ -1,14 +1,14 @@
 import { Resources } from '../models/resources';
 
 
-export interface SetupParams extends TableSetupSpecs, SearchSpecs {
+export interface SetupParams extends TableSpecs, SearchSpecs {
   moduleId: number;
   errorContainerId?: string;
   customizerDistPath?: string; // Optional app URL for dynamic imports
   resources: Resources;
 }
 
-export interface TableSetupSpecs {
+export interface TableSpecs {
   tableName: string;
   canEditConfig: boolean;
   canEditData: boolean;

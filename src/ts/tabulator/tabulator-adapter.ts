@@ -25,8 +25,8 @@ import { SetupObjectSorter } from "../helpers/setup-object-sorter";
 import { ErrorMessageGenerator } from "../helpers/error-message-generator";
 import { TabulatorToolbars } from "./tabulator-toolbars/tabulator-toolbar";
 import { ServiceBase } from '../shared/service-base';
-import { TableServices } from './table-services';
-import { SearchSpecs } from '../radmin/setup-params';
+import { TableServices, TableServicesComplete } from './table-services';
+import { SearchSpecs, TableSpecs } from '../radmin/setup-params';
 
 // Register required modules for Tabulator
 Tabulator.registerModule([
@@ -79,38 +79,16 @@ export class TabulatorAdapter extends ServiceBase {
   }
 
   async createTable(
-    data: SearchSpecs,
-    services: TableServices,
-    tableName: string,
+    specs: SearchSpecs & TableSpecs,
+    services: TableServicesComplete,
     tableConfigData: RadminTableConfig,
-    dataProvider: DataProvider,
-    canEditConfig: boolean,
-    canEditData: boolean,
-    viewId: string
   ) {
+    const tableName = specs.tableName;
     try {
       this.log("createTable called", { tableName, tableConfigData });
 
-      let schema;
-      try {
-        schema = await services.schemaProvider.getSchema(
-          tableConfigData.dataContentType,
-          viewId
-        );
-        this.log("schema loaded", schema);
-
-        // Check if schema is valid
-        if (!schema || !schema.properties) {
-          throw new Error("Invalid schema: missing properties");
-        }
-      } catch (error: unknown) {
-        const errStr = ErrorMessageGenerator.toErrorString(error);
-        this.log("Error loading schema:", errStr);
-        throw new Error(`Schema loading failed: ${errStr}`);
-      }
-
       const tabulatorConfig: Partial<ExtendedOptions> =
-        await this.createTabulatorConfig(tableConfigData, schema);
+        await this.createTabulatorConfig(tableConfigData, services.schema);
       this.log("tabulatorConfig created", tabulatorConfig);
 
       const savedSortersJson = sessionStorage.getItem(`${tableName}-sorters`);
@@ -126,6 +104,7 @@ export class TabulatorAdapter extends ServiceBase {
         }
       }
 
+      const dataProvider = services.dataProvider; // Use the data provider from servicesComplete, which may have customizations
       const tabulatorOptionsRaw: ExtendedOptions = {
         ajaxURL: dataProvider.getApiUrl(),
         ajaxConfig: {
@@ -174,14 +153,12 @@ export class TabulatorAdapter extends ServiceBase {
             try {
               table.setSort(initialSort);
             } catch (error) {
-              this.log(
-                "setSort on dataLoaded failed:",
-                ErrorMessageGenerator.toErrorString(error)
-              );
+              this.log("setSort on dataLoaded failed:", ErrorMessageGenerator.toErrorString(error));
             }
 
             table.on("dataSorted", function (sorters, rows) {
-              if (sorters.length === 0) return;
+              if (sorters.length === 0)
+                return;
 
               const cleanSorters = sorters.map((s) => ({
                 field: s.field || s.column.getField(),
@@ -202,15 +179,15 @@ export class TabulatorAdapter extends ServiceBase {
         );
       }
 
-      if (data.searchDomId && tableConfigData.searchEnabled) {
-        this.log("setting up filter input", data.searchDomId);
-        this.setupFilterInput(table, data.searchDomId);
+      if (specs.searchDomId && tableConfigData.searchEnabled) {
+        this.log("setting up filter input", specs.searchDomId);
+        this.setupFilterInput(table, specs.searchDomId);
       }
 
-      if (this.isViewConfigMode() && canEditConfig) {
+      if (this.isViewConfigMode() && specs.canEditConfig) {
         this.log("in ViewConfigMode, setting up header handlers");
         this.setupViewConfigMode(table, tableConfigData);
-      } else if (canEditData) {
+      } else if (specs.canEditData) {
         const editEnabled = !!tableConfigData.enableEdit;
         const canDelete = !!tableConfigData.enableDelete;
         this.log("row actions", { editEnabled, canDelete });

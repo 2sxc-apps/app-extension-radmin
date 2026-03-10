@@ -1,12 +1,10 @@
 import { TabulatorAdapter } from "../tabulator/tabulator-adapter";
 import { ConfigurationLoader } from "../loaders/table-configuration-loader";
-import { DataProvider } from "../providers/data-provider";
 import { TabulatorSearchFilter } from "../tabulator/tabulator-search-filter";
 import { ErrorMessageGenerator } from "../helpers/error-message-generator";
-import { SearchSpecs, SetupParams } from './setup-params';
+import { SearchSpecs, SetupParams, TableSpecs } from './setup-params';
 import { ServiceBase } from '../shared/service-base';
 import { TableServices } from '../tabulator/table-services';
-import { DataProviderFactory } from '../providers/data-provider-factory';
 
 
 export class RadminMain extends ServiceBase {
@@ -36,16 +34,12 @@ export class RadminMain extends ServiceBase {
       await services.customizeManager.load(data.customizerDistPath);
 
       // Load table configuration with ConfigurationLoader
-      // const configLoader = new ConfigurationLoader(sxc);
       let tableConfigDataRaw;
       try {
         tableConfigDataRaw = await new ConfigurationLoader(sxc).loadConfig(data.viewId);
         this.log("Loaded raw table config:", tableConfigDataRaw);
       } catch (error) {
-        this.log(
-          "Failed to load table configuration:",
-          ErrorMessageGenerator.toErrorString(error)
-        );
+        this.log("Failed to load table configuration:", ErrorMessageGenerator.toErrorString(error));
         ErrorMessageGenerator.handleLoadConfigError(data.tableName, error);
         return;
       }
@@ -75,24 +69,17 @@ export class RadminMain extends ServiceBase {
       }
 
       // Create the filter UI element if search is enabled
-      if (tableConfigData.searchEnabled) {
+      if (tableConfigData.searchEnabled)
         new TabulatorSearchFilter().createFilterInput(data as SearchSpecs);
-      }
 
-      // Create the appropriate DataProvider based on the configuration
-      const dataProvider: DataProvider = new DataProviderFactory().getDataProvider(tableConfigData, sxc, linkParameters);
+      const servicesComplete = await services.getComplete(tableConfigData, data.viewId, linkParameters);
 
       try {
         this.log("Creating table with TabulatorAdapter.createTable");
         await new TabulatorAdapter().createTable(
-          data as SearchSpecs,
-          services,
-          data.tableName,
+          data as SearchSpecs & TableSpecs,
+          servicesComplete,
           tableConfigData,
-          dataProvider,
-          data.canEditConfig,
-          data.canEditData,
-          data.viewId
         );
         this.log("Table creation complete");
       } catch (error) {

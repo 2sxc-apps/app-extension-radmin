@@ -36,11 +36,11 @@ export class TableServices extends TableServicesBase {
     // Setup data provider based on config
     const dataProvider = new DataProviderFactory().getDataProvider(tableConfigData, this.sxc, linkParameters)
 
-    const schema = await this.loadSchema(this.schemaProvider, tableConfigData, viewId);
+    const schema = await this.loadSchema(this.schemaProvider, viewId);
     return new TableServicesComplete(this, dataProvider, schema);
   }
 
-  private async loadSchema(schemaProvider: SchemaLoader, tableConfigData: RadminTableConfig, viewId: string): Promise<JsonSchema> {
+  private async loadSchema(schemaProvider: SchemaLoader, viewId: string): Promise<JsonSchema> {
     try {
       const schema = await schemaProvider.getSchema(viewId);
       this.log("schema loaded", schema);

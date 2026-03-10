@@ -18,12 +18,16 @@ export class TabulatorConfigService {
     schema: JsonSchema
   ): Partial<Options> {
 
+    // Convert column definitions
     const columns = new TabulatorColumnAdapter().convert(
       data.columnConfigs,
       data.columnsAutoShowRemaining,
       schema
     );
 
+    // Figure out initial sort
+    // If it's cached in the sessionState, use that (eg. when sorting, editing, then reloading)
+    // Otherwise use definition from data
     const initialSort = new RadTabSetupSort().loadSortFromSession(specs.tableName)
       ?? new RadTabColumnSortParser().loadFromSettings(
           schema,

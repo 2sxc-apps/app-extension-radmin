@@ -53,16 +53,21 @@ export class TabulatorAdapter extends ServiceBase {
 
       // Prepare initial options (before customizations)
       const dataProvider = services.dataProvider; // Use the data provider from servicesComplete, which may have customizations
-      const tabulatorOptionsRaw: Options & { dependencies: Record<string, unknown> } = {
-        columnDefaults: {
-          maxWidth: 300,
-        },
+      
+      const ajaxOptions: Options = {
         ajaxURL: dataProvider.getApiUrl(),
         ajaxConfig: {
           method: "GET",
           headers: dataProvider.getHeaders(),
         },
         ajaxResponse: (_url, _params, response) => dataProvider.processData(response),
+      };
+
+      const tabulatorOptionsRaw: Options & { dependencies: Record<string, unknown> } = {
+        columnDefaults: {
+          maxWidth: 300,
+        },
+        ...ajaxOptions,
         ...tabulatorConfig,
         dependencies: {
           // include Luxon DateTime for use in formatters and other custom functions

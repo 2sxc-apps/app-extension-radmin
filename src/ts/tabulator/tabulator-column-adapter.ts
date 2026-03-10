@@ -30,17 +30,30 @@ export class TabulatorColumnAdapter extends ServiceBase {
 
     // Process configured columns (explicit user config). If a configured column points to a group property,
     // skip it (group fields should not become visible columns).
-    const configuredColumns = columnConfigs
+    const columns = columnConfigs
       .map((col) => {
         const fieldName = new SchemaHelper(schema).findCasing(col.fieldValue);
         const prop = schema.properties[fieldName];
         this.log(`configured column: '${col.fieldValue}' to '${fieldName}'`, { col }, `schemaProp:`, prop);
 
-        if (PropertyDefHelper.isGroup(prop, fieldName)) {
-          // skip any configured column that references a group property
-          this.log(`Skipping configured column because it references a group property: '${fieldName}'`, col);
-          return null;
-        }
+        // skip any configured column that references a group property
+        if (PropertyDefHelper.isGroup(prop, fieldName)) 
+          return this.retLog(null, `Skipping configured column because it references a group property: '${fieldName}'`, col);
+        return { fieldName, col, prop };
+      })
+      .filter((c) => !!c); // remove nulls (skipped group columns);
+
+    const configuredColumns = columns
+      .map(({ fieldName, col, prop }) => {
+        // const fieldName = new SchemaHelper(schema).findCasing(col.fieldValue);
+        // const prop = schema.properties[fieldName];
+        // this.log(`configured column: '${col.fieldValue}' to '${fieldName}'`, { col }, `schemaProp:`, prop);
+
+        // if (PropertyDefHelper.isGroup(prop, fieldName)) {
+        //   // skip any configured column that references a group property
+        //   this.log(`Skipping configured column because it references a group property: '${fieldName}'`, col);
+        //   return null;
+        // }
 
         const chosenFormat = col.fieldFormat
           || SchemaFormatter.getFormatFromSchema(col.fieldValue, schema);
@@ -70,18 +83,15 @@ export class TabulatorColumnAdapter extends ServiceBase {
           ...this.linkFormatter(schema, col, fieldName)
         };
 
-        this.log(`Final column config for field '${fieldName}'`, column);
-        return column;
+        return this.retLog(column, `Final column config for field '${fieldName}'`);
       })
       .filter((c): c is ColumnDefinition => !!c); // remove nulls (skipped group columns)
 
     this.log(`Configured columns built: ${configuredColumns.length}`);
 
     // Add remaining columns from schema if configured
-    if (!columnsAutoShowRemaining) {
-      this.log("columnsAutoShowRemaining is false — returning configured columns only");
-      return configuredColumns;
-    }
+    if (!columnsAutoShowRemaining && configuredColumns.length > 0)
+      return this.retLog(configuredColumns, "columnsAutoShowRemaining is false — returning configured columns only");
 
     // Check any remaining fields that may have to be auto-added as well
     return this.tryAddRemainingColumns(schema, configuredColumns);

@@ -12,7 +12,7 @@ import { ServiceBase } from '../shared/service-base';
 
 export class ColumnSortParser extends ServiceBase {
   constructor() {
-    super("ColumnSortParser", true);
+    super("ColumnSortParser", false);
   }
 
   parse(

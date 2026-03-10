@@ -13,11 +13,9 @@ import {
   Sorter,
 } from "tabulator-tables";
 import { DateTime } from "luxon";
-import { TabulatorConfig } from "../models/tabulator-config-models";
 import { TabulatorConfigService } from "./tabulator-config-service";
 import { RadminTableConfig } from "../configs/radmin-table-config";
 import { TabulatorSearchFilter } from "./tabulator-search-filter";
-import { JsonSchema } from "../models/json-schema-model";
 import { SetupObjectSorter } from "../helpers/setup-object-sorter";
 import { ErrorHelper } from "../helpers/error-helper";
 import { TabulatorToolbars } from "./tabulator-toolbars/tabulator-toolbar";
@@ -49,14 +47,6 @@ export class TabulatorAdapter extends ServiceBase {
     super({ name: "TabulatorAdapter", enableDebug: false });
   }
 
-
-  private async createTabulatorConfig(
-    tableConfigData: RadminTableConfig,
-    schema: JsonSchema
-  ): Promise<TabulatorConfig> {
-    return this.configService.createTabulatorConfig(tableConfigData, schema);
-  }
-
   private setupFilterInput(table: Tabulator, filterName: string) {
     const searchFilter = new TabulatorSearchFilter();
     const filterInput = searchFilter.getFilterFunction(filterName);
@@ -84,8 +74,8 @@ export class TabulatorAdapter extends ServiceBase {
     try {
       this.log("createTable called", { tableName, tableConfigData });
 
-      const tabulatorConfig: Partial<ExtendedOptions> =
-        await this.createTabulatorConfig(tableConfigData, services.schema);
+      const tabulatorConfig: Partial<Options> =
+        await this.configService.createTabulatorConfig(tableConfigData, services.schema);
       this.log("tabulatorConfig created", tabulatorConfig);
 
       const savedSortersJson = sessionStorage.getItem(`${tableName}-sorters`);

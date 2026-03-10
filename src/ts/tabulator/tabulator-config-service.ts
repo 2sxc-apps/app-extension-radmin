@@ -1,8 +1,8 @@
 import { RadminTableConfig } from "../configs/radmin-table-config";
 import { JsonSchema } from "../models/json-schema-model";
 import { TabulatorColumnAdapter } from "./tabulator-column-adapter";
-import { TabulatorConfig } from "../models/tabulator-config-models";
 import { ColumnSortParser } from "../helpers/column-sort-parser";
+import { Options } from 'tabulator-tables';
 
 /**
  * Service for creating a Tabulator configuration from RadminTableConfig.
@@ -13,7 +13,7 @@ export class TabulatorConfigService {
   createTabulatorConfig(
     data: RadminTableConfig,
     schema: JsonSchema
-  ): TabulatorConfig {
+  ): Partial<Options> {
     const columnAdapter = new TabulatorColumnAdapter();
 
     const columns = columnAdapter.convert(
@@ -50,6 +50,6 @@ export class TabulatorConfigService {
       pagination: data.pagingMode === "true",
       paginationSize: data.pagingSize ?? 10,
       guid: data.guid,
-    } as TabulatorConfig;
+    } as Partial<Options>;
   }
 }

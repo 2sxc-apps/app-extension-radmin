@@ -1,6 +1,5 @@
-import { TabulatorColumnConfig } from "../models/tabulator-config-models";
 import { RadminColumnConfig } from "../configs/radmin-column-config";
-import { CellComponent } from "tabulator-tables";
+import { CellComponent, ColumnDefinition } from "tabulator-tables";
 import { JsonSchema, SchemaProperty } from "../models/json-schema-model";
 import { PropertyDefHelper } from "../helpers/property-def.helper";
 import { ValueLookup } from "../helpers/value-lookup.helper";
@@ -21,7 +20,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
     columnConfigs: RadminColumnConfig[],
     columnsAutoShowRemaining: boolean,
     schema: JsonSchema
-  ): TabulatorColumnConfig[] {
+  ): ColumnDefinition[] {
     this.log("convert called with", {
       columnConfigLength: columnConfigs.length,
       columnsAutoShowRemaining,
@@ -52,7 +51,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
           ? col.horizontalAlignment
           : undefined;
 
-        const column: TabulatorColumnConfig = {
+        const column: ColumnDefinition = {
           title: col.title,
           field: fieldName,
           headerTooltip: col.headerTooltip || false,
@@ -63,18 +62,18 @@ export class TabulatorColumnAdapter extends ServiceBase {
           // Only set width if explicitly specified
           width: col.width !== "automatic" ? col.width : undefined,
           // Handle tooltip configuration
-          tooltip: !col.tooltipEnabled
+          tooltip: (!col.tooltipEnabled
             ? false
             : col.fieldTooltip
-              ? (e, cell) => new ValueLookup(schema, cell.getData()).resolveTemplate(col.fieldTooltip)
-              : true,
+              ? (e: UIEvent, cell: CellComponent, _: unknown) => new ValueLookup(schema, cell.getData()).resolveTemplate(col.fieldTooltip)
+              : true) as unknown as string,
           ...this.linkFormatter(schema, col, fieldName)
         };
 
         this.log(`Final column config for field '${fieldName}'`, column);
         return column;
       })
-      .filter((c): c is TabulatorColumnConfig => !!c); // remove nulls (skipped group columns)
+      .filter((c): c is ColumnDefinition => !!c); // remove nulls (skipped group columns)
 
     this.log(`Configured columns built: ${configuredColumns.length}`);
 
@@ -96,9 +95,9 @@ export class TabulatorColumnAdapter extends ServiceBase {
    * @param configuredColumns The columns that have already been configured.
    * @returns An array of TabulatorColumnConfig including the newly added columns.
    */
-  private tryAddRemainingColumns(schema: JsonSchema, configuredColumns: TabulatorColumnConfig[]) {
+  private tryAddRemainingColumns(schema: JsonSchema, configuredColumns: ColumnDefinition[]) {
     // Get fields that are already configured
-    const configuredFields = new Set(configuredColumns.map((col) => col.field));
+    const configuredFields = new Set(configuredColumns.filter(col => !!col).map((col) => col.field as string));
     this.log("Configured fields set:", Array.from(configuredFields));
 
     // Create columns for remaining schema properties, skipping group properties
@@ -135,11 +134,11 @@ export class TabulatorColumnAdapter extends ServiceBase {
         const property = schema.properties[key];
         const formatAndSort = this.#formatAndSortHelper.getFormatAndSortOfPropertyUnspecified(schema, key);
 
-        const col: TabulatorColumnConfig = {
+        const col: ColumnDefinition = {
           title: property.title || key,
           field: key,
           ...formatAndSort
-        } as TabulatorColumnConfig;
+        } satisfies ColumnDefinition;
 
         this.log("Built auto column config for key:", key, col);
         return col;
@@ -151,7 +150,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
   /**
    * Configure link if enabled
    */
-  linkFormatter(schema: JsonSchema, col: RadminColumnConfig, normalizedField: string): Partial<TabulatorColumnConfig> {
+  linkFormatter(schema: JsonSchema, col: RadminColumnConfig, normalizedField: string): Partial<ColumnDefinition> {
     // if not enabled, just return empty config
     if (!col.linkEnable)
       return {};

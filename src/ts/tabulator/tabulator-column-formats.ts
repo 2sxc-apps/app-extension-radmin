@@ -1,6 +1,6 @@
-import { TabulatorColumnConfig } from "../models/tabulator-config-models";
+import { ColumnDefinition } from 'tabulator-tables';
 
-export const formatConfigs: Record<string, Partial<TabulatorColumnConfig>> = {
+export const formatConfigs: Record<string, Partial<ColumnDefinition>> = {
   "": {},
   number: {
     hozAlign: "right",

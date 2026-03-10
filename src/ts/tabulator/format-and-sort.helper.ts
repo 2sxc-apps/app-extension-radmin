@@ -1,3 +1,4 @@
+import { ColumnDefinition } from 'tabulator-tables';
 import HtmlStripper from '../helpers/html-stripper';
 import { SchemaFormatter } from '../helpers/schema-formatter';
 import { JsonSchema, SchemaProperty } from '../models/json-schema-model';
@@ -25,7 +26,7 @@ export class FormatAndSortHelper extends ServiceBase {
     const formatConfig = formatConfigs[format] || {};
     this.log("Auto-adding column for key:", key, { format, formatConfig });
 
-    let formatter = property.type === "object" || property.type === "array"
+    let formatter: ColumnDefinition['formatter'] = property.type === "object" || property.type === "array"
       ? SchemaFormatter.objectTitleFormatter
       : formatConfig.formatter;
 
@@ -37,9 +38,9 @@ export class FormatAndSortHelper extends ServiceBase {
       formatter = HtmlStripper.plainTextFormatter;
     }
 
-    let sorter = property.type === "object" || property.type === "array"
-      ? "object"
-      : formatConfig.sorter;
+    let sorter: ColumnDefinition['sorter'] = property.type === "object" || property.type === "array"
+      ? "object" as unknown as ColumnDefinition["sorter"] // force type to satisfy ColumnDefinition but will be handled by custom sorter function
+      : formatConfig.sorter || undefined;
 
     // When link is enabled we don't want the object formatter/sorter interfering
     // (link formatter will produce a string)
@@ -48,6 +49,10 @@ export class FormatAndSortHelper extends ServiceBase {
       sorter = "string";
     }
 
-    return { ...formatConfig, formatter, sorter };
+    return {
+      ...formatConfig,
+      formatter,
+      sorter
+    };
   }
 }

@@ -1,3 +1,7 @@
+import { ColumnDefinition, Sorter } from 'tabulator-tables';
+import { JsonSchema } from "../models/json-schema-model";
+import { ServiceBase } from '../shared/service-base';
+
 /**
  * Parses a CSV-style sort string (e.g. "Subject:desc,SubSubject:desc")
  * into Tabulator-compatible sort entries: { column: string, dir: "asc"|"desc" }[]
@@ -5,11 +9,6 @@
  * Matching against configured column.field, column.title and schema property keys/titles
  * is done case-insensitively and with whitespace-normalization where appropriate.
  */
-import { ColumnDef } from "../models/column-def-model";
-import { JsonSchema } from "../models/json-schema-model";
-import { TabulatorSort } from "../models/tabulator-config-models";
-import { ServiceBase } from '../shared/service-base';
-
 export class ColumnSortParser extends ServiceBase {
   constructor() {
     super({ name: "ColumnSortParser", enableDebug: false });
@@ -17,9 +16,9 @@ export class ColumnSortParser extends ServiceBase {
 
   parse(
     sortString?: string,
-    columns?: ColumnDef[],
+    columns?: ColumnDefinition[],
     schema?: JsonSchema
-  ): TabulatorSort[] {
+  ): Sorter[] {
     if (!sortString) return [];
 
     // strip outer quotes if the entire string is quoted (handles the case you hit)
@@ -150,7 +149,7 @@ export class ColumnSortParser extends ServiceBase {
       return cleaned;
     };
 
-    const result: TabulatorSort[] = tokens.map((segment) => {
+    const result: Sorter[] = tokens.map((segment) => {
       // remove surrounding quotes from the whole token before splitting
       const token = normalize(segment);
 

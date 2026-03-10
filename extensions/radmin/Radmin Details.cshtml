@@ -62,7 +62,7 @@
       @foreach (var attr in contentType.Attributes)
       {
         var key = attr.Name;
-        var value = entity.Get(key);
+        var value = entity.Get(key, required: false); // 2dm: needs required: false for special edge cases (data loaded from json may not have certain data)
         // Determine if current attr is a group title (starts with "Group" and has no value)
         var isGroupTitle = attr.IsEmpty();
         // Group titles should be rendered bold

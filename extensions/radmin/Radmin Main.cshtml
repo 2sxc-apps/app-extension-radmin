@@ -16,8 +16,10 @@
   var viewId = MyPage.Parameters.String(RadminConstants.UrlParamViewId, fallback: null);
 
   // 1.2. If viewId is present, switch to the details view for the corresponding viewId
-  // TODO: THIS IS NOT quite correct, as the viewId could also be for another table
-  @if (!string.IsNullOrWhiteSpace(viewId))
+  // Note: It's important to NOT switch items if the url has the same ID as is already in MyItem,
+  // because that would make a demo-item be loaded as a normal item, so demo-item checks later (in toolbar / intro texts)
+  // would appear to be false, while they should be true.
+  @if (!string.IsNullOrWhiteSpace(viewId) && viewId != tableSpecs.ViewId.ToString())
   {
     // Check if this is a table configuration
     var alternateSpecs = App.Data.GetAll<RadminTable>()

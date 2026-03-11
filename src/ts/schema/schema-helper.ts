@@ -1,4 +1,4 @@
-import { JsonSchema } from '../models/json-schema-model';
+import { JsonSchema } from './json-schema-model';
 import { ServiceBase } from '../shared/service-base';
 
 

@@ -1,11 +1,9 @@
 import { Sxc } from "@2sic.com/2sxc-typings";
-import { RadminTableConfig } from "../configs/radmin-table-config";
+import { RadminTableConfig } from "./radmin-table-config";
 
-export class ConfigurationLoader {
-  private sxc: Sxc;
+export class TableViewConfigurationLoader {
 
-  constructor(sxc: Sxc) {
-    this.sxc = sxc;
+  constructor(private sxc: Sxc) {
   }
 
   /**

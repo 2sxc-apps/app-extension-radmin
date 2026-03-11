@@ -1,5 +1,5 @@
 import { RadminTableConfig } from "../configs/radmin-table-config";
-import { JsonSchema } from "../models/json-schema-model";
+import { JsonSchema } from "../schema/json-schema-model";
 import { TabulatorColumnAdapter } from "./tabulator-column-adapter";
 import { RadTabColumnSortParser } from "./sort/radtab-column-sort-parser";
 import { Options } from 'tabulator-tables';

@@ -1,13 +1,11 @@
 
 export abstract class DataProviderBase {
-  protected dataContentType?: string;
 
   constructor(
     protected apiUrl: string,
     protected headers: Record<string, string>,
-    dataContentType?: string
+    protected dataContentType?: string
   ) {
-    this.dataContentType = dataContentType;
   }
 
   /**

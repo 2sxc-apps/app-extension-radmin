@@ -1,10 +1,10 @@
 import { TabulatorAdapter } from "../tabulator/tabulator-adapter";
-import { ConfigurationLoader } from "../loaders/table-configuration-loader";
 import { RadTabSetupSearch } from "../tabulator/features/radtab-setup-search";
-import { ErrorHelper } from "../helpers/error-helper";
 import { SearchSpecs, SetupParams, TableSpecs } from './setup-params';
 import { ServiceBase } from '../shared/service-base';
 import { TableServices } from '../tabulator/table-services';
+import { ErrorHelper } from '../shared/error-helper';
+import { TableViewConfigurationLoader } from '../configs/table-view-configuration.loader';
 
 
 export class RadminMain extends ServiceBase {
@@ -36,7 +36,7 @@ export class RadminMain extends ServiceBase {
       // Load table configuration with ConfigurationLoader
       let tableConfigDataRaw;
       try {
-        tableConfigDataRaw = await new ConfigurationLoader(sxc).loadConfig(data.viewId);
+        tableConfigDataRaw = await new TableViewConfigurationLoader(sxc).loadConfig(data.viewId);
         this.log("Loaded raw table config:", tableConfigDataRaw);
       } catch (error) {
         this.log("Failed to load table configuration:", ErrorHelper.toErrorString(error));

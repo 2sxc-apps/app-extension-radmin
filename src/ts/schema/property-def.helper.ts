@@ -1,4 +1,4 @@
-import { SchemaProperty } from "../models/json-schema-model";
+import { SchemaProperty } from "./json-schema-model";
 
 export class PropertyDefHelper {
   static isGroup(property: SchemaProperty | undefined, key: string): boolean {

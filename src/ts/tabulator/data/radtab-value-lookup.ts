@@ -1,11 +1,11 @@
-import { JsonSchema } from "../models/json-schema-model";
-import { ServiceBase } from '../shared/service-base';
-import { SchemaHelper } from './schema-helper';
+import { JsonSchema } from "../../schema/json-schema-model";
+import { ServiceBase } from '../../shared/service-base';
+import { SchemaHelper } from '../../schema/schema-helper';
 
-export class ValueLookup extends ServiceBase {
+export class RadTabValueLookup extends ServiceBase {
 
   constructor(private schema: JsonSchema, private cellData: Record<string, unknown>) {
-    super({ name: "ValueLookup", enableDebug: false });
+    super({ name: "RadTabValueLookup", enableDebug: false });
   }
 
   resolveValue(path: string) {

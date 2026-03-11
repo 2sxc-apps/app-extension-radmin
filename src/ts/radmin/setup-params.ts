@@ -1,4 +1,4 @@
-import { Resources } from '../models/resources';
+import { Resources } from '../configs/resources';
 
 
 export interface SetupParams extends TableSpecs, SearchSpecs {

@@ -1,6 +1,6 @@
 import { Options, Sorter, Tabulator } from 'tabulator-tables';
 import { ServiceBase } from '../../shared/service-base';
-import { ErrorHelper } from '../../helpers/error-helper';
+import { ErrorHelper } from '../../shared/error-helper';
 
 export class RadTabSetupSort extends ServiceBase {
 

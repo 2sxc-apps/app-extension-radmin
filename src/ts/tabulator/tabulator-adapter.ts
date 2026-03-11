@@ -14,7 +14,7 @@ import { TabulatorConfigService } from "./tabulator-config-service";
 import { RadminTableConfig } from "../configs/radmin-table-config";
 import { RadTabSetupSearch } from "./features/radtab-setup-search";
 import { RadTabRegisterSort } from "./sort/radtab-register-sort";
-import { ErrorHelper } from "../helpers/error-helper";
+import { ErrorHelper } from "../shared/error-helper";
 import { ServiceBase } from '../shared/service-base';
 import { TableServicesComplete } from './table-services';
 import { SearchSpecs, TableSpecs } from '../radmin/setup-params';

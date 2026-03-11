@@ -1,4 +1,4 @@
-import { ErrorHelper } from '../helpers/error-helper';
+import { ErrorHelper } from '../shared/error-helper';
 import { ServiceBase } from '../shared/service-base';
 import { CustomizeManager } from './customize-manager';
 

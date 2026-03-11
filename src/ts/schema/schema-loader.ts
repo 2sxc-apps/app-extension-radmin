@@ -1,12 +1,9 @@
 import { Sxc } from "@2sic.com/2sxc-typings";
-import { JsonSchema } from "../models/json-schema-model";
+import { JsonSchema } from "./json-schema-model";
 
 export class SchemaLoader {
-  private sxc: Sxc;
 
-  constructor(sxc: Sxc) {
-    this.sxc = sxc;
-  }
+  constructor(private sxc: Sxc) {}
 
   /**
    * Fetches the schema for a given content type
@@ -15,7 +12,9 @@ export class SchemaLoader {
    */
   async getSchema(viewId: string): Promise<JsonSchema> {
     try {
-      return await this.sxc.webApi.fetchJson(`app/auto/api/radmin/schema?viewid=${viewId}`);
+      return await this.sxc.webApi.fetchJson(
+        `app/auto/api/radmin/schema?viewid=${viewId}`
+      );
     } catch (error) {
       console.error("Error fetching schema:", error);
       throw error;

@@ -1,13 +1,13 @@
 import { Sxc } from '@2sic.com/2sxc-typings';
 import { CustomizeManager } from '../customizers/customize-manager';
-import { SchemaLoader } from '../loaders/schema-loader';
+import { SchemaLoader } from '../schema/schema-loader';
 import { ServiceBase } from '../shared/service-base';
 import { TabulatorAdapter } from './tabulator-adapter';
 import { RadminTableConfig } from '../configs/radmin-table-config';
 import { DataProviderEntities } from '../providers/data-provider-entities';
 import { DataProviderFactory } from '../providers/data-provider-factory';
-import { JsonSchema } from '../models/json-schema-model';
-import { ErrorHelper } from '../helpers/error-helper';
+import { JsonSchema } from '../schema/json-schema-model';
+import { ErrorHelper } from '../shared/error-helper';
 
 
 abstract class TableServicesBase extends ServiceBase {

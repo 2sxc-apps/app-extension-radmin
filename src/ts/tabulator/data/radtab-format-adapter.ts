@@ -1,8 +1,14 @@
-import { JsonSchema, SchemaProperty } from "../models/json-schema-model";
+import { JsonSchema, SchemaProperty } from "../../schema/json-schema-model";
 import { CellComponent } from "tabulator-tables";
-import { SchemaHelper } from './schema-helper';
+import { SchemaHelper } from '../../schema/schema-helper';
+import { ServiceBase } from '../../shared/service-base';
 
-export class SchemaFormatter {
+export class RadTabFormatAdapter extends ServiceBase {
+
+  constructor() {
+    super({ name: "RadTabFormatAdapter", enableDebug: true });
+  }
+
   /** Maps JSON schema type/format → internal format key */
   static mapSchemaTypeToFormat(
     property: SchemaProperty,
@@ -39,7 +45,7 @@ export class SchemaFormatter {
     const property = schema.properties[normalized];
 
     const format = property
-      ? SchemaFormatter.mapSchemaTypeToFormat(property, log)
+      ? RadTabFormatAdapter.mapSchemaTypeToFormat(property, log)
       : "";
 
     log?.("getFormatFromSchema", { field, normalized, format });

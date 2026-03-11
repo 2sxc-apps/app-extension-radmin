@@ -1,7 +1,7 @@
 import { ColumnDefinition } from 'tabulator-tables';
-import HtmlStripper from '../helpers/html-stripper';
-import { SchemaFormatter } from '../helpers/schema-formatter';
-import { JsonSchema, SchemaProperty } from '../models/json-schema-model';
+import HtmlStripper from '../shared/html-stripper';
+import { RadTabFormatAdapter } from './data/radtab-format-adapter';
+import { JsonSchema, SchemaProperty } from '../schema/json-schema-model';
 import { ServiceBase } from '../shared/service-base';
 import { formatConfigs } from './tabulator-column-formats';
 
@@ -17,7 +17,7 @@ export class FormatAndSortHelper extends ServiceBase {
 
   public getFormatAndSortOfPropertyUnspecified(schema: JsonSchema, key: string) {
     const property = schema.properties[key];
-    const format = SchemaFormatter.mapSchemaTypeToFormat(property);
+    const format = RadTabFormatAdapter.mapSchemaTypeToFormat(property);
     return this.getFormatAndSort(format, key, property);
   }
 
@@ -27,7 +27,7 @@ export class FormatAndSortHelper extends ServiceBase {
     this.log("Auto-adding column for key:", key, { format, formatConfig });
 
     let formatter: ColumnDefinition['formatter'] = property.type === "object" || property.type === "array"
-      ? SchemaFormatter.objectTitleFormatter
+      ? RadTabFormatAdapter.objectTitleFormatter
       : formatConfig.formatter;
 
     // If schema explicitly indicates html/wysiwyg, and no explicit formatter was provided,

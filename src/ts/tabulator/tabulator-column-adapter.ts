@@ -1,10 +1,10 @@
 import { RadminColumnConfig } from "../configs/radmin-column-config";
 import { CellComponent, ColumnDefinition } from "tabulator-tables";
-import { JsonSchema, SchemaProperty } from "../models/json-schema-model";
-import { PropertyDefHelper } from "../helpers/property-def.helper";
-import { ValueLookup } from "../helpers/value-lookup.helper";
-import { SchemaHelper } from '../helpers/schema-helper';
-import { SchemaFormatter } from "../helpers/schema-formatter";
+import { JsonSchema, SchemaProperty } from "../schema/json-schema-model";
+import { PropertyDefHelper } from "../schema/property-def.helper";
+import { RadTabValueLookup } from "./data/radtab-value-lookup";
+import { SchemaHelper } from '../schema/schema-helper';
+import { RadTabFormatAdapter } from "./data/radtab-format-adapter";
 import { ServiceBase } from '../shared/service-base';
 import { FormatAndSortHelper } from './format-and-sort.helper';
 
@@ -45,18 +45,8 @@ export class TabulatorColumnAdapter extends ServiceBase {
 
     const configuredColumns = columns
       .map(({ fieldName, col, prop }) => {
-        // const fieldName = new SchemaHelper(schema).findCasing(col.fieldValue);
-        // const prop = schema.properties[fieldName];
-        // this.log(`configured column: '${col.fieldValue}' to '${fieldName}'`, { col }, `schemaProp:`, prop);
-
-        // if (PropertyDefHelper.isGroup(prop, fieldName)) {
-        //   // skip any configured column that references a group property
-        //   this.log(`Skipping configured column because it references a group property: '${fieldName}'`, col);
-        //   return null;
-        // }
-
         const chosenFormat = col.fieldFormat
-          || SchemaFormatter.getFormatFromSchema(col.fieldValue, schema);
+          || RadTabFormatAdapter.getFormatFromSchema(col.fieldValue, schema);
 
         const formatAndSort = this.#formatAndSortHelper.getFormatAndSort(chosenFormat, fieldName, prop || { type: "string" } as SchemaProperty, !!col.linkEnable);
 
@@ -78,7 +68,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
           tooltip: (!col.tooltipEnabled
             ? false
             : col.fieldTooltip
-              ? (e: UIEvent, cell: CellComponent, _: unknown) => new ValueLookup(schema, cell.getData()).resolveTemplate(col.fieldTooltip)
+              ? (e: UIEvent, cell: CellComponent, _: unknown) => new RadTabValueLookup(schema, cell.getData()).resolveTemplate(col.fieldTooltip)
               : true) as unknown as string,
           ...this.linkFormatter(schema, col, fieldName)
         };
@@ -175,7 +165,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
       formatterParams: {
         url: (cell: CellComponent) => {
           // Prepare lookup and parameters
-          const valLookup = new ValueLookup(schema, cell.getData());
+          const valLookup = new RadTabValueLookup(schema, cell.getData());
           const params = valLookup.resolveTemplate(col.linkParameters);
 
           const expectedParams = col.linkViewRef?.expectedParameters;
@@ -214,7 +204,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
           return url;
         },
         target: col.linkTarget || "_self",
-        label: (cell: CellComponent) => SchemaFormatter.objectTitleFormatter(cell),
+        label: (cell: CellComponent) => RadTabFormatAdapter.objectTitleFormatter(cell),
       }
     };
   }

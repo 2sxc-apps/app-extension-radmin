@@ -52,6 +52,9 @@ module.exports = (env = {}) => {
       new MiniCssExtractPlugin({
         filename: "[name].min.css",
       }),
+
+      // Special: copy specific files into the extension
+      // since they would be needed if someone wants to create customizations.
       new CopyPlugin({
         patterns: [
           {

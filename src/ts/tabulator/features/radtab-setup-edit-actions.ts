@@ -1,6 +1,6 @@
 import { Tabulator, ColumnComponent, RowComponent } from "tabulator-tables";
 import { RadminTableConfig } from "../../configs/radmin-table-config";
-import { ErrorHelper } from "../../helpers/error-helper";
+import { ErrorHelper } from "../../shared/error-helper";
 import { TabulatorToolbars } from "../tabulator-toolbars/tabulator-toolbar";
 import { ServiceBase } from '../../shared/service-base';
 import { SearchSpecs, TableSpecs } from '../../radmin/setup-params';

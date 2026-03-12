@@ -45,13 +45,14 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 1. Big: Re-review handling of details, with permissions etc.
 1. click on view "unknown" should show better info, don't switch to details if not found
 
-1. @2ro pls change to use Vite
-
 ## History
 
-### 2026-03-11
+### 2026-03-11 / 03-12
 
 1. 2dm: reorg TS files to better match purpose/topic
+1. 2ro: move to Vite
+1. 2dm: improve vite code a bit for more clarity
+1. 2ro: minify JS, added .min suffix to output files
 
 ### 2026-03-09 / 03-10
 

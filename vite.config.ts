@@ -2,26 +2,70 @@ import { defineConfig } from 'vite';
 import path from 'path';
 import fs from 'fs';
 
+export default defineConfig({
+  build: {
+    outDir: 'extensions/radmin/dist',
+    emptyOutDir: true,
+    sourcemap: true,
+    minify: true,
+    cssCodeSplit: true,
+    
+    rollupOptions: {
+      input: {
+        tables: path.resolve(__dirname, 'src/ts/index.ts'),
+        styles: path.resolve(__dirname, 'src/styles/styles.scss'),
+      },
+      output: {
+        entryFileNames: '[name].min.js',
+        chunkFileNames: '[name].min.js',
+        assetFileNames: (assetInfo) => {
+          // CSS files use .min.css extension
+          if (assetInfo.name?.endsWith('.css')) {
+            return '[name].min.css';
+          }
+          return '[name].[ext]';
+        },
+      },
+    },
+  },
+  
+  css: {
+    preprocessorOptions: {
+      scss: {
+        includePaths: ['node_modules'],
+      },
+    },
+  },
+  
+  resolve: {
+    extensions: ['.ts', '.js', '.css', '.scss'],
+  },
+  
+  plugins: [
+    copyFilesPlugin([
+      {
+        src: path.resolve(__dirname, 'src/ts/configs/radmin-column-config.ts'),
+        dest: path.resolve(__dirname, 'extensions/radmin/src/configs/radmin-column-config.ts'),
+      },
+      {
+        src: path.resolve(__dirname, 'src/ts/configs/radmin-table-config.ts'),
+        dest: path.resolve(__dirname, 'extensions/radmin/src/configs/radmin-table-config.ts'),
+      },
+      {
+        src: path.resolve(__dirname, 'src/ts/customizers/table-customizer.ts'),
+        dest: path.resolve(__dirname, 'extensions/radmin/src/customizers/table-customizer.ts'),
+      },
+    ]),
+  ],
+});
+
+
+
 /**
  * Plugin to copy specific TypeScript files to the extension directory.
  * Works in both build and watch mode.
  */
-function copyFilesPlugin() {
-  const filesToCopy = [
-    {
-      src: path.resolve(__dirname, 'src/ts/configs/radmin-column-config.ts'),
-      dest: path.resolve(__dirname, 'extensions/radmin/src/configs/radmin-column-config.ts'),
-    },
-    {
-      src: path.resolve(__dirname, 'src/ts/configs/radmin-table-config.ts'),
-      dest: path.resolve(__dirname, 'extensions/radmin/src/configs/radmin-table-config.ts'),
-    },
-    {
-      src: path.resolve(__dirname, 'src/ts/customizers/table-customizer.ts'),
-      dest: path.resolve(__dirname, 'extensions/radmin/src/customizers/table-customizer.ts'),
-    },
-  ];
-
+function copyFilesPlugin(filesToCopy: { src: string; dest: string }[]) {
   const copyFile = (src: string, dest: string) => {
     const destDir = path.dirname(dest);
     if (!fs.existsSync(destDir)) {
@@ -57,47 +101,3 @@ function copyFilesPlugin() {
     },
   };
 }
-
-export default defineConfig({
-  build: {
-    outDir: 'extensions/radmin/dist',
-    emptyOutDir: true,
-    sourcemap: true,
-    minify: false, // Keep unminified for development
-    cssCodeSplit: true,
-    
-    rollupOptions: {
-      input: {
-        tables: path.resolve(__dirname, 'src/ts/index.ts'),
-        styles: path.resolve(__dirname, 'src/styles/styles.scss'),
-      },
-      output: {
-        entryFileNames: '[name].js',
-        chunkFileNames: '[name].js',
-        assetFileNames: (assetInfo) => {
-          // CSS files use .min.css extension
-          if (assetInfo.name?.endsWith('.css')) {
-            return '[name].min.css';
-          }
-          return '[name].[ext]';
-        },
-      },
-    },
-  },
-  
-  css: {
-    preprocessorOptions: {
-      scss: {
-        includePaths: ['node_modules'],
-      },
-    },
-  },
-  
-  resolve: {
-    extensions: ['.ts', '.js', '.css', '.scss'],
-  },
-  
-  plugins: [
-    copyFilesPlugin(),
-  ],
-});

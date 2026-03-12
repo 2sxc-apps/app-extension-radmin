@@ -1,5 +1,5 @@
 {
-  "name": "2sxc-extension-radmin",
+  "name": "2sxc-app-extension-radmin",
   "version": "01.00.00",
   "description": "",
   "main": "(none)",
@@ -7,9 +7,10 @@
     "radmin:build": "vite build",
     "radmin:watch": "vite build --watch"
   },
-  "author": "2sic internet solutions 2025",
-  "license": "ISC",
+  "author": "2sic internet solutions 2026",
+  "license": "MIT",
   "devDependencies": {
+    "@2sic.com/2sxc-typings": "^14.7.3",
     "@types/luxon": "^3.4.2",
     "@types/node": "^22.9.0",
     "@types/tabulator-tables": "^6.3.1",
@@ -19,7 +20,6 @@
     "vite": "^7.3.1"
   },
   "dependencies": {
-    "@2sic.com/2sxc-typings": "^14.7.3",
     "luxon": "^3.6.0",
     "tabulator-tables": "^6.3.1"
   }

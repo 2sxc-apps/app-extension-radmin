@@ -44,6 +44,8 @@
   // 2.3. Prepare some common variables
   var urlRoot = App.Folder.Url;
   var mid = MyContext.Module.Id;
+
+  var dataIsConfigured = tableSpecs.IsNotEmpty(nameof(tableSpecs.DataContentType)) || tableSpecs.IsNotEmpty(nameof(tableSpecs.DataQuery));
 }
 
 @* 3. Show "toggle configuration mode" - admins only, and not on demo-configuration *@
@@ -60,6 +62,14 @@
 @* 3. Show instructions *@
 @Html.Partial("./Razor Parts/Instructions New Module.cshtml", new { tableSpecs, resources })
 
+@* 4. If data is not configured, show a warning and exit *@
+@if (!dataIsConfigured) {
+  <div class="alert alert-warning mb-0" role="alert">
+    @resources.Html(nameof(resources.DataNotConfiguredError))
+  </div>
+  return;
+}
+
 
 @* 5. Add placeholder for errors before the final data table *@
 <div id="radmin-id-error-@mid" class="mb-3">
@@ -75,7 +85,6 @@
 }
 
 @* 7. Initialize the Tabulator table using turnOn *@
-@* TODO: rename window.table to window.radmin *@
 @Kit.Page.TurnOn("window.radmin.setup()", data: new {
   tableName = "radmin-id-" + mid,
   searchContainerDomId = "radmin-id-search-container-" + mid,

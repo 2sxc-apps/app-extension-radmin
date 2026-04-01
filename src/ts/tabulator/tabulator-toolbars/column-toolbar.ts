@@ -95,15 +95,14 @@ function getToolbar(sxc: any, column: ColumnComponent, tableConfigData: RadminTa
     return cfgTitle === colTitle || cfgTitle === colField;
   });
 
-  // find the index of the colConfig
-  const colIndex = colConfig ? configuredColumns.indexOf(colConfig) : -1;
-
   const alreadyConfigured = !!colConfig;
-  const entityId = colConfig ? (colConfig.id as number) : 0;
-
-  let toolbarHtml: string;
   if (alreadyConfigured) {
-    toolbarHtml = sxc.manage.getToolbar({
+    // find the index of the colConfig
+    const colIndex = colConfig ? configuredColumns.indexOf(colConfig) : -1;
+    const entityId = colConfig ? (colConfig.id as number) : 0;
+
+    // Create the edit/move toolbar for the column
+    return sxc.manage.getToolbar({
       groups: [{ buttons: "edit", }, { buttons: "moveup,movedown", }],
       params: {
         entityId,
@@ -112,26 +111,26 @@ function getToolbar(sxc: any, column: ColumnComponent, tableConfigData: RadminTa
         index: colIndex,
       }
     });
-  } else {
-    const fieldValue = colField && colField.trim() !== ""
-      ? colField
-      : colTitle.replace(/\s+/g, "");
+  }
+  
+  const fieldValue = colField && colField.trim() !== ""
+    ? colField
+    : colTitle.replace(/\s+/g, "");
 
-
-
-    toolbarHtml = sxc.manage.getToolbar({
+  return sxc.manage.getToolbar({
+    action: "new",
+    params: {
       contentType: "f58eaa8e-88c0-403a-a996-9afc01ec14be",
-      action: "new",
+      parent: tableConfigData.guid,
+      fields: "ColumnConfigs",
+      index: configuredColumns.length,
       prefill: {
         Title: colTitle,
         linkEnable: false,
         tooltipEnabled: false,
         FieldValue: fieldValue,
       },
-      fields: "ColumnConfigs",
-      parent: tableConfigData.guid,
-    });
-  }
-  return toolbarHtml;
+    },
+  });
 }
 

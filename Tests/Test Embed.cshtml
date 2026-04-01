@@ -1,0 +1,15 @@
+@inherits Custom.Hybrid.RazorTyped
+@using AppCode.Extensions.Radmin
+@using AppCode.Extensions.Radmin.Data
+@using DotNetNuke.UI.Containers
+
+@{
+  var tableSpecs = App.Data.GetAll<RadminTable>().FirstOrDefault();
+}
+
+<h1>Test Embed</h1>
+<p>
+  This sample shows how to directly embed Radmin into a razor, giving it the specs it should show.
+</p>
+
+@Html.Partial("../extensions/radmin/Radmin Table.cshtml", new { tableSpecs, TitleTag = "h3" })

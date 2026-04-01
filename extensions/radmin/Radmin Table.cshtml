@@ -1,0 +1,86 @@
+@inherits Custom.Hybrid.RazorTyped
+@using AppCode.Extensions.Radmin
+@using AppCode.Extensions.Radmin.Data
+
+@{
+  // 1. Get Table Configuration as is handed in the parameters
+  // You can call this template and pass in any table Specs.
+  var tableSpecs = MyModel.Get<RadminTable>("tableSpecs");
+  var titleTag = MyModel.Get<string>("titleTag", fallback: "h2");
+
+  // 1.1. Load the resources for localization
+  var radminHelper = GetService<RadminHelper>();
+  var resources = radminHelper.GetResources();
+
+  // 1.2. Prepare some common variables
+  var urlRoot = App.Folder.Url;
+  var mid = MyContext.Module.Id;
+  var pageParams = MyPage.Parameters;
+}
+
+@* 2. Main Container with Header, Search and any Instructions + Toolbar *@
+<div @radminHelper.GetToolbar(tableSpecs)>
+  @* 2.1. Show the Header which will also contain the search *@
+  <div class="d-flex justify-content-between align-items-center mb-1">
+    <@titleTag>@tableSpecs.Title</@titleTag>
+    <div id="radmin-id-search-container-@mid" class="w-25">
+      @* The filter input will be dynamically inserted here by JavaScript *@
+    </div>
+  </div>
+
+  @* 2.2. Show instructions for new module and View Config Mode *@
+  @Html.Partial("./Razor Parts/Instructions.cshtml", new { tableSpecs, resources, isConfig = radminHelper.IsConfigMode })
+
+
+  @* 2.3. If data is not configured, show a warning and exit *@
+  @if (!tableSpecs.DataIsConfigured)
+  {
+    <div class="alert alert-warning mb-0" role="alert">
+      @Html.Raw(resources.DataNotConfiguredError)
+    </div>
+    return;
+  }
+
+  @* 2.4. Show the intro text if available *@
+  @if (tableSpecs.IsNotEmpty(nameof(tableSpecs.Intro)))
+  {
+    @Html.Raw(tableSpecs.Intro)
+  }
+</div>
+
+
+@* 3. Add placeholder for errors before the final data table *@
+<div id="radmin-id-error-@mid" class="mb-3">
+</div>
+
+@* 4. Add placeholder which will contain the tabulator JS (must have a proper closing div-tag) *@
+<div>
+  <div id="radmin-id-@mid"></div>
+</div>
+
+@if (tableSpecs.IsNotEmpty(nameof(tableSpecs.Outro))){
+  @Html.Raw(tableSpecs.Outro)
+}
+
+@* 5. Initialize the Tabulator table using turnOn *@
+@Kit.Page.TurnOn("window.radmin.setup()", data: new {
+  tableName = "radmin-id-" + mid,
+  searchContainerDomId = "radmin-id-search-container-" + mid,
+  searchDomId = "radmin-id-search-" + mid,
+  errorContainerId = "radmin-id-error-" + mid,
+  moduleId = mid,
+  viewId = tableSpecs.Guid,
+  canEditConfig = MyUser.IsSiteAdmin && !tableSpecs.IsDemoItem,
+  canEditData = MyUser.IsContentEditor && !tableSpecs.IsDemoItem,
+  customizerDistPath = tableSpecs.IsEmpty(nameof(tableSpecs.CustomizersDistPath))
+    ? ""
+    : urlRoot + tableSpecs.CustomizersDistPath,
+  resources = resources
+})
+
+@* 6. Activate 2sxc JS Core features so toolbars/edit-buttons will work *@
+@Kit.Page.Activate("2sxc.JsCore")
+
+@* 7. Load Radmin Table scripts and styles *@
+<script src="@urlRoot/extensions/radmin/dist/tables.min.js" @Kit.Page.AssetAttributes(position: "bottom")></script>
+<link href="@urlRoot/extensions/radmin/dist/styles.min.css" rel="stylesheet" @Kit.Page.AssetAttributes(position: "bottom") />

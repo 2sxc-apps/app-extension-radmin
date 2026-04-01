@@ -3,19 +3,15 @@
 @using AppCode.Extensions.Radmin.Data
 
 @{
-  // 0. Start with the preset configuration
-  var itemToUse = MyItem;
-
-  // 2. Load Data and prepare some common variables
-  // 2.1. Load the table config based on the current context (moduleId, viewId, etc.)
+  // 1. Start by using the data configured for this view
+  // 1.1. Load the table config based on the current context (moduleId, viewId, etc.)
   var tableSpecs = As<RadminTable>(MyItem);
 
-
-  // 1. Check if we should switch views
-  // 1.1. Get the viewId from the URL parameters to determine if we should switch views to another table or the details
+  // 2. Check if we should switch views
+  // 2.1. Get the viewId from the URL parameters to determine if we should switch views to another table or the details
   var viewId = MyPage.Parameters.String(RadminConstants.UrlParamViewId, fallback: null);
 
-  // 1.2. If viewId is present, switch to the details view for the corresponding viewId
+  // 2.2. If viewId is present, switch to the details view for the corresponding viewId
   // Note: It's important to NOT switch items if the url has the same ID as is already in MyItem,
   // because that would make a demo-item be loaded as a normal item, so demo-item checks later (in toolbar / intro texts)
   // would appear to be false, while they should be true.
@@ -25,92 +21,17 @@
     var alternateSpecs = App.Data.GetAll<RadminTable>()
       .FirstOrDefault(t => t.ViewId == viewId);
 
-    if (alternateSpecs != null)
-    {
-      // Switch to the alternate table configuration
-      tableSpecs = alternateSpecs;
-    }
-    else
+    if (alternateSpecs == null)
     {
       // No alternate table configuration found, so we assume it's a details view and switch to the details view
       @Html.Partial("Radmin Details.cshtml", new { viewId });
       return;
     }
+
+    // Switch to the alternate table configuration
+    tableSpecs = alternateSpecs;
   }
-
-  // 2.2. Load the resources for localization
-  var radminHelper = GetService<RadminHelper>();
-  var resources = radminHelper.GetResources();
-
-  // 2.3. Prepare some common variables
-  var urlRoot = App.Folder.Url;
-  var mid = MyContext.Module.Id;
-  var pageParams = MyPage.Parameters;
 }
 
-@* 3. Main Container with Header, Search and any Instructions + Toolbar *@
-<div @radminHelper.GetToolbar(tableSpecs)>
-  @* 3.1. Show the Header which will also contain the search *@
-  <div class="d-flex justify-content-between align-items-center mb-1">
-    <h1>@tableSpecs.Title</h1>
-    <div id="radmin-id-search-container-@mid" class="w-25">
-      @* The filter input will be dynamically inserted here by JavaScript *@
-    </div>
-  </div>
-
-  @* 3.2. Show instructions for new module and View Config Mode *@
-  @Html.Partial("./Razor Parts/Instructions.cshtml", new { tableSpecs, resources, isConfig = radminHelper.IsConfigMode })
-
-
-  @* 3.3. If data is not configured, show a warning and exit *@
-  @if (!tableSpecs.DataIsConfigured)
-  {
-    <div class="alert alert-warning mb-0" role="alert">
-      @Html.Raw(resources.DataNotConfiguredError)
-    </div>
-    return;
-  }
-
-  @* 3.4. Show the intro text if available *@
-  @if (tableSpecs.IsNotEmpty(nameof(tableSpecs.Intro)))
-  {
-    @Html.Raw(tableSpecs.Intro)
-  }
-</div>
-
-
-@* 5. Add placeholder for errors before the final data table *@
-<div id="radmin-id-error-@mid" class="mb-3">
-</div>
-
-@* 6. Add placeholder which will contain the tabulator JS (must have a proper closing div-tag) *@
-<div>
-  <div id="radmin-id-@mid"></div>
-</div>
-
-@if (tableSpecs.IsNotEmpty(nameof(tableSpecs.Outro))){
-  @Html.Raw(tableSpecs.Outro)
-}
-
-@* 7. Initialize the Tabulator table using turnOn *@
-@Kit.Page.TurnOn("window.radmin.setup()", data: new {
-  tableName = "radmin-id-" + mid,
-  searchContainerDomId = "radmin-id-search-container-" + mid,
-  searchDomId = "radmin-id-search-" + mid,
-  errorContainerId = "radmin-id-error-" + mid,
-  moduleId = mid,
-  viewId = tableSpecs.Guid,
-  canEditConfig = MyUser.IsSiteAdmin && !tableSpecs.IsDemoItem,
-  canEditData = MyUser.IsContentEditor && !tableSpecs.IsDemoItem,
-  customizerDistPath = tableSpecs.IsEmpty(nameof(tableSpecs.CustomizersDistPath))
-    ? ""
-    : urlRoot + tableSpecs.CustomizersDistPath,
-  resources = resources
-})
-
-@* Activate 2sxc JS Core features so toolbars/edit-buttons will work *@
-@Kit.Page.Activate("2sxc.JsCore")
-
-@* Load Radmin Table scripts and styles *@
-<script src="@urlRoot/extensions/radmin/dist/tables.min.js" @Kit.Page.AssetAttributes(position: "bottom")></script>
-<link href="@urlRoot/extensions/radmin/dist/styles.min.css" rel="stylesheet" @Kit.Page.AssetAttributes(position: "bottom") />
+@* 3. Render the table view (default case) *@
+@Html.Partial("./Radmin Table.cshtml", new { tableSpecs })

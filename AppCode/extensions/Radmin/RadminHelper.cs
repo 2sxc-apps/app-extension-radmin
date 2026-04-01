@@ -55,18 +55,24 @@ namespace AppCode.Extensions.Radmin
       mainToolbar = mainToolbar
         // if in config mode, always show the toolbar
         .Settings(show: IsConfigMode ? "always" : "hover")
+        // Replace the default edit button with a "Configure" button with a different icon
+        .Edit("-")
+        .Edit(tweak: t => t.Icon(RadminConstants.IconConfigure))
+        // Prevent "New" button from appearing (would happen when the config is from the URL)
+        .New("-")
+        // Add an "Edit Columns" button which is only visible in config mode
         .Code("radmin.goToUrl", tweak: t => t
-          .Position(2)                              // place after the pencil
-          .Icon("icon-sxc-sliders")                 // sliders icon
+          .Icon(RadminConstants.IconEditColumns)    // sliders icon
           .Tooltip(IsConfigMode                     // label, different if we're in config mode or not
             ? resources.ViewConfigModeLabelActive
             : resources.ViewConfigModeLabel
           )
-          .Color(IsConfigMode ? "#3372F9" : "")    // make it blue if active, default color if not
+          .Color(IsConfigMode ? "#3372F9" : "")   // make it blue if active, default color if not
           .Parameters("url", onChangeLink)
         );
       return mainToolbar;
     }
+
   }
 
 }

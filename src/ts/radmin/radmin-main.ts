@@ -12,6 +12,10 @@ export class RadminMain extends ServiceBase {
     super({ name: "RadminMain", enableDebug: false });
   }
 
+  goToUrl(data: { url: string }) {
+    window.location.href = data.url;
+  }
+
   /**
    * Create a Tabulator table based on configuration
    *

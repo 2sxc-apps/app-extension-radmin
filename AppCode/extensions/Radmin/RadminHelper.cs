@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using AppCode.Extensions.Radmin.Data;
 using Custom.Hybrid;
+using ToSic.Sxc.Edit.Toolbar;
 
 namespace AppCode.Extensions.Radmin
 {
@@ -10,9 +11,11 @@ namespace AppCode.Extensions.Radmin
     /// <summary>
     /// Get the resources
     /// </summary>
-    /// <returns></returns>
     public RadminResources GetResources()
     {
+      if (_resources != null)
+        return _resources;
+
       var resources = App.Data.GetStream(nameof(RadminResources)).ToList();
   
       switch (resources.Count) {
@@ -20,13 +23,50 @@ namespace AppCode.Extensions.Radmin
           throw new Exception("Radmin Resources definition is missing - please create one in the Radmin app.");
         case 1:
           // Only one resource - all good
-          return As<RadminResources>(resources[0]);
+          return _resources = As<RadminResources>(resources[0]);
         default:
           // Multiple resources found - use the first one but log a warning
           var resCustomized = resources.Last();
-          return AsStack<RadminResources>(resCustomized, resources[0]);
+          return _resources = AsStack<RadminResources>(resCustomized, resources[0]);
       }
+    }
+    private RadminResources _resources;
 
+    public bool IsConfigMode => _isConfigMode ??= MyPage.Parameters.Bool(RadminConstants.UrlParamConfigMode, fallback: false);
+    private bool? _isConfigMode;
+
+    /// <summary>
+    /// Get the toolbar for the Radmin table, which may include a "toggle configuration mode" button if data is configured and user is admin.
+    /// </summary>
+    /// <param name="tableSpecs">The specifications of the Radmin table.</param>
+    /// <returns>The toolbar builder for the Radmin table.</returns>
+    public IToolbarBuilder GetToolbar(RadminTable tableSpecs)
+    {
+      var mainToolbar = Kit.Toolbar.Default(tableSpecs);
+      if (!tableSpecs.DataIsConfigured || tableSpecs.IsDemoItem)
+        return mainToolbar;
+
+      var pageParams = MyPage.Parameters;
+      var resources = GetResources();
+      // a) Figure out if we're in config-mode, then prep the url for switching modes
+      var onChangeLink = Link.To(parameters: pageParams.Toggle(RadminConstants.UrlParamConfigMode, "true"));
+
+      // b) Add the "toggle configuration mode" button to the toolbar
+      mainToolbar = mainToolbar
+        // if in config mode, always show the toolbar
+        .Settings(show: IsConfigMode ? "always" : "hover")
+        .Code("radmin.goToUrl", tweak: t => t
+          .Position(2)                              // place after the pencil
+          .Icon("icon-sxc-sliders")                 // sliders icon
+          .Tooltip(IsConfigMode                     // label, different if we're in config mode or not
+            ? resources.ViewConfigModeLabelActive
+            : resources.ViewConfigModeLabel
+          )
+          .Color(IsConfigMode ? "#3372F9" : "")    // make it blue if active, default color if not
+          .Parameters("url", onChangeLink)
+        );
+      return mainToolbar;
     }
   }
+
 }

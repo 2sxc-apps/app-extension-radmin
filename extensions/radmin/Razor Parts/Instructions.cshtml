@@ -10,13 +10,26 @@
   var res = MyModel.Get<RadminResources>("resources");
 
   var tableSpecs = MyModel.Get<RadminTable>("tableSpecs");
+  var isConfig = MyModel.Get<bool>("isConfig");
 
   // 2. Check permissions and conditions for showing the introduction
   // should only be shown to admins, and only if it's currently showing a demo-item
-  if (!MyUser.IsSiteAdmin || !tableSpecs.IsDemoItem)
+  if (!MyUser.IsSiteAdmin)
     return;
 }
 
-<div class="alert alert-info">
-  @Html.Raw(res.InstructionsNewModule)
-</div>
+@* Instructions for new module (admins only, shown for demo items) *@
+@if (tableSpecs.IsDemoItem)
+{
+  <div class="alert alert-info">
+    @Html.Raw(res.InstructionsNewModule)
+  </div>
+}
+
+@* Instructions for Config Mode *@
+@if (isConfig)
+{
+  <div class="alert alert-info">
+    @Html.Raw(res.InstructionsConfigMode)
+  </div>
+}

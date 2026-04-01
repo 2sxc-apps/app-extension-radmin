@@ -95,14 +95,22 @@ function getToolbar(sxc: any, column: ColumnComponent, tableConfigData: RadminTa
     return cfgTitle === colTitle || cfgTitle === colField;
   });
 
+  // find the index of the colConfig
+  const colIndex = colConfig ? configuredColumns.indexOf(colConfig) : -1;
+
   const alreadyConfigured = !!colConfig;
   const entityId = colConfig ? (colConfig.id as number) : 0;
 
   let toolbarHtml: string;
   if (alreadyConfigured) {
     toolbarHtml = sxc.manage.getToolbar({
-      entityId,
-      action: "edit",
+      groups: [{ buttons: "edit", }, { buttons: "moveup,movedown", }],
+      params: {
+        entityId,
+        parent: tableConfigData.guid,
+        fields: "ColumnConfigs",
+        index: colIndex,
+      }
     });
   } else {
     const fieldValue = colField && colField.trim() !== ""

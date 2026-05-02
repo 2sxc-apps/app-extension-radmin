@@ -36,7 +36,8 @@ namespace AppCode.Extensions.Radmin
     private bool? _isConfigMode;
 
     /// <summary>
-    /// Get the toolbar for the Radmin table, which may include a "toggle configuration mode" button if data is configured and user is admin.
+    /// Get the toolbar for the Radmin table, which 
+    /// includes a "toggle configuration mode" button if data is configured and user is admin.
     /// </summary>
     /// <param name="tableSpecs">The specifications of the Radmin table.</param>
     /// <returns>The toolbar builder for the Radmin table.</returns>
@@ -79,13 +80,15 @@ namespace AppCode.Extensions.Radmin
 
   internal static class RadminHelperExtensions
   {
-    public static IToolbarBuilder ReplaceEditButtonIcon(this IToolbarBuilder toolbar)
-    {
-      return toolbar
-        // Replace the default edit button with a "Configure" button with a different icon
+    /// <summary>
+    /// Replace the default edit button with a "Configure" button with a different icon
+    /// </summary>
+    /// <param name="toolbar"></param>
+    /// <returns></returns>
+    public static IToolbarBuilder ReplaceEditButtonIcon(this IToolbarBuilder toolbar) =>
+      toolbar
         .Edit("-")
         .Edit(tweak: t => t.Icon(RadminConstants.IconConfigure));
-    }
 
   }
 }

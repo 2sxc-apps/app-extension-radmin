@@ -7,26 +7,22 @@
 @using ToSic.Sxc.Data
 
 @{
+  // 1. Get the viewId and entityId from the Model and URL parameters
   var viewId = MyModel.String("viewId");
+  var detailSpecs = MyModel.Get<RadminDetails>("detailSpecs");
   var entityId = MyPage.Parameters.Get<Guid>(RadminConstants.UrlParamEntityGuid);
-
-  if (!Text.Has(viewId) || entityId == Guid.Empty)
-  {
-    <div class="alert alert-warning">
-      Missing parameters.
-    </div>
-    return;
-  }
-
-  var backPageParameters = MyPage.Parameters.Flush();
-
-  var detailSpecs = App.Data.GetAll<RadminDetails>()
-    .Where(d => d.ViewId == viewId)
-    .FirstOrDefault();
-
-  // Find the entity by ID
-  var entity = App.Data.GetOne<Custom.Data.CustomItem>(entityId);
 }
+
+@if (!Text.Has(viewId) || entityId == Guid.Empty)
+{
+  <div class="alert alert-warning">
+    Missing parameter <code>@RadminConstants.UrlParamEntityGuid</code>.
+  </div>
+  return;
+}
+
+@* Find the entity by ID, if not found, show error *@
+@{var entity = App.Data.GetOne<Custom.Data.CustomItem>(entityId); }
 
 @if (entity == null)
 {
@@ -62,10 +58,14 @@
       @foreach (var attr in contentType.Attributes)
       {
         var key = attr.Name;
-        var value = entity.Get(key, required: false); // 2dm: needs required: false for special edge cases (data loaded from json may not have certain data)
+
+        // Get the value
+        // It needs "required: false" for special edge cases (data loaded from json may not have certain data)
+        var value = entity.Get(key, required: false);
+
         // Determine if current attr is a group title (starts with "Group" and has no value)
-        var isGroupTitle = attr.IsEmpty();
         // Group titles should be rendered bold
+        var isGroupTitle = attr.IsEmpty();
         var groupTitleClass = isGroupTitle ? "fw-bold" : "fw-normal";
         
         <tr>
@@ -73,14 +73,34 @@
             @key
           </th>
           <td>
-            @value
+            @if (attr.IsEntity()) {
+              var children = entity.Children(key);
+              if (children != null && children.Any()) {
+                <ul>
+                  @foreach (var child in children)
+                  {
+                    <li>@child.Title (@child.Type.Name, @child.Id)</li>
+                  }
+                </ul>
+              } else {
+                <em>No related items</em>
+              }
+            }
+            else if (attr.IsBoolean())
+            {
+              @(value == null ? "❓" : value as bool? == true ? "✅" : "❌")
+            }
+            else
+            {
+              @value
+            }
           </td>
         </tr>
       }
     </tbody>
   </table>
   
-  <a href="@Link.To(parameters: backPageParameters)" class="btn btn-primary mt-3">
+  <a href="@Link.To(parameters: MyPage.Parameters.Flush())" class="btn btn-primary mt-3">
     Back to Table View
   </a>
 </div>

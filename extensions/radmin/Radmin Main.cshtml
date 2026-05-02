@@ -11,28 +11,41 @@
   // 2.1. Get the viewId from the URL parameters to determine if we should switch views to another table or the details
   var viewId = MyPage.Parameters.String(RadminConstants.UrlParamViewId, fallback: null);
 
-  // 2.2. If viewId is present, switch to the details view for the corresponding viewId
-  // Note: It's important to NOT switch items if the url has the same ID as is already in MyItem,
-  // because that would make a demo-item be loaded as a normal item, so demo-item checks later (in toolbar / intro texts)
-  // would appear to be false, while they should be true.
-  @if (!string.IsNullOrWhiteSpace(viewId) && viewId != tableSpecs.ViewId.ToString())
+  // 2.2. Check if the viewId in the URL is different from the current tableSpecs.ViewId.
+  // If they are the same, it means we are already on the correct view and we should not switch,
+  // to avoid breaking demo-item checks and other logic that relies on MyItem.
+  var viewIdChanged = !string.IsNullOrWhiteSpace(viewId) && viewId != tableSpecs.ViewId.ToString();
+
+  // 2.3. If viewID has not changed, show the table view as normal (default case).
+  // If viewId has changed, we will switch to the correct view in the next steps.
+  if (!viewIdChanged)
   {
-    // Check if this is a table configuration
-    var alternateSpecs = App.Data
-      .GetAll<RadminTable>()
-      .FirstOrDefault(t => t.ViewId == viewId);
+    @Html.Partial("./Radmin Table.cshtml", new { tableSpecs })
+    return;
+  }
 
-    if (alternateSpecs == null)
-    {
-      // No alternate table configuration found, so we assume it's a details view and switch to the details view
-      @Html.Partial("Radmin Details.cshtml", new { viewId });
-      return;
-    }
+  // 2.4. Check if this is another table configuration
+  tableSpecs = App.Data
+    .GetAll<RadminTable>()
+    .FirstOrDefault(t => t.ViewId == viewId);
 
-    // Switch to the alternate table configuration
-    tableSpecs = alternateSpecs;
+  if (tableSpecs != null) {
+    @Html.Partial("./Radmin Table.cshtml", new { tableSpecs })
+    return;
+  }
+
+  // 3. Check if it's referencing a details view
+  var detailSpecs = App.Data.GetAll<RadminDetails>()
+    .FirstOrDefault(d => d.ViewId == viewId);
+
+  if (detailSpecs != null)
+  {
+    @Html.Partial("Radmin Details.cshtml", new { viewId, detailSpecs });
+    return;
   }
 }
 
-@* 3. Render the table view (default case) *@
-@Html.Partial("./Radmin Table.cshtml", new { tableSpecs })
+@* 4. Nothing found, show an error *@
+<div class="alert alert-warning">
+  View <code>@viewId</code> not found.
+</div>

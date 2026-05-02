@@ -47,7 +47,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 1. Customizers - there are no samples, so it can't be verified ATM!
 1. show date - default / automatic format is date only
 1. Big: Re-review handling of details-view, with permissions etc.
-1. click on view "unknown" should show better info, don't switch to details if not found
 
 ## History
 
@@ -55,6 +54,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 1. 2dm: Fix initial edit-icon to show the same gears
 1. 2dm: minor js refactoring
+1. 2dm: improve warnings when viewId is unknown or showing details with missing/invalid guid
+1. 2dm: Details: Improve showing data of content-type entity
+1. 2dm: Details: show "❓" for null boolean values, "✅" for true and "❌" for false
 
 ### 2026-03-11 / 03-12
 

@@ -15,6 +15,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
   }
 
   #formatAndSortHelper = new FormatAndSortHelper();
+  #radTabFormatAdapter = new RadTabFormatAdapter();
 
   convert(
     columnConfigs: RadminColumnConfig[],
@@ -46,7 +47,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
     const configuredColumns = columns
       .map(({ fieldName, col, prop }) => {
         const chosenFormat = col.fieldFormat
-          || RadTabFormatAdapter.getFormatFromSchema(col.fieldValue, schema);
+          || this.#radTabFormatAdapter.getFormatFromSchema(col.fieldValue, schema);
 
         const formatAndSort = this.#formatAndSortHelper.getFormatAndSort(chosenFormat, fieldName, prop || { type: "string" } as SchemaProperty, !!col.linkEnable);
 

@@ -47,6 +47,7 @@ namespace AppCode.Extensions.Radmin
       // just return the default toolbar (which will include a "Configure" button to start configuration)
       if (!tableSpecs.DataIsConfigured || tableSpecs.IsDemoItem)
         return Kit.Toolbar.Default(tableSpecs)
+          .Settings(show: "always")  // always show, as it should be reconfigured
           .ReplaceEditButtonIcon();
 
       // a) Prepare materials to generate the toolbar

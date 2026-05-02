@@ -20,7 +20,7 @@
   // If viewId has changed, we will switch to the correct view in the next steps.
   if (!viewIdChanged)
   {
-    @Html.Partial("./Radmin Table.cshtml", new { tableSpecs })
+    @Html.Partial("./List/Table.cshtml", new { tableSpecs })
     return;
   }
 
@@ -29,8 +29,9 @@
     .GetAll<RadminTable>()
     .FirstOrDefault(t => t.ViewId == viewId);
 
-  if (tableSpecs != null) {
-    @Html.Partial("./Radmin Table.cshtml", new { tableSpecs })
+  if (tableSpecs != null)
+  {
+    @Html.Partial("./List/Table.cshtml", new { tableSpecs })
     return;
   }
 
@@ -40,7 +41,7 @@
 
   if (detailSpecs != null)
   {
-    @Html.Partial("Radmin Details.cshtml", new { viewId, detailSpecs });
+    @Html.Partial("./Details/Details.cshtml", new { detailSpecs });
     return;
   }
 }

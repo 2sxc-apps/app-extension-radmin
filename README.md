@@ -46,7 +46,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 1. Customizers - there are no samples, so it can't be verified ATM!
 1. show date - default / automatic format is date only
-1. Big: Re-review handling of details-view, with permissions etc.
 
 ## History
 
@@ -57,6 +56,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 1. 2dm: improve warnings when viewId is unknown or showing details with missing/invalid guid
 1. 2dm: Details: Improve showing data of content-type entity
 1. 2dm: Details: show "❓" for null boolean values, "✅" for true and "❌" for false
+1. 2dm: Improve handling of details-view, with permissions etc.
+1. 2dm: Split details view into checks vs. table view, and show better warnings if something is wrong
 
 ### 2026-03-11 / 03-12
 

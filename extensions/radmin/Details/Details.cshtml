@@ -1,0 +1,86 @@
+@inherits Custom.Hybrid.RazorTyped
+@using AppCode
+@using AppCode.Extensions.Radmin
+@using AppCode.Extensions.Radmin.Data
+@using ToSic.Eav.Data
+@using ToSic.Razor.Blade
+@using ToSic.Sxc.Data
+
+@* 1. Get the details specs from the model *@
+@{
+  var detailSpecs = MyModel.Get<RadminDetails>("detailSpecs");
+}
+
+@* 2. Ensure details view allows anonymous if necessary *@
+@if (!MyUser.IsContentAdmin && !detailSpecs.ViewAllowAnonymous)
+{
+  <div class="alert alert-warning">
+    You don't have permission to view this content.
+    The details view is not configured to allow anonymous access, and you are not a content admin.
+  </div>
+  return;
+}
+
+@* 3. Check if allow-all types is set, but only for admins *@
+@{
+  var allowAllTypes = detailSpecs.DataContentType == "*";
+}
+@if (allowAllTypes && !MyUser.IsContentAdmin)
+{
+  <div class="alert alert-warning">
+    You don't have permission to view this content.
+    The details view is configured to allow all content types, which is not allowed for non-admin users for security reasons.
+  </div>
+  return;
+}
+
+@* 3. Get Guid from URL and show error if not found *@
+@{
+  var entityGuid = MyPage.Parameters.Get<Guid>(RadminConstants.UrlParamEntityGuid);
+
+  if (entityGuid == Guid.Empty)
+  {
+    <div class="alert alert-warning">
+      Missing parameter <code>@RadminConstants.UrlParamEntityGuid</code>.
+    </div>
+    return;
+  }
+}
+
+@* 3.Find the entity by GUID, if not found, show error *@
+@{
+  var entity = App.Data.GetOne<Custom.Data.CustomItem>(entityGuid);
+}
+@if (entity == null)
+{
+  <div class="alert alert-warning">
+    Entity <code>@entityGuid</code> not found.
+  </div>
+  return;
+}
+
+@* 4. Verify that the entity has the same content type as specified in detailSpecs *@
+@{
+  var typeMatches = entity.Type.Name == detailSpecs.DataContentType;
+}
+@if (!allowAllTypes && !typeMatches)
+{
+  <div class="alert alert-warning">
+    Error: Entity <code>@entityGuid</code> content type does not match the type in the view configuration.
+  </div>
+  return;
+}
+
+<div @Kit.Toolbar.Empty().Edit(entity)>
+  <h2>
+    Details of:
+    @entity.Title
+    (@entity.Id)
+  </h2>
+
+  @Html.Partial("./PropertiesTable.cshtml", new { entity })
+  
+  <a href="@Link.To(parameters: MyPage.Parameters.Flush())" class="btn btn-primary mt-3">
+    Back to Table View
+  </a>
+</div>

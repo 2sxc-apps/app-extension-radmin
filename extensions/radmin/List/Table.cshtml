@@ -28,7 +28,7 @@
   </div>
 
   @* 2.2. Show instructions for new module and View Config Mode *@
-  @Html.Partial("./Razor Parts/Instructions.cshtml", new { tableSpecs, resources, isConfig = radminHelper.IsConfigMode })
+  @Html.Partial("./Part Instructions.cshtml", new { tableSpecs, resources, isConfig = radminHelper.IsConfigMode })
 
 
   @* 2.3. If data is not configured, show a warning and exit *@

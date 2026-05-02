@@ -1,0 +1,63 @@
+@inherits Custom.Hybrid.RazorTyped
+@using AppCode
+@using AppCode.Extensions.Radmin
+@using AppCode.Extensions.Radmin.Data
+@using ToSic.Eav.Data
+@using ToSic.Razor.Blade
+@using ToSic.Sxc.Data
+
+@* 
+  This shows the details of a single entity, without any security checks.
+  So be careful when using this.
+*@
+
+@{
+  var entity = MyModel.Get<Custom.Data.CustomItem>("entity");
+}
+
+<table class="table table-bordered mt-4">
+  <tbody>
+    @foreach (var attr in entity.Type.Attributes)
+    {
+      var key = attr.Name;
+
+      // Get the value
+      // It needs "required: false" for special edge cases (data loaded from json may not have certain data)
+      var value = entity.Get(key, required: false);
+
+      // Determine if current attr is a group title (starts with "Group" and has no value)
+      // Group titles should be rendered bold
+      var isGroupTitle = attr.IsEmpty();
+      var groupTitleClass = isGroupTitle ? "fw-bold" : "fw-normal";
+      
+      <tr>
+        <th class="w-25 @groupTitleClass">
+          @key
+        </th>
+        <td>
+          @if (attr.IsEntity()) {
+            var children = entity.Children(key);
+            if (children != null && children.Any()) {
+              <ul>
+                @foreach (var child in children)
+                {
+                  <li>@child.Title (@child.Type.Name, @child.Id)</li>
+                }
+              </ul>
+            } else {
+              <em>No related items</em>
+            }
+          }
+          else if (attr.IsBoolean())
+          {
+            @(value == null ? "❓" : value as bool? == true ? "✅" : "❌")
+          }
+          else
+          {
+            @value
+          }
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>

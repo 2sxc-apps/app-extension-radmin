@@ -14,19 +14,23 @@ export class FormatAndSortHelper extends ServiceBase {
     super({ name: "FormatAndSortHelper", enableDebug: true });
   }
 
+  #formatAdapter = new RadTabFormatAdapter();
 
   public getFormatAndSortOfPropertyUnspecified(schema: JsonSchema, key: string) {
     const property = schema.properties[key];
-    const format = RadTabFormatAdapter.mapSchemaTypeToFormat(property);
+    const format = this.#formatAdapter.mapSchemaTypeToFormat(property);
     return this.getFormatAndSort(format, key, property);
   }
 
   
-  public getFormatAndSort(format: string, key: string, property: SchemaProperty, isLink = false) {
+  public getFormatAndSort(format: string, key: string, property: SchemaProperty, isLink = false): Partial<ColumnDefinition> {
+    // Try to find a predefined format/formatter/sorter based on the format or schema type.
+    // This covers common cases like dates and numbers
     const formatConfig = formatConfigs[format] || {};
     this.log("Auto-adding column for key:", key, { format, formatConfig });
 
-    let formatter: ColumnDefinition['formatter'] = property.type === "object" || property.type === "array"
+    const propIsObjOrArray = property.type === "object" || property.type === "array";
+    let formatter: ColumnDefinition['formatter'] = propIsObjOrArray
       ? RadTabFormatAdapter.objectTitleFormatter
       : formatConfig.formatter;
 
@@ -38,7 +42,7 @@ export class FormatAndSortHelper extends ServiceBase {
       formatter = HtmlStripper.plainTextFormatter;
     }
 
-    let sorter: ColumnDefinition['sorter'] = property.type === "object" || property.type === "array"
+    let sorter: ColumnDefinition['sorter'] = propIsObjOrArray
       ? "object" as unknown as ColumnDefinition["sorter"] // force type to satisfy ColumnDefinition but will be handled by custom sorter function
       : formatConfig.sorter || undefined;
 
@@ -49,10 +53,12 @@ export class FormatAndSortHelper extends ServiceBase {
       sorter = "string";
     }
 
-    return {
+    const result: Partial<ColumnDefinition> = {
       ...formatConfig,
       formatter,
       sorter
     };
+    return this.logAndReturn(result, `getFormatAndSort result for key: ${key}`, { format, property, isLink });
   }
+
 }

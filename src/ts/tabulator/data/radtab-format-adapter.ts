@@ -10,65 +10,51 @@ export class RadTabFormatAdapter extends ServiceBase {
   }
 
   /** Maps JSON schema type/format → internal format key */
-  static mapSchemaTypeToFormat(
-    property: SchemaProperty,
-    log?: (...args: any[]) => void
-  ): string {
-    if (!property) return "";
+  mapSchemaTypeToFormat(property: SchemaProperty): string {
+    if (!property)
+      return "";
 
-    if (property.format === "date-time") {
-      log?.("mapSchemaTypeToFormat: using 'date-time'", { property });
-      return "date-time";
-    }
+    if (property.format === "date-time" || property.format === "date")
+      return this.logAndReturn(property.format, "mapSchemaTypeToFormat", { property });
 
-    if (property.format === "date") {
-      log?.("mapSchemaTypeToFormat: using 'date'", { property });
-      return "date";
-    }
+    if (property.format === "uri" || property.format === "email")
+      return this.logAndReturn("link", "mapSchemaTypeToFormat", { property });
 
-    if (property.format === "uri" || property.format === "email") {
-      log?.("mapSchemaTypeToFormat: using 'link'", { property });
-      return "link";
-    }
-
-    log?.("mapSchemaTypeToFormat: falling back to type", property.type);
-    return property.type;
+    return this.logAndReturn(property.type, "mapSchemaTypeToFormat: falling back to type", { property });
   }
 
-  /** Normalizes the field and maps to format via schema */
-  static getFormatFromSchema(
-    field: string,
-    schema: JsonSchema,
-    log?: (...args: any[]) => void
-  ): string {
+  /**
+   * Normalizes the field and maps to format via schema
+   */
+  getFormatFromSchema(field: string, schema: JsonSchema): string {
     const normalized = new SchemaHelper(schema).findCasing(field);
     const property = schema.properties[normalized];
 
     const format = property
-      ? RadTabFormatAdapter.mapSchemaTypeToFormat(property, log)
+      ? this.mapSchemaTypeToFormat(property)
       : "";
 
-    log?.("getFormatFromSchema", { field, normalized, format });
-    return format;
+    return this.logAndReturn(format, "getFormatFromSchema", { field, normalized, format });
   }
 
   /** Title formatter for object and array fields */
   static objectTitleFormatter(cell: CellComponent): string {
     const value = cell.getValue();
 
-    if (!value) return "";
+    if (!value)
+      return "";
 
     if (Array.isArray(value)) {
-      if (value.length === 0) return "";
+      if (value.length === 0)
+        return "";
       const first = value[0];
       const title = first?.Title ?? first?.title ?? JSON.stringify(first);
       const extra = value.length > 1 ? ` +${value.length - 1}` : "";
       return `${title}${extra}`;
     }
 
-    if (typeof value === "object") {
+    if (typeof value === "object")
       return value.Title ?? value.title ?? JSON.stringify(value);
-    }
 
     return String(value);
   }

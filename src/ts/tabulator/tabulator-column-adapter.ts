@@ -72,10 +72,10 @@ export class TabulatorColumnAdapter extends ServiceBase {
               : true) as unknown as string,
           ...this.linkFormatter(schema, col, fieldName)
         };
-
+console.log('2dmx');
         return this.logAndReturn(column, `Final column config for field '${fieldName}'`);
-      })
-      .filter((c): c is ColumnDefinition => !!c); // remove nulls (skipped group columns)
+      });
+      // .filter((c): c is ColumnDefinition => !!c); // remove nulls (skipped group columns)
 
     this.log(`Configured columns built: ${configuredColumns.length}`);
 
@@ -138,10 +138,9 @@ export class TabulatorColumnAdapter extends ServiceBase {
           title: property.title || key,
           field: key,
           ...formatAndSort
-        } satisfies ColumnDefinition;
+        };
 
-        this.log("Built auto column config for key:", key, col);
-        return col;
+        return this.logAndReturn(col, "Built auto column config for key:", key);
       });
   }
 

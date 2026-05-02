@@ -32,7 +32,7 @@ export class ServiceBase {
    * @returns The value passed in
    */
   public logAndReturn<T>(value: T, ...args: any[]): T {
-    this.log(...args);
+    this.log(...args, value);
     return value;
   }
 

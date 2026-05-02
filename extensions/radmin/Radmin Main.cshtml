@@ -18,7 +18,8 @@
   @if (!string.IsNullOrWhiteSpace(viewId) && viewId != tableSpecs.ViewId.ToString())
   {
     // Check if this is a table configuration
-    var alternateSpecs = App.Data.GetAll<RadminTable>()
+    var alternateSpecs = App.Data
+      .GetAll<RadminTable>()
       .FirstOrDefault(t => t.ViewId == viewId);
 
     if (alternateSpecs == null)

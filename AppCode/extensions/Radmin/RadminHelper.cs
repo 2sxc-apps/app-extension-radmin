@@ -42,22 +42,24 @@ namespace AppCode.Extensions.Radmin
     /// <returns>The toolbar builder for the Radmin table.</returns>
     public IToolbarBuilder GetToolbar(RadminTable tableSpecs)
     {
-      var mainToolbar = Kit.Toolbar.Default(tableSpecs);
+      // If nothing is configured or this is a demo item,
+      // just return the default toolbar (which will include a "Configure" button to start configuration)
       if (!tableSpecs.DataIsConfigured || tableSpecs.IsDemoItem)
-        return mainToolbar;
+        return Kit.Toolbar.Default(tableSpecs)
+          .ReplaceEditButtonIcon();
 
+      // a) Prepare materials to generate the toolbar
       var pageParams = MyPage.Parameters;
       var resources = GetResources();
-      // a) Figure out if we're in config-mode, then prep the url for switching modes
+
+      // b) Figure out if we're in config-mode, then prep the url for switching modes
       var onChangeLink = Link.To(parameters: pageParams.Toggle(RadminConstants.UrlParamConfigMode, "true"));
 
-      // b) Add the "toggle configuration mode" button to the toolbar
-      mainToolbar = mainToolbar
+      // c) Add the "toggle configuration mode" button to the toolbar
+      var mainToolbar = Kit.Toolbar.Default(tableSpecs)
         // if in config mode, always show the toolbar
         .Settings(show: IsConfigMode ? "always" : "hover")
-        // Replace the default edit button with a "Configure" button with a different icon
-        .Edit("-")
-        .Edit(tweak: t => t.Icon(RadminConstants.IconConfigure))
+        .ReplaceEditButtonIcon()
         // Prevent "New" button from appearing (would happen when the config is from the URL)
         .New("-")
         // Add an "Edit Columns" button which is only visible in config mode
@@ -75,4 +77,15 @@ namespace AppCode.Extensions.Radmin
 
   }
 
+  internal static class RadminHelperExtensions
+  {
+    public static IToolbarBuilder ReplaceEditButtonIcon(this IToolbarBuilder toolbar)
+    {
+      return toolbar
+        // Replace the default edit button with a "Configure" button with a different icon
+        .Edit("-")
+        .Edit(tweak: t => t.Icon(RadminConstants.IconConfigure));
+    }
+
+  }
 }

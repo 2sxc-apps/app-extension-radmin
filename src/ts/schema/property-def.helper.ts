@@ -25,13 +25,8 @@ export class PropertyDefHelper {
     if (property.type === "array") {
       // If items are objects that have typical title fields, this is probably relation/group
       const items = (property as any).items;
-      if (
-        items &&
-        items.properties &&
-        (items.properties.Title || items.properties.title)
-      ) {
+      if (items?.properties?.Title || items?.properties?.title)
         return true;
-      }
     }
 
     // default: not considered a group

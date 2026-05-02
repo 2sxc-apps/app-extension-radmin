@@ -2,9 +2,13 @@
 
 # 2sxc Extension Radmin App
 
-> This is a JavaScript App for creating dynamic tables with [2sxc](https://2sxc.org) for [DNN ☢️](https://www.dnnsoftware.com/) and [Oqtane 💧](https://www.oqtane.org/)
+> This is a JavaScript App for creating quick tables
+> with [2sxc](https://2sxc.org)
+> for [DNN ☢️](https://www.dnnsoftware.com/)
+> and [Oqtane 💧](https://www.oqtane.org/)
 
-This **2sxc Extension Radmin** app provides a powerful and flexible way to create, manage, and display tabular data in 2sxc apps. Built with TypeScript, it offers robust typing and modern JavaScript features for enhanced development experience.
+This **2sxc Extension Radmin** app provides a powerful and flexible way to create, manage,
+and display tabular data in 2sxc apps to administer data.
 
 | Aspect              | Status | Comments or Version
 | ------------------- | :----: | -------------------
@@ -20,12 +24,12 @@ This **2sxc Extension Radmin** app provides a powerful and flexible way to creat
 
 This means that it
 
-1. can be used to create a simple and advanced tables in minutes
+1. can be used to create simple and advanced tables in minutes
 2. can be modified to fit any needs
 
 ## Get Started
 
-This is an extension.
+This is a 2sxc App extension.
 Normally you'll want to install THE EXTENSION in your app, and start using it.
 
 ## Contributing
@@ -42,10 +46,15 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 1. Customizers - there are no samples, so it can't be verified ATM!
 1. show date - default / automatic format is date only
-1. Big: Re-review handling of details, with permissions etc.
+1. Big: Re-review handling of details-view, with permissions etc.
 1. click on view "unknown" should show better info, don't switch to details if not found
 
 ## History
+
+### 2026-05-01
+
+1. 2dm: Fix initial edit-icon to show the same gears
+1. 2dm: minor js refactoring
 
 ### 2026-03-11 / 03-12
 

@@ -12,6 +12,10 @@ export class RadminMain extends ServiceBase {
     super({ name: "RadminMain", enableDebug: false });
   }
 
+  /**
+   * Special Go-To-Url method, called by the toolbar buttons
+   * Do not remove!
+   */
   goToUrl(data: { url: string }) {
     window.location.href = data.url;
   }

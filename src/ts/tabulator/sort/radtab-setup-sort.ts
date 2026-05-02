@@ -16,7 +16,7 @@ export class RadTabSetupSort extends ServiceBase {
     try {
       const savedSorters = JSON.parse(savedSortersJson) as Sorter[];
       if (Array.isArray(savedSorters) && savedSorters.length > 0)
-        return this.retLog(savedSorters, `Loaded saved sorters for ${tableName}`);
+        return this.logAndReturn(savedSorters, `Loaded saved sorters for ${tableName}`);
     } catch (err) {
       this.log(`Failed to parse saved sorters for ${tableName}`, err);
     }

@@ -38,7 +38,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
 
         // skip any configured column that references a group property
         if (PropertyDefHelper.isGroup(prop, fieldName)) 
-          return this.retLog(null, `Skipping configured column because it references a group property: '${fieldName}'`, col);
+          return this.logAndReturn(null, `Skipping configured column because it references a group property: '${fieldName}'`, col);
         return { fieldName, col, prop };
       })
       .filter((c) => !!c); // remove nulls (skipped group columns);
@@ -73,7 +73,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
           ...this.linkFormatter(schema, col, fieldName)
         };
 
-        return this.retLog(column, `Final column config for field '${fieldName}'`);
+        return this.logAndReturn(column, `Final column config for field '${fieldName}'`);
       })
       .filter((c): c is ColumnDefinition => !!c); // remove nulls (skipped group columns)
 
@@ -81,7 +81,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
 
     // Add remaining columns from schema if configured
     if (!columnsAutoShowRemaining && configuredColumns.length > 0)
-      return this.retLog(configuredColumns, "columnsAutoShowRemaining is false — returning configured columns only");
+      return this.logAndReturn(configuredColumns, "columnsAutoShowRemaining is false — returning configured columns only");
 
     // Check any remaining fields that may have to be auto-added as well
     return this.tryAddRemainingColumns(schema, configuredColumns);

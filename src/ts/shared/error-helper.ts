@@ -11,15 +11,21 @@ export class ErrorHelper {
    */
   static toErrorString(err: unknown): string {
     try {
-      if (err === undefined) return "undefined";
-      if (err === null) return "null";
-      if (typeof err === "string") return err;
-      if (err instanceof Error) return err.message || String(err);
+      if (err === undefined)
+        return "undefined";
+      if (err === null)
+        return "null";
+      if (typeof err === "string")
+        return err;
+      if (err instanceof Error)
+        return err.message || String(err);
       // Some libraries attach status/message
       const anyErr = err as any;
       if (typeof anyErr === "object") {
-        if (typeof anyErr.message === "string") return anyErr.message;
-        if (typeof anyErr.toString === "function") return anyErr.toString();
+        if (typeof anyErr.message === "string")
+          return anyErr.message;
+        if (typeof anyErr.toString === "function")
+          return anyErr.toString();
         try {
           return JSON.stringify(anyErr);
         } catch {
@@ -41,9 +47,11 @@ export class ErrorHelper {
       // object with status property
       if (typeof err === "object" && err !== null) {
         const anyErr = err as any;
-        if (typeof anyErr.status === "number" && anyErr.status === 401) return true;
+        if (typeof anyErr.status === "number" && anyErr.status === 401)
+          return true;
         // some libs use statusCode
-        if (typeof anyErr.statusCode === "number" && anyErr.statusCode === 401) return true;
+        if (typeof anyErr.statusCode === "number" && anyErr.statusCode === 401)
+          return true;
       }
 
       // string includes 401

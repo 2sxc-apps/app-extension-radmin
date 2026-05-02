@@ -58,20 +58,18 @@ namespace AppCode.Extensions.Radmin
 
       // c) Add the "toggle configuration mode" button to the toolbar
       var mainToolbar = Kit.Toolbar.Default(tableSpecs)
-        // if in config mode, always show the toolbar
-        .Settings(show: IsConfigMode ? "always" : "hover")
-        .ReplaceEditButtonIcon()
-        // Prevent "New" button from appearing (would happen when the config is from the URL)
-        .New("-")
-        // Add an "Edit Columns" button which is only visible in config mode
-        .Code("radmin.goToUrl", tweak: t => t
+        .Settings(show: IsConfigMode ? "always" : "hover")  // if in config mode, always show the toolbar
+        .ReplaceEditButtonIcon()  // Replace the default edit button with a "Configure" button with a different icon
+        .New("-")                 // Prevent "New" button from appearing (would happen when the config is from the URL)
+        .Layout("-")              // Remove the "Layout" button, as it doesn't make sense to change the layout once it's configured
+        .Code("radmin.goToUrl", tweak: t => t       // Add an "Edit Columns" button which is only visible in config mode
           .Icon(RadminConstants.IconEditColumns)    // sliders icon
           .Tooltip(IsConfigMode                     // label, different if we're in config mode or not
             ? resources.ViewConfigModeLabelActive
             : resources.ViewConfigModeLabel
           )
           .Color(IsConfigMode ? "#3372F9" : "")   // make it blue if active, default color if not
-          .Parameters("url", onChangeLink)
+          .Parameters("url", onChangeLink)          // use URL generated before to toggle config mode on/off when clicked
         );
       return mainToolbar;
     }

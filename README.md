@@ -59,6 +59,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 1. 2dm: Improve handling of details-view, with permissions etc.
 1. 2dm: Split details view into checks vs. table view, and show better warnings if something is wrong
 1. 2dm: show date - default / automatic format is date only
+1. 2dm: disable "layout" button once configured
 
 ### 2026-03-11 / 03-12
 

@@ -45,6 +45,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## TODO (2DM)
 
 1. Customizers - there are no samples, so it can't be verified ATM!
+1. Ephemeral field "HasData" is a workaround, should be removed again once Copilot correctly ignores it.
 
 ## History
 

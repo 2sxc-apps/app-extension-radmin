@@ -4,13 +4,12 @@ using AppCode.Extensions.Radmin.Schemas;
 using System.Threading.Tasks;
 using System.Linq;
 
-
 // Add namespaces to enable security in Oqtane & Dnn despite the differences
 #if NETCOREAPP
   using Microsoft.AspNetCore.Authorization; // .net core [AllowAnonymous] & [Authorize]
   using Microsoft.AspNetCore.Mvc;           // .net core [HttpGet] / [HttpPost] etc.
 #else
-using System.Web.Http;
+  using System.Web.Http;
   using DotNetNuke.Security;
   using DotNetNuke.Web.Api;
   using IActionResult = System.Web.Http.IHttpActionResult;

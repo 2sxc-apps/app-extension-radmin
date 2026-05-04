@@ -49,6 +49,12 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## History
 
+### 2026-05-04
+
+1. 2ro: first v01.00.00 release
+1. 2dm: add support for "stream" in query
+1. 2dm: prepare v01.00.01 release
+
 ### 2026-05-01
 
 1. 2dm: Fix initial edit-icon to show the same gears

@@ -3,13 +3,15 @@ using AppCode.Extensions.Radmin.Data;
 using AppCode.Extensions.Radmin.Schemas;
 using System.Threading.Tasks;
 using System.Linq;
+using ToSic.Eav.Data;
+
 
 // Add namespaces to enable security in Oqtane & Dnn despite the differences
 #if NETCOREAPP
   using Microsoft.AspNetCore.Authorization; // .net core [AllowAnonymous] & [Authorize]
   using Microsoft.AspNetCore.Mvc;           // .net core [HttpGet] / [HttpPost] etc.
 #else
-  using System.Web.Http;
+using System.Web.Http;
   using DotNetNuke.Security;
   using DotNetNuke.Web.Api;
   using IActionResult = System.Web.Http.IHttpActionResult;
@@ -38,14 +40,35 @@ namespace AppCode.Extensions.Radmin.Api
         return accessCheck;
 
       // Get content type - either from view definition, or from query definition (if view is based on a query)
-      var contentType = view.IsNotEmpty(nameof(view.DataContentType)) 
-        ? App.Data.GetContentType(view.DataContentType)
-        : view.IsNotEmpty(nameof(view.DataQuery))
-          ? Kit.Data.GetQuery(view.DataQuery).List.FirstOrDefault()?.Type
-          : null;
+      var contentType = GetContentType(view);
 
       var schema = new RadminSchemaHelper().ConvertToJsonSchema(contentType);
       return ResponseMessage(Ok(schema));
+    }
+
+    /// <summary>
+    /// Get the content type based on the view definition. It can be defined directly, or indirectly via a query.
+    /// </summary>
+    /// <param name="view"></param>
+    /// <returns></returns>
+    private IContentType GetContentType(RadminTable view)
+    {
+      if (view.IsNotEmpty(nameof(view.DataContentType)))
+        return App.Data.GetContentType(view.DataContentType);
+
+      if (view.IsEmpty(nameof(view.DataQuery)))
+        return null;
+
+      var query = Kit.Data.GetQuery(view.DataQuery);
+
+      if (view.IsEmpty(nameof(view.DataQueryStream)))
+        return query.List.FirstOrDefault()?.Type;
+
+      var stream = query.GetStream(view.DataQueryStream);
+      if (stream == null)
+        return null;
+
+      return stream.List.FirstOrDefault()?.Type;
     }
 
     [HttpGet]

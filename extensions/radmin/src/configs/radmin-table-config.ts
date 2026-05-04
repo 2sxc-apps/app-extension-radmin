@@ -13,6 +13,8 @@ export interface RadminTableConfig {
   enableDelete: boolean;
   enableEdit: boolean;
   dataQuery: string;
+  dataQueryStream: string; // wip
+  dataQueryParameters: string; // wip
   searchEnabled?: boolean;
   sortOrderReverse?: boolean;
   columnSort?: string;

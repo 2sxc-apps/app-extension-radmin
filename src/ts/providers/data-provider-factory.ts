@@ -30,7 +30,7 @@ export class DataProviderFactory extends ServiceBase {
     this.log("Created QueryDataProvider");
     return new DataProviderQuery(
       sxc,
-      tableConfigData.dataQuery,
+      tableConfigData,
       linkParameters
     );
   }

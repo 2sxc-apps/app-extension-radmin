@@ -50,5 +50,8 @@ namespace AppCode.Extensions.Radmin.Schemas
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public string InputType { get; set; }
+
+    // [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    // public bool AutoLinkDetails { get; set; }
   }
 }

@@ -32,13 +32,14 @@ export class TabulatorToolbars extends ServiceBase {
     );
   }
 
-  private createRowActioToolbar(
+  #createRowActionToolbar(
     table: Tabulator,
     row: RowComponent,
     event: Event,
     showEdit: boolean,
     showDelete: boolean
   ) {
+    // call the function outside of this
     createRowActionToolbar(
       table,
       row,
@@ -56,7 +57,7 @@ export class TabulatorToolbars extends ServiceBase {
     row: RowComponent,
     event: Event
   ) {
-    this.createRowActioToolbar(table, row, event, true, true);
+    this.#createRowActionToolbar(table, row, event, true, true);
   }
 
   public showEditOnlyToolbar(
@@ -64,7 +65,7 @@ export class TabulatorToolbars extends ServiceBase {
     row: RowComponent,
     event: Event
   ) {
-    this.createRowActioToolbar(table, row, event, true, false);
+    this.#createRowActionToolbar(table, row, event, true, false);
   }
 
   public showDeleteOnlyToolbar(
@@ -72,7 +73,7 @@ export class TabulatorToolbars extends ServiceBase {
     row: RowComponent,
     event: Event
   ) {
-    this.createRowActioToolbar(table, row, event, false, true);
+    this.#createRowActionToolbar(table, row, event, false, true);
   }
 
   public showColumnToolbar(

@@ -73,7 +73,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
               : true) as unknown as string,
           ...this.linkFormatter(schema, col, fieldName)
         };
-console.log('2dmx');
+// console.log('2dmx');
         return this.logAndReturn(column, `Final column config for field '${fieldName}'`);
       });
       // .filter((c): c is ColumnDefinition => !!c); // remove nulls (skipped group columns)
@@ -85,7 +85,7 @@ console.log('2dmx');
       return this.logAndReturn(configuredColumns, "columnsAutoShowRemaining is false — returning configured columns only");
 
     // Check any remaining fields that may have to be auto-added as well
-    return this.tryAddRemainingColumns(schema, configuredColumns);
+    return this.#tryAddRemainingColumns(schema, configuredColumns);
   }
 
 
@@ -96,13 +96,14 @@ console.log('2dmx');
    * @param configuredColumns The columns that have already been configured.
    * @returns An array of TabulatorColumnConfig including the newly added columns.
    */
-  private tryAddRemainingColumns(schema: JsonSchema, configuredColumns: ColumnDefinition[]) {
+  #tryAddRemainingColumns(schema: JsonSchema, configuredColumns: ColumnDefinition[]) {
     // Get fields that are already configured
-    const configuredFields = new Set(configuredColumns.filter(col => !!col).map((col) => col.field as string));
+    const configuredFields = new Set(configuredColumns.filter(col => !!col)
+      .map((col) => col.field as string));
     this.log("Configured fields set:", Array.from(configuredFields));
 
     // Create columns for remaining schema properties, skipping group properties
-    const remainingColumns = this.defineRemainingColumns(schema, configuredFields);
+    const remainingColumns = this.#defineRemainingColumns(schema, configuredFields);
 
     this.log(`Remaining columns built: ${remainingColumns.length}`);
 
@@ -117,7 +118,7 @@ console.log('2dmx');
    * @param configuredFields The set of fields that have already been configured.
    * @returns An array of TabulatorColumnConfig for the remaining columns.
    */
-  private defineRemainingColumns(schema: JsonSchema, configuredFields: Set<string>) {
+  #defineRemainingColumns(schema: JsonSchema, configuredFields: Set<string>) {
     this.log("Defining remaining columns from schema. Total properties:", { schema, configuredFields });
     const keysToUse = Object.keys(schema.properties)
       .filter((key) => !configuredFields.has(key))
@@ -182,7 +183,7 @@ console.log('2dmx');
           }
 
           if (col.linkType == 'url') {
-            const urlParams = this.combineUrlParams(allParams);
+            const urlParams = this.#combineUrlParams(allParams);
             this.log(`Generated URL for cell '${normalizedField}': '${urlParams}'`, { addParams, params });
             return `${col.linkUrl}${urlParams ? '?' + urlParams : ''}`;
           }
@@ -195,7 +196,7 @@ console.log('2dmx');
             || valLookup.resolveTemplate(col.linkViewId || "")
             || "unknown";
 
-          const url = '?' + this.combineUrlParams({
+          const url = '?' + this.#combineUrlParams({
             viewId: viewId,
             ...allParams,
           })
@@ -209,7 +210,7 @@ console.log('2dmx');
     };
   }
 
-  private combineUrlParams(params: Record<string, string>): string {
+  #combineUrlParams(params: Record<string, string>): string {
     const url = new URL("", window.location.origin);
     Object.entries(params).forEach(([key, value]) => url.searchParams.append(key, value));
     return url.searchParams.toString();

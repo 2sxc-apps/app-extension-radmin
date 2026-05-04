@@ -17,7 +17,7 @@ namespace AppCode.Extensions.Radmin.Schemas
         .ToString()
         .ToLower();
 
-      var properties = contentType.Attributes
+      var propsList = contentType.Attributes
         .OrderBy(attribute => attribute.SortOrder)
         .Select(attribute =>
         {
@@ -45,7 +45,15 @@ namespace AppCode.Extensions.Radmin.Schemas
           // Create schema property based on determined type, format, description and inputType
           return new JsonSchemaProperty(attribute.Name, title, schemaType, format, description, inputType);
         })
-        .ToDictionary(p => p.Name, p => p);
+        .ToList();
+
+      // var idProperty = new JsonSchemaProperty("Id", "Id", "number", null, "ID of the item")
+      // {
+      //   AutoLinkDetails = true
+      // };
+      // propsList.Insert(0, idProperty); // Ensure Id is the first property
+
+      var properties = propsList.ToDictionary(p => p.Name, p => p); // Remove duplicates while preserving order
 
       var schema = new JsonSchema
       {

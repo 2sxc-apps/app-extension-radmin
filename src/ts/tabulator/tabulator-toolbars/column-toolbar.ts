@@ -5,6 +5,8 @@ import { SxcGlobal } from '@2sic.com/2sxc-typings';
 
 declare const $2sxc: SxcGlobal;
 
+const ColumnContentTypeId = 'f58eaa8e-88c0-403a-a996-9afc01ec14be';
+
 /**
  * Create and show a column header toolbar. This mirrors the row toolbar approach:
  * - simple hover flag on the toolbar
@@ -91,10 +93,11 @@ function getToolbar(sxc: any, column: ColumnComponent, tableConfigData: RadminTa
   const colTitle = (colDef.title ?? colField) || "";
 
   const colConfig = configuredColumns.find((cfg: any) => {
-    const cfgTitle = String(cfg.Title ?? cfg.title ?? "");
+    const cfgTitle = String(cfg.Title ?? cfg.title /* try lower case, not sure why both */ ?? "");
     return cfgTitle === colTitle || cfgTitle === colField;
   });
 
+  // If already configured, just return an edit + move up/down toolbar
   const alreadyConfigured = !!colConfig;
   if (alreadyConfigured) {
     // find the index of the colConfig
@@ -103,7 +106,30 @@ function getToolbar(sxc: any, column: ColumnComponent, tableConfigData: RadminTa
 
     // Create the edit/move toolbar for the column
     return sxc.manage.getToolbar({
-      groups: [{ buttons: "edit", }, { buttons: "moveup,movedown", }],
+      groups: [
+        { buttons: "edit", },
+        { buttons: "moveup,movedown", },
+        // 2026-05-04 2dm, experimental add-id-column with link
+        // it works, but it's not clear where we should put this link, so commented out again for now.
+        // { buttons: [{
+        //   action: "new",
+        //   params: {
+        //     contentType: ColumnContentTypeId,
+        //     parent: tableConfigData.guid,
+        //     fields: "ColumnConfigs",
+        //     index: -1,
+        //     prefill: {
+        //       Title: 'Id',
+        //       FieldValue: 'id',
+        //       LinkEnable: true,
+        //       LinkType: 'view',
+        //       LinkViewRef: 'e935d112-f33d-468e-9144-eb9f271a59a9', // Reference to default details-view
+        //       TooltipEnabled: false,
+        //     },
+        //   }
+        // }]
+        // },
+      ],
       params: {
         entityId,
         parent: tableConfigData.guid,
@@ -113,6 +139,7 @@ function getToolbar(sxc: any, column: ColumnComponent, tableConfigData: RadminTa
     });
   }
   
+  // Not yet configured, create an "add" toolbar with pre-filled values
   const fieldValue = colField && colField.trim() !== ""
     ? colField
     : colTitle.replace(/\s+/g, "");
@@ -120,7 +147,7 @@ function getToolbar(sxc: any, column: ColumnComponent, tableConfigData: RadminTa
   return sxc.manage.getToolbar({
     action: "new",
     params: {
-      contentType: "f58eaa8e-88c0-403a-a996-9afc01ec14be",
+      contentType: ColumnContentTypeId,
       parent: tableConfigData.guid,
       fields: "ColumnConfigs",
       index: configuredColumns.length,

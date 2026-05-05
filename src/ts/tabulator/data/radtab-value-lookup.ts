@@ -1,6 +1,6 @@
 import { JsonSchema } from "../../schema/json-schema-model";
 import { ServiceBase } from '../../shared/service-base';
-import { SchemaHelper } from '../../schema/schema-helper';
+import { RadminSchemaHelper } from '../../schema/radmin-schema-helper';
 
 export class RadTabValueLookup extends ServiceBase {
 
@@ -54,7 +54,7 @@ export class RadTabValueLookup extends ServiceBase {
 
         const key =
           this.schema && !rawKey.includes(".")
-            ? new SchemaHelper(this.schema).findCasing(rawKey)
+            ? new RadminSchemaHelper(this.schema).findCasing(rawKey)
             : rawKey;
 
         let val = this.cellData?.[key];

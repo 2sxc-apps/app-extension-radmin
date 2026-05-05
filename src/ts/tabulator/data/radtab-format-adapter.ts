@@ -1,7 +1,8 @@
 import { JsonSchema, SchemaProperty } from "../../schema/json-schema-model";
 import { CellComponent } from "tabulator-tables";
-import { SchemaHelper } from '../../schema/schema-helper';
+import { RadminSchemaHelper } from '../../schema/radmin-schema-helper';
 import { ServiceBase } from '../../shared/service-base';
+import { tabulatorFormatConfigs } from '../tabulator-column-formats';
 
 export class RadTabFormatAdapter extends ServiceBase {
 
@@ -9,29 +10,32 @@ export class RadTabFormatAdapter extends ServiceBase {
     super({ name: "RadTabFormatAdapter", enableDebug: true });
   }
 
-  /** Maps JSON schema type/format → internal format key */
-  mapSchemaTypeToFormat(property: SchemaProperty): string {
-    if (!property)
-      return "";
+  /**
+   * Maps JSON schema type/format → internal format key
+   * The resulting internal format-key will be used to lookup the actual Tabulator formatter/sorter in tabulator-column-formats based on the format or type of the field.
+   */
+  mapSchemaTypeToFormat(fieldSchema: SchemaProperty): keyof typeof tabulatorFormatConfigs | '' {
+    if (!fieldSchema)
+      return '';
 
-    if (property.format === "date-time" || property.format === "date")
-      return this.logAndReturn(property.format, "mapSchemaTypeToFormat", { property });
+    if (fieldSchema.format === "date-time" || fieldSchema.format === "date")
+      return this.logAndReturn(fieldSchema.format, "mapSchemaTypeToFormat", { fieldSchema });
 
-    if (property.format === "uri" || property.format === "email")
-      return this.logAndReturn("link", "mapSchemaTypeToFormat", { property });
+    if (fieldSchema.format === "uri" || fieldSchema.format === "email")
+      return this.logAndReturn("link", "mapSchemaTypeToFormat", { fieldSchema });
 
-    return this.logAndReturn(property.type, "mapSchemaTypeToFormat: falling back to type", { property });
+    return this.logAndReturn(fieldSchema.type || '', "mapSchemaTypeToFormat: falling back to type", { fieldSchema });
   }
 
   /**
    * Normalizes the field and maps to format via schema
    */
   getFormatFromSchema(field: string, schema: JsonSchema): string {
-    const normalized = new SchemaHelper(schema).findCasing(field);
-    const property = schema.properties[normalized];
+    const normalized = new RadminSchemaHelper(schema).findCasing(field);
+    const fieldSchema = schema.properties[normalized];
 
-    const format = property
-      ? this.mapSchemaTypeToFormat(property)
+    const format = fieldSchema
+      ? this.mapSchemaTypeToFormat(fieldSchema)
       : "";
 
     return this.logAndReturn(format, "getFormatFromSchema", { field, normalized, format });

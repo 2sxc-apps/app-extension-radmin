@@ -1,162 +1,129 @@
 import { RadminColumnConfig } from "../configs/radmin-column-config";
-import { CellComponent, ColumnDefinition } from "tabulator-tables";
+import { CellComponent, ColumnDefinition, GlobalTooltipOption } from "tabulator-tables";
 import { JsonSchema, SchemaProperty } from "../schema/json-schema-model";
-import { PropertyDefHelper } from "../schema/property-def.helper";
 import { RadTabValueLookup } from "./data/radtab-value-lookup";
-import { SchemaHelper } from '../schema/schema-helper';
+import { ColumnSpecs, ColumnSpecsWithConfig, RadminSchemaHelper } from '../schema/radmin-schema-helper';
 import { RadTabFormatAdapter } from "./data/radtab-format-adapter";
 import { ServiceBase } from '../shared/service-base';
-import { FormatAndSortHelper } from './format-and-sort.helper';
+import { RadTabFormatAndSortHelper } from './format-and-sort.helper';
 
-type ColumnDefinitionWithHide = ColumnDefinition & { hide: boolean };
+abstract class RadminColumnAdapter<TColumn> extends ServiceBase {
 
-export class TabulatorColumnAdapter extends ServiceBase {
-
-  constructor() {
-    super({ name: "TabulatorColumnAdapter", enableDebug: true });
+  constructor({ schema, name, enableDebug }: { schema: JsonSchema; name: string; enableDebug?: boolean; }) {
+    super({ name, enableDebug });
+    this.schema = schema;
   }
 
-  #formatAndSortHelper = new FormatAndSortHelper();
-  #radTabFormatAdapter = new RadTabFormatAdapter();
+  public schema: JsonSchema;
+
+  abstract convertConfiguredColumn(spec: ColumnSpecsWithConfig): TColumn;
+
+  abstract convertUnconfiguredColumn(column: ColumnSpecs): TColumn;
+
 
   convert(
     columnConfigs: RadminColumnConfig[],
-    columnsAutoShowRemaining: boolean,
-    schema: JsonSchema
-  ): ColumnDefinitionWithHide[] {
+    columnsAutoShowRemaining: boolean
+  ): TColumn[] {
     this.log("convert called with", {
       columnConfigLength: columnConfigs.length,
       columnsAutoShowRemaining,
-      schemaProperties: Object.keys(schema.properties).length,
+      schemaProperties: Object.keys(this.schema.properties).length,
       columnConfigs
     });
 
-    // Process configured columns (explicit user config). If a configured column points to a group property,
-    // skip it (group fields should not become visible columns).
-    const columns = columnConfigs
-      .map((col) => {
-        const fieldName = new SchemaHelper(schema).findCasing(col.fieldValue);
-        const columnDef = schema.properties[fieldName];
-        this.log(`configured column: '${col.fieldValue}' to '${fieldName}'`, { col }, `schemaProp:`, columnDef);
+    const all = new RadminSchemaHelper(this.schema).getConfigs(columnConfigs);
 
-        // skip any configured column that references a group property
-        if (PropertyDefHelper.isGroup(columnDef, fieldName)) 
-          return this.logAndReturn(null, `Skipping configured column because it references a group property: '${fieldName}'`, col);
-        return { fieldName, col, columnDef };
-      })
-      .filter((c) => !!c); // remove nulls (skipped group columns);
-
-    const configuredColumns = columns
-      .map(({ fieldName, col, columnDef }) => {
-        const chosenFormat = col.fieldFormat
-          || this.#radTabFormatAdapter.getFormatFromSchema(col.fieldValue, schema);
-
-        const formatAndSort = this.#formatAndSortHelper.getFormatAndSort(chosenFormat, fieldName, columnDef || { type: "string" } as SchemaProperty, !!col.linkType);
-
-        const hAlign = col.horizontalAlignment !== "automatic"
-          ? col.horizontalAlignment
-          : undefined;
-
-        const column: ColumnDefinitionWithHide = {
-          title: col.title,
-          field: fieldName,
-          headerTooltip: col.headerTooltip || false,
-          ...formatAndSort,
-          // Only set alignment if explicitly specified
-          hozAlign: hAlign,
-          headerHozAlign: hAlign,
-          // Only set width if explicitly specified
-          width: col.width !== "automatic"
-            ? col.width
-            : undefined,
-          // Handle tooltip configuration
-          tooltip: (!col.fieldTooltip
-            ? false
-            : col.fieldTooltip
-              ? (e: UIEvent, cell: CellComponent, _: unknown) => new RadTabValueLookup(schema, cell.getData()).resolveTemplate(col.fieldTooltip)
-              : true) as unknown as string,
-          ...this.linkFormatter(schema, col, fieldName),
-
-          hide: col.hide || false, // use the new 'hide' property to determine initial visibility
-        };
-        return this.logAndReturn(column, `Final column config for field '${fieldName}'`);
-      });
+    const configuredColumns = all.configured
+      .map((spec) => this.convertConfiguredColumn(spec));
 
     this.log(`Configured columns built: ${configuredColumns.length}`);
 
     // Add remaining columns from schema if configured
-    if (!columnsAutoShowRemaining && configuredColumns.length > 0) {
-      const nonHidden = this.#dropHiddenColumns(configuredColumns);
-      return this.logAndReturn(nonHidden, `columnsAutoShowRemaining is false — returning configured columns only; all ${configuredColumns.length}; ${nonHidden.length} non-hidden`);
-    }
+    const addRemaining = columnsAutoShowRemaining || configuredColumns.length === 0;
+    const rest = addRemaining
+        ? this.convertRest(all.rest)
+        : [];
 
     // Check any remaining fields that may have to be auto-added as well
-    const allWithRemaining = this.#tryAddRemainingColumns(schema, configuredColumns);
-    const nonHidden = this.#dropHiddenColumns(allWithRemaining);
-    return this.logAndReturn(nonHidden, `Returning all columns including auto-added; total ${allWithRemaining.length}; ${nonHidden.length} non-hidden`);
+    const result = [...configuredColumns, ...rest];
+    return this.logAndReturn(result, `Total ${result.length}; addRemaining: ${addRemaining}; ${all.hidden.length} hidden`);
   }
-
-  #dropHiddenColumns(columns: ColumnDefinitionWithHide[]): ColumnDefinitionWithHide[] {
-    return columns.filter(col => !col.hide);
-  }
-
-
-
-  /**
-   * Try to add remaining columns from the schema that are not already configured.
-   * @param schema The JSON schema defining the properties.
-   * @param configuredColumns The columns that have already been configured.
-   * @returns An array of TabulatorColumnConfig including the newly added columns.
-   */
-  #tryAddRemainingColumns(schema: JsonSchema, configuredColumns: ColumnDefinitionWithHide[]) {
-    // Get fields that are already configured
-    const configuredFields = new Set(configuredColumns.filter(col => !!col)
-      .map((col) => col.field as string));
-    this.log("Configured fields set:", Array.from(configuredFields));
-
-    // Create columns for remaining schema properties, skipping group properties
-    const remainingColumns = this.#defineRemainingColumns(schema, configuredFields);
-
-    this.log(`Remaining columns built: ${remainingColumns.length}`);
-
-    return [...configuredColumns, ...remainingColumns];
-  }
-
-
 
   /**
    * Define remaining columns from the schema that are not already configured.
-   * @param schema The JSON schema defining the properties.
+   * @param schemaHelper The helper for working with the JSON schema.
    * @param configuredFields The set of fields that have already been configured.
    * @returns An array of TabulatorColumnConfig for the remaining columns.
    */
-  #defineRemainingColumns(schema: JsonSchema, configuredFields: Set<string>): ColumnDefinitionWithHide[] {
-    this.log("Defining remaining columns from schema. Total properties:", { schema, configuredFields });
-    const keysToUse = Object.keys(schema.properties)
-      .filter((key) => !configuredFields.has(key))
-      .filter((key) => {
-        const prop = schema.properties[key];
-        // do not auto-add group properties
-        const isGroup = PropertyDefHelper.isGroup(prop, key);
-        if (isGroup)
-          this.log("Skipping auto-add of group property:", key);
-        return !isGroup;
-      });
+  convertRest(restColumns: ColumnSpecs[]): TColumn[] {
+    this.log("Defining remaining columns from schema. Total properties:", { restColumns });
 
-    return keysToUse
-      .map((key) => {
-        const property = schema.properties[key];
-        const formatAndSort = this.#formatAndSortHelper.getFormatAndSortOfPropertyUnspecified(schema, key);
+    const result = restColumns
+      .map((column) => this.convertUnconfiguredColumn(column));
 
-        const col: ColumnDefinitionWithHide = {
-          title: property.title || key,
-          field: key,
-          ...formatAndSort,
-          hide: false, // default to not hidden
-        };
+    return this.logAndReturn(result, "All auto-added columns built");
+  }
+}
 
-        return this.logAndReturn(col, "Built auto column config for key:", key);
-      });
+export class TabulatorColumnAdapter extends RadminColumnAdapter<ColumnDefinition> {
+
+  constructor(schema: JsonSchema) {
+    super({ schema, name: "TabulatorColumnAdapter", enableDebug: true });
+  }
+
+  #formatAndSortHelper = new RadTabFormatAndSortHelper();
+  #radTabFormatAdapter = new RadTabFormatAdapter();
+
+
+  convertConfiguredColumn(spec: ColumnSpecsWithConfig): ColumnDefinition {
+    const { fieldName, columnConfig, fieldSchema } = spec;
+    const chosenFormat = columnConfig.fieldFormat
+      || this.#radTabFormatAdapter.mapSchemaTypeToFormat(fieldSchema);
+
+    const formatAndSort = this.#formatAndSortHelper.getFormatAndSort(chosenFormat, fieldName, fieldSchema || { type: "string" } as SchemaProperty, !!columnConfig.linkType);
+
+    // Only set alignment if explicitly specified
+    const hAlign = columnConfig.horizontalAlignment !== "automatic"
+      ? columnConfig.horizontalAlignment
+      : undefined;
+
+    // Only set width if explicitly specified
+    const width = columnConfig.width !== "automatic"
+        ? columnConfig.width
+        : undefined;
+
+    // Handle tooltip configuration
+    const tooltip: string | GlobalTooltipOption = !columnConfig.fieldTooltip
+      ? false
+      : columnConfig.fieldTooltip
+        ? (e: UIEvent, cell: CellComponent, _: unknown) => new RadTabValueLookup(this.schema, cell.getData()).resolveTemplate(columnConfig.fieldTooltip)
+        : true;
+
+    const column: ColumnDefinition = {
+      title: columnConfig.title,
+      field: fieldName,
+      headerTooltip: columnConfig.headerTooltip || false,
+      ...formatAndSort,
+      hozAlign: hAlign,
+      headerHozAlign: hAlign,
+      width,
+      tooltip,
+      ...this.#linkFormatter(this.schema, columnConfig, fieldName),
+    };
+    return this.logAndReturn(column, `Final column config for field '${fieldName}'`);
+  }
+
+
+  convertUnconfiguredColumn(column: ColumnSpecs): ColumnDefinition {
+    const formatAndSort = this.#formatAndSortHelper.getFormatAndSortOfPropertyUnspecified(column);
+
+    const result = {
+      title: column.fieldSchema.title || column.fieldName,
+      field: column.fieldName,
+      ...formatAndSort,
+    } satisfies ColumnDefinition;
+    return result;
   }
 
 
@@ -164,7 +131,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
   /**
    * Configure link if enabled
    */
-  linkFormatter(schema: JsonSchema, col: RadminColumnConfig, normalizedField: string): Partial<ColumnDefinition> {
+  #linkFormatter(schema: JsonSchema, col: RadminColumnConfig, normalizedField: string): Partial<ColumnDefinition> {
     // if not enabled (linkType blank), just return empty config
     if (!col.linkType)
       return {};
@@ -224,9 +191,9 @@ export class TabulatorColumnAdapter extends ServiceBase {
   }
 
   #combineUrlParams(params: Record<string, string>): string {
-    const url = new URL("", window.location.origin);
-    Object.entries(params).forEach(([key, value]) => url.searchParams.append(key, value));
-    return url.searchParams.toString();
+    const searchParams = new URL("", window.location.origin).searchParams;
+    Object.entries(params).forEach(([key, value]) => searchParams.append(key, value));
+    return searchParams.toString();
   }
 }
 

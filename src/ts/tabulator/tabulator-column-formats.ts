@@ -7,7 +7,7 @@ import { DateTime } from 'luxon';
  * @param formatterParams 
  * @returns 
  */
-function dateTimeFormatter(cell: CellComponent, formatterParams: FormatterParams) {
+function tabulatorDateTimeFormatter(cell: CellComponent, formatterParams: FormatterParams) {
   var value = cell.getValue();
   if (!value)
     return ""; // Handle empty cells
@@ -20,7 +20,7 @@ function dateTimeFormatter(cell: CellComponent, formatterParams: FormatterParams
     : dt.toFormat("yyyy-MM-dd HH:mm");
 };
 
-export const formatConfigs: Record<string, Partial<ColumnDefinition>> = {
+export const tabulatorFormatConfigs: Record<string, Partial<ColumnDefinition>> = {
   "": {},
   number: {
     hozAlign: "right",
@@ -39,7 +39,7 @@ export const formatConfigs: Record<string, Partial<ColumnDefinition>> = {
   },
   "date-time": {
     hozAlign: "right",
-    formatter: dateTimeFormatter, // "datetime",
+    formatter: tabulatorDateTimeFormatter, // "datetime",
     // formatterParams: {
     //   inputFormat: "yyyy-MM-dd'T'HH:mm:ss'Z'",
     //   outputFormat: "yyyy-MM-dd HH:mm:ss",

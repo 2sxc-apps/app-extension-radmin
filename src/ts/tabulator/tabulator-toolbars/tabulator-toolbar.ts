@@ -32,48 +32,22 @@ export class TabulatorToolbars extends ServiceBase {
     );
   }
 
-  #createRowActionToolbar(
+  createRowToolbar(
     table: Tabulator,
     row: RowComponent,
     event: Event,
-    showEdit: boolean,
-    showDelete: boolean
+    tableConfigData: RadminTableConfig
   ) {
     // call the function outside of this
     createRowActionToolbar(
       table,
       row,
       event,
-      showEdit,
-      showDelete,
+      tableConfigData,
       this.baseButtonSize,
       this.zIndex,
       (...a: any[]) => this.log(...a)
     );
-  }
-
-  public showEditDeleteToolbar(
-    table: Tabulator,
-    row: RowComponent,
-    event: Event
-  ) {
-    this.#createRowActionToolbar(table, row, event, true, true);
-  }
-
-  public showEditOnlyToolbar(
-    table: Tabulator,
-    row: RowComponent,
-    event: Event
-  ) {
-    this.#createRowActionToolbar(table, row, event, true, false);
-  }
-
-  public showDeleteOnlyToolbar(
-    table: Tabulator,
-    row: RowComponent,
-    event: Event
-  ) {
-    this.#createRowActionToolbar(table, row, event, false, true);
   }
 
   public showColumnToolbar(

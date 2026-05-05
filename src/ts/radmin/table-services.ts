@@ -2,7 +2,6 @@ import { Sxc } from '@2sic.com/2sxc-typings';
 import { CustomizeManager } from '../customizers/customize-manager';
 import { SchemaLoader } from '../schema/schema-loader';
 import { ServiceBase } from '../shared/service-base';
-import { TabulatorTableAdapter } from './tabulator-table-adapter';
 import { RadminTableConfig } from '../configs/radmin-table-config';
 import { DataProviderEntities } from '../providers/data-provider-entities';
 import { DataProviderFactory } from '../providers/data-provider-factory';

@@ -16,7 +16,7 @@ import { RadTabSetupSearch } from "./features/radtab-setup-search";
 import { RadTabRegisterSort } from "./sort/radtab-register-sort";
 import { ErrorHelper } from "../shared/error-helper";
 import { ServiceBase } from '../shared/service-base';
-import { TableServices } from './table-services';
+import { TableServices } from '../radmin/table-services';
 import { SearchSpecs, TableSpecs } from '../radmin/setup-params';
 import { RadTabSetupSort } from './sort/radtab-setup-sort';
 import { RadTabSetupEditActions } from './features/radtab-setup-edit-actions';
@@ -38,6 +38,19 @@ export class TabulatorTableAdapter extends ServiceBase implements ITableAdapter 
 
   constructor() {
     super({ name: "TabulatorAdapter", enableDebug: false });
+  }
+
+  async setup(
+    specs: SearchSpecs & TableSpecs,
+    services: TableServices,
+    tableConfigData: RadminTableConfig,
+  ): Promise<unknown> {
+    // Create the filter UI element if search is enabled
+    if (tableConfigData.searchEnabled)
+      new RadTabSetupSearch().createSearchInput(specs as SearchSpecs);
+
+
+    return this.createTable(specs, services, tableConfigData);
   }
 
   async createTable(

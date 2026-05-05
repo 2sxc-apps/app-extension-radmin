@@ -5,6 +5,7 @@ import {
   positionToolbarElement,
 } from "./utils/toolbar-positioning";
 import { CommandNames } from "@2sic.com/2sxc-typings";
+import { RadminTableConfig } from '../../configs/radmin-table-config';
 
 declare const $2sxc: any;
 
@@ -15,14 +16,16 @@ export function createRowActionToolbar(
   table: Tabulator,
   row: RowComponent,
   event: Event,
-  showEdit: boolean,
-  showDelete: boolean,
+  tableConfigData: RadminTableConfig,
   baseButtonSize: number,
   zIndex: number,
   log: (...args: any[]) => void
 ) {
   event.preventDefault();
   cleanupToolbars();
+  const showEdit = !!tableConfigData.enableEdit;
+  const showDelete = !!tableConfigData.enableDelete;
+
   log("Creating row action toolbar", { showEdit, showDelete });
 
   const sxc = $2sxc(table.element);
@@ -121,9 +124,7 @@ export function createRowActionToolbar(
     );
 
   positionToolbarElement(virtualEl, toolbarEl, middlewareOffsetFn).then(
-    ({ x, y }) => {
-      log("Computed toolbar position", { x, y });
-    }
+    ({ x, y }) => log("Computed toolbar position", { x, y })
   );
 
   let isHovered = false;

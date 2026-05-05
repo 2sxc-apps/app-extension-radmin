@@ -23,9 +23,9 @@ export class RadTabSetupEditActions extends ServiceBase {
       const editEnabled = !!tableConfigData.enableEdit;
       const canDelete = !!tableConfigData.enableDelete;
       this.log("row actions", { editEnabled, canDelete });
-      if (editEnabled || canDelete) {
-        this.#setupRowActionsHover(table, editEnabled, canDelete);
-      }
+      if (editEnabled || canDelete)
+        this.#setupRowActionsHover(table, tableConfigData);
+
       if (tableConfigData.enableAdd) {
         this.log("enabling row add mode");
         this.#setupRowAddMode(table, tableConfigData);
@@ -60,10 +60,9 @@ export class RadTabSetupEditActions extends ServiceBase {
 
   #setupRowActionsHover(
     table: Tabulator,
-    enableEdit: boolean,
-    enableDelete: boolean
+    tableConfigData: RadminTableConfig
   ) {
-    this.log("setupRowActionsHover called", { enableEdit, enableDelete });
+    this.log("setupRowActionsHover called");
 
     try {
       table.off?.("rowMouseEnter");
@@ -76,13 +75,7 @@ export class RadTabSetupEditActions extends ServiceBase {
 
     table.on("rowMouseEnter", (e, row: RowComponent) => {
       this.log("rowMouseEnter triggered", row.getData());
-      if (enableEdit && enableDelete) {
-        this.tabulatorToolbars.showEditDeleteToolbar(table, row, e);
-      } else if (enableEdit) {
-        this.tabulatorToolbars.showEditOnlyToolbar(table, row, e);
-      } else if (enableDelete) {
-        this.tabulatorToolbars.showDeleteOnlyToolbar(table, row, e);
-      }
+      this.tabulatorToolbars.createRowToolbar(table, row, e, tableConfigData);
     });
 
     table.on("rowMouseLeave", (e, row: RowComponent) => {

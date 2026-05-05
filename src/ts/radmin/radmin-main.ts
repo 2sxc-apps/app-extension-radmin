@@ -1,8 +1,7 @@
-import { TabulatorAdapter } from "../tabulator/tabulator-adapter";
 import { RadTabSetupSearch } from "../tabulator/features/radtab-setup-search";
 import { SearchSpecs, SetupParams, TableSpecs } from './setup-params';
 import { ServiceBase } from '../shared/service-base';
-import { TableServices } from '../tabulator/table-services';
+import { TableServicesFactory } from '../tabulator/table-services';
 import { ErrorHelper } from '../shared/error-helper';
 import { TableViewConfigurationLoader } from '../configs/table-view-configuration.loader';
 
@@ -36,10 +35,10 @@ export class RadminMain extends ServiceBase {
       this.log(`SXC context initialized for moduleId: ${data.moduleId}; viewId: ${data.viewId}`);
 
       // get shared services
-      const services = new TableServices(sxc);
+      const factory = new TableServicesFactory(sxc);
 
       // Try to load customizers if customizerDistPath is provided
-      await services.customizeManager.load(data.customizerDistPath);
+      await factory.customizeManager.load(data.customizerDistPath);
 
       // Load table configuration with ConfigurationLoader
       let tableConfigDataRaw;
@@ -54,7 +53,7 @@ export class RadminMain extends ServiceBase {
 
       // Apply customizations to the config
       this.log("Applying customizations to config");
-      const tableConfigData = services.customizeManager.customizeConfig(tableConfigDataRaw);
+      const tableConfigData = factory.customizeManager.customizeConfig(tableConfigDataRaw);
       this.log("Config after customization:", tableConfigData);
 
       // Check for differences to see if customizations were applied
@@ -80,13 +79,13 @@ export class RadminMain extends ServiceBase {
       if (tableConfigData.searchEnabled)
         new RadTabSetupSearch().createSearchInput(data as SearchSpecs);
 
-      const servicesComplete = await services.getComplete(tableConfigData, data.viewId, linkParameters);
+      const services = await factory.getServices(tableConfigData, data.viewId, linkParameters);
 
       try {
         this.log("Creating table with TabulatorAdapter.createTable");
-        await new TabulatorAdapter().createTable(
+        await services.table.createTable(
           data as SearchSpecs & TableSpecs,
-          servicesComplete,
+          services,
           tableConfigData,
         );
         this.log("Table creation complete");

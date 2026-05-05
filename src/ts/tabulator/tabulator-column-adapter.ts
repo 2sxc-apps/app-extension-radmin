@@ -2,81 +2,25 @@ import { RadminColumnConfig } from "../configs/radmin-column-config";
 import { CellComponent, ColumnDefinition, GlobalTooltipOption } from "tabulator-tables";
 import { JsonSchema, SchemaProperty } from "../schema/json-schema-model";
 import { RadTabValueLookup } from "./data/radtab-value-lookup";
-import { ColumnSpecs, ColumnSpecsWithConfig, RadminSchemaHelper } from '../schema/radmin-schema-helper';
+import { ColumnSpecs, ColumnSpecsWithConfig } from '../schema/radmin-schema-helper';
 import { RadTabFormatAdapter } from "./data/radtab-format-adapter";
 import { ServiceBase } from '../shared/service-base';
 import { RadTabFormatAndSortHelper } from './format-and-sort.helper';
+import { ColumnAdapter } from '../adapters/column-adapter';
 
-abstract class RadminColumnAdapter<TColumn> extends ServiceBase {
+/**
+ * Tabulator specific adapter, used by the ColumnService.
+ */
+export class TabulatorColumnAdapter extends ServiceBase implements ColumnAdapter<ColumnDefinition> {
 
-  constructor({ schema, name, enableDebug }: { schema: JsonSchema; name: string; enableDebug?: boolean; }) {
-    super({ name, enableDebug });
-    this.schema = schema;
-  }
-
-  public schema: JsonSchema;
-
-  abstract convertConfiguredColumn(spec: ColumnSpecsWithConfig): TColumn;
-
-  abstract convertUnconfiguredColumn(column: ColumnSpecs): TColumn;
-
-
-  convert(
-    columnConfigs: RadminColumnConfig[],
-    columnsAutoShowRemaining: boolean
-  ): TColumn[] {
-    this.log("convert called with", {
-      columnConfigLength: columnConfigs.length,
-      columnsAutoShowRemaining,
-      schemaProperties: Object.keys(this.schema.properties).length,
-      columnConfigs
-    });
-
-    const all = new RadminSchemaHelper(this.schema).getConfigs(columnConfigs);
-
-    const configuredColumns = all.configured
-      .map((spec) => this.convertConfiguredColumn(spec));
-
-    this.log(`Configured columns built: ${configuredColumns.length}`);
-
-    // Add remaining columns from schema if configured
-    const addRemaining = columnsAutoShowRemaining || configuredColumns.length === 0;
-    const rest = addRemaining
-        ? this.convertRest(all.rest)
-        : [];
-
-    // Check any remaining fields that may have to be auto-added as well
-    const result = [...configuredColumns, ...rest];
-    return this.logAndReturn(result, `Total ${result.length}; addRemaining: ${addRemaining}; ${all.hidden.length} hidden`);
-  }
-
-  /**
-   * Define remaining columns from the schema that are not already configured.
-   * @param schemaHelper The helper for working with the JSON schema.
-   * @param configuredFields The set of fields that have already been configured.
-   * @returns An array of TabulatorColumnConfig for the remaining columns.
-   */
-  convertRest(restColumns: ColumnSpecs[]): TColumn[] {
-    this.log("Defining remaining columns from schema. Total properties:", { restColumns });
-
-    const result = restColumns
-      .map((column) => this.convertUnconfiguredColumn(column));
-
-    return this.logAndReturn(result, "All auto-added columns built");
-  }
-}
-
-export class TabulatorColumnAdapter extends RadminColumnAdapter<ColumnDefinition> {
-
-  constructor(schema: JsonSchema) {
-    super({ schema, name: "TabulatorColumnAdapter", enableDebug: true });
+  constructor() {
+    super({ name: "TabulatorColumnAdapter", enableDebug: true });
   }
 
   #formatAndSortHelper = new RadTabFormatAndSortHelper();
   #radTabFormatAdapter = new RadTabFormatAdapter();
 
-
-  convertConfiguredColumn(spec: ColumnSpecsWithConfig): ColumnDefinition {
+  convertConfiguredColumn(schema: JsonSchema, spec: ColumnSpecsWithConfig): ColumnDefinition {
     const { fieldName, columnConfig, fieldSchema } = spec;
     const chosenFormat = columnConfig.fieldFormat
       || this.#radTabFormatAdapter.mapSchemaTypeToFormat(fieldSchema);
@@ -97,7 +41,7 @@ export class TabulatorColumnAdapter extends RadminColumnAdapter<ColumnDefinition
     const tooltip: string | GlobalTooltipOption = !columnConfig.fieldTooltip
       ? false
       : columnConfig.fieldTooltip
-        ? (e: UIEvent, cell: CellComponent, _: unknown) => new RadTabValueLookup(this.schema, cell.getData()).resolveTemplate(columnConfig.fieldTooltip)
+        ? (e: UIEvent, cell: CellComponent, _: unknown) => new RadTabValueLookup(schema, cell.getData()).resolveTemplate(columnConfig.fieldTooltip)
         : true;
 
     const column: ColumnDefinition = {
@@ -109,13 +53,13 @@ export class TabulatorColumnAdapter extends RadminColumnAdapter<ColumnDefinition
       headerHozAlign: hAlign,
       width,
       tooltip,
-      ...this.#linkFormatter(this.schema, columnConfig, fieldName),
+      ...this.#linkFormatter(schema, columnConfig, fieldName),
     };
     return this.logAndReturn(column, `Final column config for field '${fieldName}'`);
   }
 
 
-  convertUnconfiguredColumn(column: ColumnSpecs): ColumnDefinition {
+  convertUnconfiguredColumn(schema: JsonSchema, column: ColumnSpecs): ColumnDefinition {
     const formatAndSort = this.#formatAndSortHelper.getFormatAndSortOfPropertyUnspecified(column);
 
     const result = {

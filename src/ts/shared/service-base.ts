@@ -10,7 +10,7 @@ export class ServiceBase {
   private name: string;
 
   /** Flag to enable or disable debug logging for this service */
-  private enableDebug: boolean;
+  public enableDebug: boolean;
 
   constructor({ name, enableDebug }: { name: string; enableDebug?: boolean; }) {
     this.name = name;

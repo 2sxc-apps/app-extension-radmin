@@ -1,6 +1,7 @@
 import { RadminTableConfig } from "../configs/radmin-table-config";
 import { JsonSchema } from "../schema/json-schema-model";
 import { TabulatorColumnAdapter } from "./tabulator-column-adapter";
+import { RadminColumnService } from '../radmin/radmin-column-service';
 import { RadTabColumnSortParser } from "./sort/radtab-column-sort-parser";
 import { Options } from 'tabulator-tables';
 import { RadTabSetupSort } from './sort/radtab-setup-sort';
@@ -19,10 +20,10 @@ export class TabulatorConfigService {
   ): Partial<Options> {
 
     // Convert column definitions
-    const columns = new TabulatorColumnAdapter().convert(
+    const colAdapter = new TabulatorColumnAdapter();
+    const columns = new RadminColumnService({ schema, adapter: colAdapter, enableDebug: true }).convert(
       data.columnConfigs,
-      data.columnsAutoShowRemaining,
-      schema
+      data.columnsAutoShowRemaining
     );
 
     // Figure out initial sort

@@ -16,10 +16,11 @@ import { RadTabSetupSearch } from "./features/radtab-setup-search";
 import { RadTabRegisterSort } from "./sort/radtab-register-sort";
 import { ErrorHelper } from "../shared/error-helper";
 import { ServiceBase } from '../shared/service-base';
-import { TableServicesComplete } from './table-services';
+import { TableServices } from './table-services';
 import { SearchSpecs, TableSpecs } from '../radmin/setup-params';
 import { RadTabSetupSort } from './sort/radtab-setup-sort';
 import { RadTabSetupEditActions } from './features/radtab-setup-edit-actions';
+import { ITableAdapter } from '../adapters/ITableAdapter';
 
 // Register required modules for Tabulator
 Tabulator.registerModule([
@@ -32,7 +33,7 @@ Tabulator.registerModule([
   SortModule,
 ]);
 
-export class TabulatorAdapter extends ServiceBase {
+export class TabulatorTableAdapter extends ServiceBase implements ITableAdapter {
   private configService = new TabulatorConfigService();
 
   constructor() {
@@ -41,9 +42,9 @@ export class TabulatorAdapter extends ServiceBase {
 
   async createTable(
     specs: SearchSpecs & TableSpecs,
-    services: TableServicesComplete,
+    services: TableServices,
     tableConfigData: RadminTableConfig,
-  ) {
+  ): Promise<unknown> {
     const tableName = specs.tableName;
     try {
       this.log("createTable called", { tableName, tableConfigData });

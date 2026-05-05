@@ -54,6 +54,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 1. 2dm: Simplify column configuration regarding links and tooltips, by removing the "enable" checkbox and just checking if a value is set for the link/tooltip template
 1. 2dm: Remove Ephemeral field "HasData" workaround; export in 2sxc 21.08 fixes the underlying issue, so this is no longer needed
 1. 2dm: Column config - enable "hide" to make a column go away
+1. 2dm: JS - major SoC toolbar logic
+1. 2dm: JS - major separation of services / tabulator from core logic; prepare for more features and better maintainability
 
 ### 2026-05-04
 

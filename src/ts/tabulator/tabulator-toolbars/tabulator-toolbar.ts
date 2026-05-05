@@ -4,12 +4,13 @@ import type {
   Tabulator,
 } from "tabulator-tables";
 import { RadminTableConfig } from "../../configs/radmin-table-config";
-import { createRowActionToolbar } from "./row-toolbar";
-import { showColumnToolbar } from "./column-toolbar";
+import { createRowActionToolbar } from "../../toolbars/row-toolbar";
+import { showColumnToolbar } from "../../toolbars/column-toolbar";
 import { showAddButton } from "../../toolbars/table-add-button";
 import { ServiceBase } from '../../shared/service-base';
 import { ToolbarHoverHandler } from '../../toolbars/table-hover-handler';
 import { Sxc } from '@2sic.com/2sxc-typings';
+import { TabulatorToolbarColumnAdapter, TabulatorToolbarRowAdapter, TabulatorToolbarTableAdapter } from './tabulator-toolbar-adapters';
 
 /**
  * Facade class kept for backward compatibility.
@@ -46,8 +47,8 @@ export class TabulatorToolbars extends ServiceBase {
     // call the function outside of this
     createRowActionToolbar(
       sxc,
-      table,
-      row,
+      new TabulatorToolbarTableAdapter(table),
+      new TabulatorToolbarRowAdapter(row),
       event,
       hoverHandler,
       tableConfigData,
@@ -66,7 +67,7 @@ export class TabulatorToolbars extends ServiceBase {
   ) {
     showColumnToolbar(
       sxc,
-      column,
+      new TabulatorToolbarColumnAdapter(column),
       event,
       hoverHandler,
       tableConfigData,
@@ -76,5 +77,3 @@ export class TabulatorToolbars extends ServiceBase {
     );
   }
 }
-
-export default TabulatorToolbars;

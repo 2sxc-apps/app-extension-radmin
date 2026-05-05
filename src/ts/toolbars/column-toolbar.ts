@@ -1,11 +1,8 @@
-import type { ColumnComponent, EventCallBackMethods, Tabulator } from "tabulator-tables";
-import { createVirtualElFromRects, positionToolbarElement, cleanupToolbars } from "../../toolbars/toolbar-positioning";
-import { RadminTableConfig } from "../../configs/radmin-table-config";
-import { SxcGlobal } from '@2sic.com/2sxc-typings';
-import { ToolbarHoverHandler } from '../../toolbars/table-hover-handler';
-import { IColumnToolbarAdapter } from './IColumnToolbarAdapter';
-
-// declare const $2sxc: SxcGlobal;
+import { createVirtualElFromRects, positionToolbarElement, cleanupToolbars } from "./toolbar-positioning";
+import { RadminTableConfig } from "../configs/radmin-table-config";
+import { ToolbarHoverHandler } from './table-hover-handler';
+import { IColumnToolbarAdapter } from './toolbar-adapters';
+import { Sxc } from '@2sic.com/2sxc-typings';
 
 const ColumnContentTypeId = 'f58eaa8e-88c0-403a-a996-9afc01ec14be';
 
@@ -15,8 +12,8 @@ const ColumnContentTypeId = 'f58eaa8e-88c0-403a-a996-9afc01ec14be';
  * - table.on("headerMouseLeave", ...) removes toolbar after short delay if not hovered
  */
 export function showColumnToolbar(
-  sxc: any,
-  column: ColumnComponent,
+  sxc: Sxc,
+  colInfo: IColumnToolbarAdapter,
   event: Event,
   hoverHandler: ToolbarHoverHandler,
   tableConfigData: RadminTableConfig,
@@ -24,8 +21,6 @@ export function showColumnToolbar(
   zIndex: number,
   log: (...args: any[]) => void
 ) {
-  const colInfo = new ColumnToolbarAdapter(column);
-
   event.preventDefault();
   log("Creating column toolbar");
 
@@ -63,20 +58,7 @@ export function showColumnToolbar(
 }
 
 
-export class ColumnToolbarAdapter implements IColumnToolbarAdapter {
-  constructor(private column: ColumnComponent) {
-    const colDef = column.getDefinition() || {};
-    this.fieldName = (column.getField?.() ?? "") as string;
-    this.title = (colDef.title ?? this.fieldName) || "";
-
-  }
-  fieldName: string;
-  title: string;
-
-  getElement() { return this.column.getElement(); }
-}
-
-function getToolbar(sxc: any, colInfo: IColumnToolbarAdapter, tableConfigData: RadminTableConfig): string {
+function getToolbar(sxc: Sxc, colInfo: IColumnToolbarAdapter, tableConfigData: RadminTableConfig): string {
   const configuredColumns = Array.isArray(tableConfigData.columnConfigs)
     ? tableConfigData.columnConfigs
     : [];
@@ -94,7 +76,7 @@ function getToolbar(sxc: any, colInfo: IColumnToolbarAdapter, tableConfigData: R
     const entityId = colConfig ? (colConfig.id as number) : 0;
 
     // Create the edit/move toolbar for the column
-    return sxc.manage.getToolbar({
+    return (sxc as any).manage.getToolbar({
       groups: [
         { buttons: "edit", },
         { buttons: "moveup,movedown", },
@@ -144,7 +126,7 @@ function getToolbar(sxc: any, colInfo: IColumnToolbarAdapter, tableConfigData: R
     ? colInfo.fieldName
     : colInfo.title.replace(/\s+/g, "");
 
-  return sxc.manage.getToolbar({
+  return (sxc as any).manage.getToolbar({
     action: "new",
     params: {
       contentType: ColumnContentTypeId,

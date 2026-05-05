@@ -1,13 +1,8 @@
-import type { RowComponent, Tabulator } from "tabulator-tables";
-import {
-  cleanupToolbars,
-  createVirtualElFromRects,
-  positionToolbarElement,
-} from "../../toolbars/toolbar-positioning";
+import { cleanupToolbars, createVirtualElFromRects, positionToolbarElement } from "./toolbar-positioning";
 import { CommandNames, Sxc } from "@2sic.com/2sxc-typings";
-import { RadminTableConfig } from '../../configs/radmin-table-config';
-import { HoverState } from '../../toolbars/hover-state';
-import { ToolbarHoverHandler } from '../../toolbars/table-hover-handler';
+import { RadminTableConfig } from '../configs/radmin-table-config';
+import { ToolbarHoverHandler } from './table-hover-handler';
+import { IDomAdapter, IRowAdapter } from './toolbar-adapters';
 
 // declare const $2sxc: any;
 
@@ -16,8 +11,8 @@ import { ToolbarHoverHandler } from '../../toolbars/table-hover-handler';
  */
 export function createRowActionToolbar(
   sxc: Sxc,
-  table: Tabulator,
-  row: RowComponent,
+  table: IDomAdapter,
+  row: IRowAdapter,
   event: Event,
   hoverHandler: ToolbarHoverHandler,
   tableConfigData: RadminTableConfig,
@@ -44,7 +39,7 @@ export function createRowActionToolbar(
     return;
   }
 
-  const tableRect = table.element.getBoundingClientRect();
+  const tableRect = table.getElement().getBoundingClientRect();
   const rowRect = row.getElement().getBoundingClientRect();
 
   const virtualEl = createVirtualElFromRects(
@@ -127,24 +122,4 @@ export function createRowActionToolbar(
 
   hoverHandler.watch(toolbarEl, "row", log);
 
-  // const hoverState: HoverState = { isHovered: false };
-  // toolbarEl.addEventListener("mouseenter", () => {
-  //   hoverState.isHovered = true;
-  //   log("Toolbar hover start");
-  // });
-  // toolbarEl.addEventListener("mouseleave", () => {
-  //   hoverState.isHovered = false;
-  //   log("Toolbar hover end — removing");
-  //   toolbarEl.remove();
-  // });
-
-  // // mirror original behavior: remove on rowMouseLeave unless toolbar hovered
-  // table.on("rowMouseLeave", () => {
-  //   setTimeout(() => {
-  //     if (!hoverState.isHovered) {
-  //       log("Row mouse leave — removing toolbar");
-  //       toolbarEl.remove();
-  //     }
-  //   }, 100);
-  // });
 }

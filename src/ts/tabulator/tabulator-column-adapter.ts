@@ -1,12 +1,12 @@
 import { RadminColumnConfig } from "../configs/radmin-column-config";
 import { CellComponent, ColumnDefinition, GlobalTooltipOption } from "tabulator-tables";
-import { JsonSchema, SchemaProperty } from "../schema/json-schema-model";
+import { JsonSchema, SchemaProperty } from "../radmin/schema/json-schema-model";
 import { RadTabValueLookup } from "./data/radtab-value-lookup";
-import { ColumnSpecs, ColumnSpecsWithConfig } from '../schema/radmin-schema-helper';
+import { ColumnSpecs, ColumnSpecsWithConfig } from '../radmin/schema/radmin-schema-helper';
 import { RadTabFormatAdapter } from "./data/radtab-format-adapter";
 import { ServiceBase } from '../shared/service-base';
 import { RadTabFormatAndSortHelper } from './format-and-sort.helper';
-import { ColumnAdapter } from '../adapters/column-adapter';
+import { ColumnAdapter } from '../radmin/adapters/column-adapter';
 
 /**
  * Tabulator specific adapter, used by the ColumnService.

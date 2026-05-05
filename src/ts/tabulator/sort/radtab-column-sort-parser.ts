@@ -1,5 +1,5 @@
 import { ColumnDefinition, Sorter } from 'tabulator-tables';
-import { JsonSchema } from "../../schema/json-schema-model";
+import { JsonSchema } from "../../radmin/schema/json-schema-model";
 import { ServiceBase } from '../../shared/service-base';
 
 /**

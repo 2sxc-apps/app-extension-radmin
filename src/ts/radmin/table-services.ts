@@ -1,20 +1,20 @@
 import { Sxc } from '@2sic.com/2sxc-typings';
 import { CustomizeManager } from '../customizers/customize-manager';
-import { SchemaLoader } from '../schema/schema-loader';
+import { SchemaLoader } from './schema/schema-loader';
 import { ServiceBase } from '../shared/service-base';
 import { RadminTableConfig } from '../configs/radmin-table-config';
-import { DataProviderEntities } from '../providers/data-provider-entities';
-import { DataProviderFactory } from '../providers/data-provider-factory';
-import { JsonSchema } from '../schema/json-schema-model';
+import { DataProviderEntities } from './data/data-provider-entities';
+import { DataProviderFactory } from './data/data-provider-factory';
+import { JsonSchema } from './schema/json-schema-model';
 import { ErrorHelper } from '../shared/error-helper';
-import { ITableAdapter } from '../adapters/ITableAdapter';
-import { AdapterService } from '../adapters/adapter-service';
+import { VisualizerBootstrapper } from './visualizer/visualizer-bootstrapper';
+import { AdapterService } from './adapters/adapter-service';
 
 
 export class TableServices extends ServiceBase {
   constructor(logEnabled: boolean,
     public sxc: Sxc,
-    public table: ITableAdapter,
+    public table: VisualizerBootstrapper,
     public schemaProvider: SchemaLoader,
     public customizeManager: CustomizeManager,
 

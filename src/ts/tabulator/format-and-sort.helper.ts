@@ -1,10 +1,10 @@
 import { ColumnDefinition } from 'tabulator-tables';
 import HtmlStripper from '../shared/html-stripper';
 import { RadTabFormatAdapter } from './data/radtab-format-adapter';
-import { SchemaProperty } from '../schema/json-schema-model';
+import { SchemaProperty } from '../radmin/schema/json-schema-model';
 import { ServiceBase } from '../shared/service-base';
 import { tabulatorFormatConfigs } from './tabulator-column-formats';
-import { ColumnSpecs } from '../schema/radmin-schema-helper';
+import { ColumnSpecs } from '../radmin/schema/radmin-schema-helper';
 
 /**
  * Tabulator Helper to determine best formatter and sorter for a given schema property and format,

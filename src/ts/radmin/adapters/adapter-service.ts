@@ -1,6 +1,6 @@
-import { ServiceBase } from '../shared/service-base';
-import { TabulatorTableAdapter } from '../tabulator/tabulator-table-adapter';
-import { ITableAdapter } from './ITableAdapter';
+import { ServiceBase } from '../../shared/service-base';
+import { TabulatorTableAdapter } from '../../tabulator/tabulator-table-adapter';
+import { VisualizerBootstrapper } from '../visualizer/visualizer-bootstrapper';
 
 /**
  * Basic idea is to have a central service that can provide the appropriate adapter based on configuration or other factors.
@@ -15,7 +15,7 @@ export class AdapterService extends ServiceBase {
     super({ name: "AdapterService", enableDebug: false });
   }
 
-  public getTableAdapter(): ITableAdapter {
+  public getTableAdapter(): VisualizerBootstrapper {
     this.log("Providing TabulatorTableAdapter instance");
     return new TabulatorTableAdapter();
   }

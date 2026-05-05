@@ -1,6 +1,6 @@
 import { JsonSchema, SchemaProperty } from './json-schema-model';
-import { ServiceBase } from '../shared/service-base';
-import { RadminColumnConfig } from '../configs/radmin-column-config';
+import { ServiceBase } from '../../shared/service-base';
+import { RadminColumnConfig } from '../../configs/radmin-column-config';
 import { PropertyDefHelper } from './property-def.helper';
 
 /**

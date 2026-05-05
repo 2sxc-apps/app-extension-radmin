@@ -1,8 +1,8 @@
 import { Sxc } from '@2sic.com/2sxc-typings';
-import { RadminTableConfig } from '../configs/radmin-table-config';
+import { RadminTableConfig } from '../../configs/radmin-table-config';
 import { DataProviderEntities } from './data-provider-entities';
 import { DataProviderQuery } from './data-provider-query';
-import { ServiceBase } from '../shared/service-base';
+import { ServiceBase } from '../../shared/service-base';
 
 /**
  * Helper to decide if the data factory should get data from a query or from the direct REST API.

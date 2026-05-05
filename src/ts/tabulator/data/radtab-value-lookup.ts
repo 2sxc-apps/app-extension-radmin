@@ -1,6 +1,6 @@
-import { JsonSchema } from "../../schema/json-schema-model";
+import { JsonSchema } from "../../radmin/schema/json-schema-model";
 import { ServiceBase } from '../../shared/service-base';
-import { RadminSchemaHelper } from '../../schema/radmin-schema-helper';
+import { RadminSchemaHelper } from '../../radmin/schema/radmin-schema-helper';
 
 export class RadTabValueLookup extends ServiceBase {
 

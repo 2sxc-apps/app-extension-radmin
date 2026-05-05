@@ -1,6 +1,6 @@
 import { Sxc } from '@2sic.com/2sxc-typings';
 import { DataProviderBase } from './data-provider-base';
-import { RadminTableConfig } from '../configs/radmin-table-config';
+import { RadminTableConfig } from '../../configs/radmin-table-config';
 
 const debug = true;
 

@@ -1,7 +1,7 @@
-import { ColumnAdapter } from '../adapters/column-adapter';
+import { ColumnAdapter } from './adapters/column-adapter';
 import { RadminColumnConfig } from '../configs/radmin-column-config';
-import { JsonSchema } from '../schema/json-schema-model';
-import { RadminSchemaHelper, ColumnSpecs } from '../schema/radmin-schema-helper';
+import { JsonSchema } from './schema/json-schema-model';
+import { RadminSchemaHelper, ColumnSpecs } from './schema/radmin-schema-helper';
 import { ServiceBase } from '../shared/service-base';
 
 /**

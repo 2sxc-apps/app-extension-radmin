@@ -20,7 +20,7 @@ import { TableServices } from '../radmin/table-services';
 import { SearchSpecs, TableSpecs } from '../radmin/setup-params';
 import { RadTabSetupSort } from './sort/radtab-setup-sort';
 import { RadTabSetupEditActions } from './features/radtab-setup-edit-actions';
-import { ITableAdapter } from '../adapters/ITableAdapter';
+import { VisualizerBootstrapper } from '../radmin/visualizer/visualizer-bootstrapper';
 
 // Register required modules for Tabulator
 Tabulator.registerModule([
@@ -33,7 +33,7 @@ Tabulator.registerModule([
   SortModule,
 ]);
 
-export class TabulatorTableAdapter extends ServiceBase implements ITableAdapter {
+export class TabulatorTableAdapter extends ServiceBase implements VisualizerBootstrapper {
   private configService = new TabulatorConfigService();
 
   constructor() {

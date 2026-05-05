@@ -1,6 +1,6 @@
-import { JsonSchema, SchemaProperty } from "../../schema/json-schema-model";
+import { JsonSchema, SchemaProperty } from "../../radmin/schema/json-schema-model";
 import { CellComponent } from "tabulator-tables";
-import { RadminSchemaHelper } from '../../schema/radmin-schema-helper';
+import { RadminSchemaHelper } from '../../radmin/schema/radmin-schema-helper';
 import { ServiceBase } from '../../shared/service-base';
 import { tabulatorFormatConfigs } from '../tabulator-column-formats';
 

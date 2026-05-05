@@ -8,6 +8,8 @@ import { RadTabFormatAdapter } from "./data/radtab-format-adapter";
 import { ServiceBase } from '../shared/service-base';
 import { FormatAndSortHelper } from './format-and-sort.helper';
 
+type ColumnDefinitionWithHide = ColumnDefinition & { hide: boolean };
+
 export class TabulatorColumnAdapter extends ServiceBase {
 
   constructor() {
@@ -21,7 +23,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
     columnConfigs: RadminColumnConfig[],
     columnsAutoShowRemaining: boolean,
     schema: JsonSchema
-  ): ColumnDefinition[] {
+  ): ColumnDefinitionWithHide[] {
     this.log("convert called with", {
       columnConfigLength: columnConfigs.length,
       columnsAutoShowRemaining,
@@ -34,28 +36,28 @@ export class TabulatorColumnAdapter extends ServiceBase {
     const columns = columnConfigs
       .map((col) => {
         const fieldName = new SchemaHelper(schema).findCasing(col.fieldValue);
-        const prop = schema.properties[fieldName];
-        this.log(`configured column: '${col.fieldValue}' to '${fieldName}'`, { col }, `schemaProp:`, prop);
+        const columnDef = schema.properties[fieldName];
+        this.log(`configured column: '${col.fieldValue}' to '${fieldName}'`, { col }, `schemaProp:`, columnDef);
 
         // skip any configured column that references a group property
-        if (PropertyDefHelper.isGroup(prop, fieldName)) 
+        if (PropertyDefHelper.isGroup(columnDef, fieldName)) 
           return this.logAndReturn(null, `Skipping configured column because it references a group property: '${fieldName}'`, col);
-        return { fieldName, col, prop };
+        return { fieldName, col, columnDef };
       })
       .filter((c) => !!c); // remove nulls (skipped group columns);
 
     const configuredColumns = columns
-      .map(({ fieldName, col, prop }) => {
+      .map(({ fieldName, col, columnDef }) => {
         const chosenFormat = col.fieldFormat
           || this.#radTabFormatAdapter.getFormatFromSchema(col.fieldValue, schema);
 
-        const formatAndSort = this.#formatAndSortHelper.getFormatAndSort(chosenFormat, fieldName, prop || { type: "string" } as SchemaProperty, !!col.linkType);
+        const formatAndSort = this.#formatAndSortHelper.getFormatAndSort(chosenFormat, fieldName, columnDef || { type: "string" } as SchemaProperty, !!col.linkType);
 
         const hAlign = col.horizontalAlignment !== "automatic"
           ? col.horizontalAlignment
           : undefined;
 
-        const column: ColumnDefinition = {
+        const column: ColumnDefinitionWithHide = {
           title: col.title,
           field: fieldName,
           headerTooltip: col.headerTooltip || false,
@@ -73,21 +75,29 @@ export class TabulatorColumnAdapter extends ServiceBase {
             : col.fieldTooltip
               ? (e: UIEvent, cell: CellComponent, _: unknown) => new RadTabValueLookup(schema, cell.getData()).resolveTemplate(col.fieldTooltip)
               : true) as unknown as string,
-          ...this.linkFormatter(schema, col, fieldName)
+          ...this.linkFormatter(schema, col, fieldName),
+
+          hide: col.hide || false, // use the new 'hide' property to determine initial visibility
         };
-// console.log('2dmx');
         return this.logAndReturn(column, `Final column config for field '${fieldName}'`);
       });
-      // .filter((c): c is ColumnDefinition => !!c); // remove nulls (skipped group columns)
 
     this.log(`Configured columns built: ${configuredColumns.length}`);
 
     // Add remaining columns from schema if configured
-    if (!columnsAutoShowRemaining && configuredColumns.length > 0)
-      return this.logAndReturn(configuredColumns, "columnsAutoShowRemaining is false — returning configured columns only");
+    if (!columnsAutoShowRemaining && configuredColumns.length > 0) {
+      const nonHidden = this.#dropHiddenColumns(configuredColumns);
+      return this.logAndReturn(nonHidden, `columnsAutoShowRemaining is false — returning configured columns only; all ${configuredColumns.length}; ${nonHidden.length} non-hidden`);
+    }
 
     // Check any remaining fields that may have to be auto-added as well
-    return this.#tryAddRemainingColumns(schema, configuredColumns);
+    const allWithRemaining = this.#tryAddRemainingColumns(schema, configuredColumns);
+    const nonHidden = this.#dropHiddenColumns(allWithRemaining);
+    return this.logAndReturn(nonHidden, `Returning all columns including auto-added; total ${allWithRemaining.length}; ${nonHidden.length} non-hidden`);
+  }
+
+  #dropHiddenColumns(columns: ColumnDefinitionWithHide[]): ColumnDefinitionWithHide[] {
+    return columns.filter(col => !col.hide);
   }
 
 
@@ -98,7 +108,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
    * @param configuredColumns The columns that have already been configured.
    * @returns An array of TabulatorColumnConfig including the newly added columns.
    */
-  #tryAddRemainingColumns(schema: JsonSchema, configuredColumns: ColumnDefinition[]) {
+  #tryAddRemainingColumns(schema: JsonSchema, configuredColumns: ColumnDefinitionWithHide[]) {
     // Get fields that are already configured
     const configuredFields = new Set(configuredColumns.filter(col => !!col)
       .map((col) => col.field as string));
@@ -120,7 +130,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
    * @param configuredFields The set of fields that have already been configured.
    * @returns An array of TabulatorColumnConfig for the remaining columns.
    */
-  #defineRemainingColumns(schema: JsonSchema, configuredFields: Set<string>) {
+  #defineRemainingColumns(schema: JsonSchema, configuredFields: Set<string>): ColumnDefinitionWithHide[] {
     this.log("Defining remaining columns from schema. Total properties:", { schema, configuredFields });
     const keysToUse = Object.keys(schema.properties)
       .filter((key) => !configuredFields.has(key))
@@ -138,10 +148,11 @@ export class TabulatorColumnAdapter extends ServiceBase {
         const property = schema.properties[key];
         const formatAndSort = this.#formatAndSortHelper.getFormatAndSortOfPropertyUnspecified(schema, key);
 
-        const col: ColumnDefinition = {
+        const col: ColumnDefinitionWithHide = {
           title: property.title || key,
           field: key,
-          ...formatAndSort
+          ...formatAndSort,
+          hide: false, // default to not hidden
         };
 
         return this.logAndReturn(col, "Built auto column config for key:", key);

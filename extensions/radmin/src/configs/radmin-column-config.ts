@@ -7,17 +7,18 @@ export interface RadminColumnConfig {
   guid: string;
   title: string;
 
+  /** new 01.00.01 */
+  hide: boolean;
+
   fieldValue: string;
   fieldFormat: string;
 
   horizontalAlignment: "automatic" | "left" | "center" | "right";
   width: number | "automatic";
   
-  // tooltipEnabled: boolean;
   fieldTooltip: string;
   headerTooltip: string;
   
-  // linkEnable: boolean;
   linkType: '' | 'page' | 'url' | 'view' | 'view-dynamic';
   linkViewRef: RadminDetailsViewConfig;
   linkViewId: string | undefined;
@@ -27,7 +28,7 @@ export interface RadminColumnConfig {
 
 }
 
-export interface RadminDetailsViewConfig {
+interface RadminDetailsViewConfig {
   id: number;
   guid: string;
   viewId: string;

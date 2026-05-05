@@ -13,8 +13,13 @@ export interface RadminTableConfig {
   enableDelete: boolean;
   enableEdit: boolean;
   dataQuery: string;
-  dataQueryStream: string; // wip
-  dataQueryParameters: string; // wip
+
+  /** The stream name of the query; if not specified, the "Default" stream is used. Case sensitive. */
+  dataQueryStream: string;
+
+  /** The parameters for the data query */
+  dataQueryParameters: string;
+
   searchEnabled?: boolean;
   sortOrderReverse?: boolean;
   columnSort?: string;

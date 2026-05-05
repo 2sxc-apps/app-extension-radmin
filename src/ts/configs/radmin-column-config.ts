@@ -7,6 +7,9 @@ export interface RadminColumnConfig {
   guid: string;
   title: string;
 
+  /** new 01.00.01 */
+  hide: boolean;
+
   fieldValue: string;
   fieldFormat: string;
 
@@ -25,7 +28,7 @@ export interface RadminColumnConfig {
 
 }
 
-export interface RadminDetailsViewConfig {
+interface RadminDetailsViewConfig {
   id: number;
   guid: string;
   viewId: string;

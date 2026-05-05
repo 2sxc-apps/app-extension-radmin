@@ -45,9 +45,15 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## TODO (2DM)
 
 1. Customizers - there are no samples, so it can't be verified ATM!
-1. Ephemeral field "HasData" is a workaround, should be removed again once Copilot correctly ignores it.
 
 ## History
+
+### 2025-05-05
+
+1. 2dm: add `delete` button to internal list management of the `Columns` list
+1. 2dm: Simplify column configuration regarding links and tooltips, by removing the "enable" checkbox and just checking if a value is set for the link/tooltip template
+1. 2dm: Remove Ephemeral field "HasData" workaround; export in 2sxc 21.08 fixes the underlying issue, so this is no longer needed
+
 
 ### 2026-05-04
 

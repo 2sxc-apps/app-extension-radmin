@@ -49,7 +49,7 @@ export class TabulatorColumnAdapter extends ServiceBase {
         const chosenFormat = col.fieldFormat
           || this.#radTabFormatAdapter.getFormatFromSchema(col.fieldValue, schema);
 
-        const formatAndSort = this.#formatAndSortHelper.getFormatAndSort(chosenFormat, fieldName, prop || { type: "string" } as SchemaProperty, !!col.linkEnable);
+        const formatAndSort = this.#formatAndSortHelper.getFormatAndSort(chosenFormat, fieldName, prop || { type: "string" } as SchemaProperty, !!col.linkType);
 
         const hAlign = col.horizontalAlignment !== "automatic"
           ? col.horizontalAlignment
@@ -64,9 +64,11 @@ export class TabulatorColumnAdapter extends ServiceBase {
           hozAlign: hAlign,
           headerHozAlign: hAlign,
           // Only set width if explicitly specified
-          width: col.width !== "automatic" ? col.width : undefined,
+          width: col.width !== "automatic"
+            ? col.width
+            : undefined,
           // Handle tooltip configuration
-          tooltip: (!col.tooltipEnabled
+          tooltip: (!col.fieldTooltip
             ? false
             : col.fieldTooltip
               ? (e: UIEvent, cell: CellComponent, _: unknown) => new RadTabValueLookup(schema, cell.getData()).resolveTemplate(col.fieldTooltip)
@@ -152,8 +154,8 @@ export class TabulatorColumnAdapter extends ServiceBase {
    * Configure link if enabled
    */
   linkFormatter(schema: JsonSchema, col: RadminColumnConfig, normalizedField: string): Partial<ColumnDefinition> {
-    // if not enabled, just return empty config
-    if (!col.linkEnable)
+    // if not enabled (linkType blank), just return empty config
+    if (!col.linkType)
       return {};
 
     this.log(`Link enabled for column '${normalizedField}'`, {

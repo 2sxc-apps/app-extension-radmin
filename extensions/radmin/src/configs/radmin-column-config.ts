@@ -13,11 +13,11 @@ export interface RadminColumnConfig {
   horizontalAlignment: "automatic" | "left" | "center" | "right";
   width: number | "automatic";
   
-  tooltipEnabled: boolean;
+  // tooltipEnabled: boolean;
   fieldTooltip: string;
   headerTooltip: string;
   
-  linkEnable: boolean;
+  // linkEnable: boolean;
   linkType: '' | 'page' | 'url' | 'view' | 'view-dynamic';
   linkViewRef: RadminDetailsViewConfig;
   linkViewId: string | undefined;

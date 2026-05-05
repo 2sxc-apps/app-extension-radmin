@@ -109,6 +109,19 @@ function getToolbar(sxc: any, column: ColumnComponent, tableConfigData: RadminTa
       groups: [
         { buttons: "edit", },
         { buttons: "moveup,movedown", },
+        // 2026-05-05 2dm, considered adding a remove/delete button to remove the configuration
+        // but I believe it would only confuse, since people would think it deletes the column,
+        // while it would only remove the configuration and make the column show with default settings again. So for now, this is left out to avoid confusion.
+        // { buttons: "remove", params: {
+        //     tooltip: "Delete column",
+        //     title: "Delete column 2dmx",
+        //     entityId,
+        //     entityGuid: colConfig.guid,
+        //     entityTitle: colConfig.title,
+        //     // contentType: ColumnContentTypeId,
+        //     // parent: tableConfigData.guid,
+        //   }
+        // },
         // 2026-05-04 2dm, experimental add-id-column with link
         // it works, but it's not clear where we should put this link, so commented out again for now.
         // { buttons: [{
@@ -121,10 +134,8 @@ function getToolbar(sxc: any, column: ColumnComponent, tableConfigData: RadminTa
         //     prefill: {
         //       Title: 'Id',
         //       FieldValue: 'id',
-        //       LinkEnable: true,
         //       LinkType: 'view',
         //       LinkViewRef: 'e935d112-f33d-468e-9144-eb9f271a59a9', // Reference to default details-view
-        //       TooltipEnabled: false,
         //     },
         //   }
         // }]
@@ -153,8 +164,6 @@ function getToolbar(sxc: any, column: ColumnComponent, tableConfigData: RadminTa
       index: configuredColumns.length,
       prefill: {
         Title: colTitle,
-        linkEnable: false,
-        tooltipEnabled: false,
         FieldValue: fieldValue,
       },
     },

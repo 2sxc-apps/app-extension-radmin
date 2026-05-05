@@ -1,22 +1,21 @@
-import type { Tabulator } from "tabulator-tables";
-import { RadminTableConfig } from "../../configs/radmin-table-config";
+import { RadminTableConfig } from "../configs/radmin-table-config";
 
 declare const $2sxc: any;
 
+const divClass = 'table-add-button';
 /**
  * Show the floating Add button (extracted for readability)
  */
 export function showAddButton(
-  table: Tabulator,
+  tableElement: HTMLElement,
   tableConfigData: RadminTableConfig,
   baseButtonSize: number,
   zIndex: number,
   log: (...args: any[]) => void
 ) {
   log("Adding add button to table");
-  const tableElement = table.element as HTMLElement;
 
-  tableElement.querySelectorAll(".table-add-button").forEach((n) => n.remove());
+  tableElement.querySelectorAll(`.${divClass}`).forEach((n) => n.remove());
 
   const sxc = $2sxc(tableElement);
   if (!sxc.isEditMode()) {
@@ -32,7 +31,7 @@ export function showAddButton(
   });
 
   const container = document.createElement("div");
-  container.className = "table-add-button";
+  container.className = divClass;
   Object.assign(container.style, {
     position: "absolute",
     top: "7.5px",

@@ -4,6 +4,7 @@ import { ErrorHelper } from "../../shared/error-helper";
 import { TabulatorToolbars } from "../tabulator-toolbars/tabulator-toolbar";
 import { ServiceBase } from '../../shared/service-base';
 import { SearchSpecs, TableSpecs } from '../../radmin/setup-params';
+import { TabulatorTableHoverHandler } from '../tabulator-toolbars/tabulator-table-hover-handler';
 
 
 export class RadTabSetupEditActions extends ServiceBase {
@@ -19,7 +20,9 @@ export class RadTabSetupEditActions extends ServiceBase {
     if (this.#isViewConfigMode() && specs.canEditConfig) {
       this.log("in ViewConfigMode, setting up header handlers");
       this.#setupViewConfigMode(table, tableConfigData);
-    } else if (specs.canEditData) {
+    }
+    
+    else if (specs.canEditData) {
       const editEnabled = !!tableConfigData.enableEdit;
       const canDelete = !!tableConfigData.enableDelete;
       this.log("row actions", { editEnabled, canDelete });
@@ -52,7 +55,18 @@ export class RadTabSetupEditActions extends ServiceBase {
       table.on("headerMouseEnter" as any,
         (e: MouseEvent, column: ColumnComponent) => {
           this.log("headerMouseEnter triggered", column);
-          this.tabulatorToolbars.showColumnToolbar(column, e, tableConfigData);
+
+          const table = column.getTable();
+          const sxc = $2sxc(table.element);
+
+          if (!sxc.isEditMode()) {
+            this.log("Not in edit mode, skipping column toolbar");
+            return;
+          }
+
+          const hoverHandler = new TabulatorTableHoverHandler(table);
+
+          this.tabulatorToolbars.showColumnToolbar(sxc, column, e, tableConfigData, hoverHandler);
         }
       );
     });
@@ -75,7 +89,16 @@ export class RadTabSetupEditActions extends ServiceBase {
 
     table.on("rowMouseEnter", (e, row: RowComponent) => {
       this.log("rowMouseEnter triggered", row.getData());
-      this.tabulatorToolbars.createRowToolbar(table, row, e, tableConfigData);
+
+      const sxc = $2sxc(table.element);
+      if (!sxc.isEditMode()) {
+        this.log("Not in edit mode, skipping toolbar");
+        return;
+      }
+
+      const hoverHandler = new TabulatorTableHoverHandler(table);
+
+      this.tabulatorToolbars.createRowToolbar(sxc, table, row, e, tableConfigData, hoverHandler);
     });
 
     table.on("rowMouseLeave", (e, row: RowComponent) => {

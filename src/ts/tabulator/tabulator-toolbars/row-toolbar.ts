@@ -3,19 +3,23 @@ import {
   cleanupToolbars,
   createVirtualElFromRects,
   positionToolbarElement,
-} from "./utils/toolbar-positioning";
-import { CommandNames } from "@2sic.com/2sxc-typings";
+} from "../../toolbars/toolbar-positioning";
+import { CommandNames, Sxc } from "@2sic.com/2sxc-typings";
 import { RadminTableConfig } from '../../configs/radmin-table-config';
+import { HoverState } from '../../toolbars/hover-state';
+import { ToolbarHoverHandler } from '../../toolbars/table-hover-handler';
 
-declare const $2sxc: any;
+// declare const $2sxc: any;
 
 /**
  * Create row action toolbar (extracted from the class to keep single-responsibility)
  */
 export function createRowActionToolbar(
+  sxc: Sxc,
   table: Tabulator,
   row: RowComponent,
   event: Event,
+  hoverHandler: ToolbarHoverHandler,
   tableConfigData: RadminTableConfig,
   baseButtonSize: number,
   zIndex: number,
@@ -27,12 +31,6 @@ export function createRowActionToolbar(
   const showDelete = !!tableConfigData.enableDelete;
 
   log("Creating row action toolbar", { showEdit, showDelete });
-
-  const sxc = $2sxc(table.element);
-  if (!sxc.isEditMode()) {
-    log("Not in edit mode, skipping toolbar");
-    return;
-  }
 
   const data = row.getData() as any;
   const entityId = data.EntityId ?? data.id;
@@ -101,7 +99,7 @@ export function createRowActionToolbar(
     return;
   }
 
-  const toolbarHtml = sxc.manage.getToolbar(actions);
+  const toolbarHtml = (sxc as any).manage.getToolbar(actions);
   log("Generated toolbar HTML:", toolbarHtml);
 
   toolbarEl.innerHTML = toolbarHtml;
@@ -127,24 +125,26 @@ export function createRowActionToolbar(
     ({ x, y }) => log("Computed toolbar position", { x, y })
   );
 
-  let isHovered = false;
-  toolbarEl.addEventListener("mouseenter", () => {
-    isHovered = true;
-    log("Toolbar hover start");
-  });
-  toolbarEl.addEventListener("mouseleave", () => {
-    isHovered = false;
-    log("Toolbar hover end — removing");
-    toolbarEl.remove();
-  });
+  hoverHandler.watch(toolbarEl, "row", log);
 
-  // mirror original behavior: remove on rowMouseLeave unless toolbar hovered
-  table.on("rowMouseLeave", () => {
-    setTimeout(() => {
-      if (!isHovered) {
-        log("Row mouse leave — removing toolbar");
-        toolbarEl.remove();
-      }
-    }, 100);
-  });
+  // const hoverState: HoverState = { isHovered: false };
+  // toolbarEl.addEventListener("mouseenter", () => {
+  //   hoverState.isHovered = true;
+  //   log("Toolbar hover start");
+  // });
+  // toolbarEl.addEventListener("mouseleave", () => {
+  //   hoverState.isHovered = false;
+  //   log("Toolbar hover end — removing");
+  //   toolbarEl.remove();
+  // });
+
+  // // mirror original behavior: remove on rowMouseLeave unless toolbar hovered
+  // table.on("rowMouseLeave", () => {
+  //   setTimeout(() => {
+  //     if (!hoverState.isHovered) {
+  //       log("Row mouse leave — removing toolbar");
+  //       toolbarEl.remove();
+  //     }
+  //   }, 100);
+  // });
 }

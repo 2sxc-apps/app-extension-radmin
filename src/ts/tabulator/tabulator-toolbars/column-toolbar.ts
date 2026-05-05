@@ -1,9 +1,11 @@
-import type { ColumnComponent } from "tabulator-tables";
-import { createVirtualElFromRects, positionToolbarElement, cleanupToolbars } from "./utils/toolbar-positioning";
+import type { ColumnComponent, EventCallBackMethods, Tabulator } from "tabulator-tables";
+import { createVirtualElFromRects, positionToolbarElement, cleanupToolbars } from "../../toolbars/toolbar-positioning";
 import { RadminTableConfig } from "../../configs/radmin-table-config";
 import { SxcGlobal } from '@2sic.com/2sxc-typings';
+import { ToolbarHoverHandler } from '../../toolbars/table-hover-handler';
+import { IColumnToolbarAdapter } from './IColumnToolbarAdapter';
 
-declare const $2sxc: SxcGlobal;
+// declare const $2sxc: SxcGlobal;
 
 const ColumnContentTypeId = 'f58eaa8e-88c0-403a-a996-9afc01ec14be';
 
@@ -13,27 +15,23 @@ const ColumnContentTypeId = 'f58eaa8e-88c0-403a-a996-9afc01ec14be';
  * - table.on("headerMouseLeave", ...) removes toolbar after short delay if not hovered
  */
 export function showColumnToolbar(
+  sxc: any,
   column: ColumnComponent,
   event: Event,
+  hoverHandler: ToolbarHoverHandler,
   tableConfigData: RadminTableConfig,
   baseButtonSize: number,
   zIndex: number,
   log: (...args: any[]) => void
 ) {
+  const colInfo = new ColumnToolbarAdapter(column);
+
   event.preventDefault();
   log("Creating column toolbar");
 
   cleanupToolbars();
 
-  const table = column.getTable();
-  const sxc = $2sxc(table.element);
-
-  if (!sxc.isEditMode()) {
-    log("Not in edit mode, skipping column toolbar");
-    return;
-  }
-
-  const colEl = column.getElement();
+  const colEl = colInfo.getElement();
   const colRect = colEl.getBoundingClientRect();
   log("Column rect", colRect);
 
@@ -55,46 +53,37 @@ export function showColumnToolbar(
     pointerEvents: "auto",
   });
 
-  toolbarEl.innerHTML = getToolbar(sxc, column, tableConfigData);
+  toolbarEl.innerHTML = getToolbar(sxc, colInfo, tableConfigData);
   document.body.appendChild(toolbarEl);
 
   positionToolbarElement(virtualEl, toolbarEl, () => -baseButtonSize)
     .then(({ x, y }) => log("Computed column toolbar position", { x, y }));
 
-  // simple hover removal (same pattern as rows)
-  let isHovered = false;
-  toolbarEl.addEventListener("mouseenter", () => {
-    isHovered = true;
-    log("Column toolbar hover start");
-  });
-  toolbarEl.addEventListener("mouseleave", () => {
-    isHovered = false;
-    log("Column toolbar hover end — removing");
-    toolbarEl.remove();
-  });
-
-  // Remove toolbar when header is left (gives time to move into the toolbar)
-  (table as any).on("headerMouseLeave", () => {
-    setTimeout(() => {
-      if (!isHovered) {
-        log("Header mouse leave — removing column toolbar");
-        toolbarEl.remove();
-      }
-    }, 100);
-  });
+  hoverHandler.watch(toolbarEl, "column", log);
 }
 
-function getToolbar(sxc: any, column: ColumnComponent, tableConfigData: RadminTableConfig): string {
+
+export class ColumnToolbarAdapter implements IColumnToolbarAdapter {
+  constructor(private column: ColumnComponent) {
+    const colDef = column.getDefinition() || {};
+    this.fieldName = (column.getField?.() ?? "") as string;
+    this.title = (colDef.title ?? this.fieldName) || "";
+
+  }
+  fieldName: string;
+  title: string;
+
+  getElement() { return this.column.getElement(); }
+}
+
+function getToolbar(sxc: any, colInfo: IColumnToolbarAdapter, tableConfigData: RadminTableConfig): string {
   const configuredColumns = Array.isArray(tableConfigData.columnConfigs)
     ? tableConfigData.columnConfigs
     : [];
-  const colDef = column.getDefinition() || {};
-  const colField = (column.getField && column.getField()) ?? "";
-  const colTitle = (colDef.title ?? colField) || "";
 
   const colConfig = configuredColumns.find((cfg: any) => {
     const cfgTitle = String(cfg.Title ?? cfg.title /* try lower case, not sure why both */ ?? "");
-    return cfgTitle === colTitle || cfgTitle === colField;
+    return cfgTitle === colInfo.title || cfgTitle === colInfo.fieldName;
   });
 
   // If already configured, just return an edit + move up/down toolbar
@@ -151,9 +140,9 @@ function getToolbar(sxc: any, column: ColumnComponent, tableConfigData: RadminTa
   }
   
   // Not yet configured, create an "add" toolbar with pre-filled values
-  const fieldValue = colField && colField.trim() !== ""
-    ? colField
-    : colTitle.replace(/\s+/g, "");
+  const fieldValue = colInfo.fieldName && colInfo.fieldName.trim() !== ""
+    ? colInfo.fieldName
+    : colInfo.title.replace(/\s+/g, "");
 
   return sxc.manage.getToolbar({
     action: "new",
@@ -163,7 +152,7 @@ function getToolbar(sxc: any, column: ColumnComponent, tableConfigData: RadminTa
       fields: "ColumnConfigs",
       index: configuredColumns.length,
       prefill: {
-        Title: colTitle,
+        Title: colInfo.title,
         FieldValue: fieldValue,
       },
     },

@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import path from 'path';
 import fs from 'fs';
-import checker from 'vite-plugin-checker';
 
 export default defineConfig({
   build: {
@@ -43,9 +42,6 @@ export default defineConfig({
   },
   
   plugins: [
-    checker({
-      typescript: true, // This enables TypeScript checking
-    }),
     copyFilesPlugin([
       {
         src: path.resolve(__dirname, 'src/ts/configs/radmin-column-config.ts'),

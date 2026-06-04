@@ -53,13 +53,16 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 1. Custom filters - e.g. date range filter, dropdown filter for specific values, etc.
 1. Enabled/disable JS logging to console in configuration
 
-## TODO (2DM)
+### Wish List Customizers
 
-1. Customizers - there are no samples, so it can't be verified ATM!
+1. Review customizers, see if it can be simplified
+1. Publish examples / tutorials for customizers
+1. Ability to specify one or more global customizers, which are always loaded
+1. Simplify the setup of a new customizer; like by generating initial files?
 
 ## History
 
-### 2025-05-05
+### 2026-05-05
 
 1. 2dm: add `delete` button to internal list management of the `Columns` list
 1. 2dm: Simplify column configuration regarding links and tooltips, by removing the "enable" checkbox and just checking if a value is set for the link/tooltip template

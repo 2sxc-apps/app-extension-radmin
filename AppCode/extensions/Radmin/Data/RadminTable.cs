@@ -2,6 +2,9 @@ namespace AppCode.Extensions.Radmin.Data
 {
   public partial class RadminTable
   {
-    public bool DataIsConfigured => !IsEmpty(nameof(DataContentType)) || !IsEmpty(nameof(DataQuery));
+    public bool DataIsConfigured =>
+      !IsEmpty(nameof(DataContentType)) ||
+      !IsEmpty(nameof(DataQuery)) ||
+      !IsEmpty(nameof(DataWebApiEndpoint));
   }
 }

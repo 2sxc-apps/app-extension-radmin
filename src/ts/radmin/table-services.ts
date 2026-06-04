@@ -10,7 +10,6 @@ import { ErrorHelper } from '../shared/error-helper';
 import { VisualizerBootstrapper } from './visualizer/visualizer-bootstrapper';
 import { AdapterService } from './adapters/adapter-service';
 
-
 export class TableServices extends ServiceBase {
   constructor(logEnabled: boolean,
     public sxc: Sxc,
@@ -48,9 +47,7 @@ export class TableServicesFactory extends ServiceBase {
       dataProvider,
       schema
     );
-
   }
-
 
   async #loadSchema(schemaProvider: SchemaLoader, viewId: string): Promise<JsonSchema> {
     try {

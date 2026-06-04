@@ -9,7 +9,11 @@ export class DataProviderQuery extends DataProviderBase {
   #query: string;
   #stream: string;
 
-  constructor(sxc: Sxc, tableConfigData: RadminTableConfig, linkParameters?: string) {
+  constructor(
+    sxc: Sxc,
+    tableConfigData: RadminTableConfig,
+    linkParameters?: string
+  ) {
 
     const query = tableConfigData.dataQuery;
     const stream = tableConfigData.dataQueryStream || '';

@@ -1,6 +1,5 @@
 import { Resources } from '../configs/resources';
 
-
 export interface SetupParams extends TableSpecs, SearchSpecs {
   moduleId: number;
   errorContainerId?: string;

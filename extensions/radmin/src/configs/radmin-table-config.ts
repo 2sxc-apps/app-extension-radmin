@@ -13,8 +13,9 @@ export interface RadminTableConfig {
   enableDelete: boolean;
   enableEdit: boolean;
   dataQuery: string;
+  dataWebApiEndpoint?: string;
 
-  /** The stream name of the query; if not specified, the "Default" stream is used. Case sensitive. */
+  /** The stream name of the query; if not specified, "Default" is used */
   dataQueryStream: string;
 
   /** The parameters for the data query */

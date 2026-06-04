@@ -12,9 +12,31 @@ export class DataProviderFactory extends ServiceBase {
     super({ name: "DataProviderFactory", enableDebug: false });
   }
 
-  public getDataProvider(tableConfigData: RadminTableConfig, sxc: Sxc, linkParameters: string | undefined): DataProviderEntities {
+  public getDataProvider(
+    tableConfigData: RadminTableConfig,
+    sxc: Sxc,
+    linkParameters: string | undefined
+  ): DataProviderEntities | DataProviderQuery {
+
+    // 1. WEB API ENDPOINT (highest priority)
+    const webApiEndpoint = tableConfigData.dataWebApiEndpoint?.trim();
+    if (webApiEndpoint) {
+      this.log("Created WebApi DataProvider", webApiEndpoint);
+
+      const apiUrl = sxc.webApi.url(webApiEndpoint);
+      const headers = sxc.webApi.headers("GET");
+
+      return new DataProviderEntities(
+        apiUrl,
+        headers,
+        tableConfigData.dataContentType
+      );
+    }
+
+    // 2. QUERY
     const query = tableConfigData.dataQuery;
     this.log("Creating data provider for config. Query:", query, "Link parameters:", linkParameters);
+
     if (query === "") {
       const apiUrl = sxc.webApi.url(`app/auto/data/${tableConfigData.dataContentType}`);
       const headers = sxc.webApi.headers("GET");
@@ -26,7 +48,7 @@ export class DataProviderFactory extends ServiceBase {
         tableConfigData.dataContentType
       );
     }
-    
+
     this.log("Created QueryDataProvider");
     return new DataProviderQuery(
       sxc,
@@ -34,5 +56,4 @@ export class DataProviderFactory extends ServiceBase {
       linkParameters
     );
   }
-
 }

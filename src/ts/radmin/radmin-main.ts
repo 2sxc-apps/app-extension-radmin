@@ -4,7 +4,6 @@ import { TableServicesFactory } from './table-services';
 import { ErrorHelper } from '../shared/error-helper';
 import { TableViewConfigurationLoader } from '../configs/table-view-configuration.loader';
 
-
 export class RadminMain extends ServiceBase {
   constructor() {
     super({ name: "RadminMain", enableDebug: false });

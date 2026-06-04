@@ -5,8 +5,7 @@ export abstract class DataProviderBase {
     protected apiUrl: string,
     protected headers: Record<string, string>,
     protected dataContentType?: string
-  ) {
-  }
+  ) {}
 
   /**
    * Get the API URL

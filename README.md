@@ -44,23 +44,35 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Wish List
 
-1. Get data from a Web-API (instead of a query); must consider how the data must be returned
-1. Ability to export data to Excel/CSV (would be a feature of tabulator, but if enabled should load more plugins and show the buttons, maybe more options)
+1. 2pp: Format fields if `date-template` or `template` (field already created by 2dm)
+1. 2pp: Ability to export data to Excel/CSV (would be a feature of tabulator, but if enabled should load more plugins and show the buttons, maybe more options)
 1. Ability to specify a custom Razor page to show details
-1. Ability to use OData parameters to filter data
 1. Boolean column: toggle inverse of value so user sees ✅ on false and ❌ on true (e.g. "active" column, where you want to toggle active/inactive)
    Note: it may be better to have a generic "mapping" feature for columns, where you can specify that a boolean column should show "✅" for true and "❌" for false, or even more complex mappings (e.g. for status codes)
 1. Custom filters - e.g. date range filter, dropdown filter for specific values, etc.
 1. Enabled/disable JS logging to console in configuration
 
+### Wish List Source Data
+
+1. Ability to use OData parameters to filter data
+
 ### Wish List Customizers
 
-1. Review customizers, see if it can be simplified
-1. Publish examples / tutorials for customizers
 1. Ability to specify one or more global customizers, which are always loaded
 1. Simplify the setup of a new customizer; like by generating initial files?
 
 ## History
+
+### 2026-06-04
+
+1. 2pp: generate content types for `Functions`, `Roles` and `Person`
+1. 2pp: add demo `PersonsController` for new `DataWebApiEndpoint`
+
+### 2026-06-04
+
+1. 2pp: add `DataWebApiEndpoint` as a new data provider for Web APIs
+1. 2pp: update `provider` files to include new provider
+1. 2pp: allow `DataWebApiEndpoint` in `configs` files
 
 ### 2026-05-05
 

@@ -58,7 +58,6 @@ export class TabulatorColumnAdapter extends ServiceBase implements ColumnAdapter
     return this.logAndReturn(column, `Final column config for field '${fieldName}'`);
   }
 
-
   convertUnconfiguredColumn(schema: JsonSchema, column: ColumnSpecs): ColumnDefinition {
     const formatAndSort = this.#formatAndSortHelper.getFormatAndSortOfPropertyUnspecified(column);
 
@@ -69,8 +68,6 @@ export class TabulatorColumnAdapter extends ServiceBase implements ColumnAdapter
     } satisfies ColumnDefinition;
     return result;
   }
-
-
 
   /**
    * Configure link if enabled

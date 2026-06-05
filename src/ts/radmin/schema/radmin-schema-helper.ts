@@ -103,8 +103,6 @@ export class RadminSchemaHelper extends ServiceBase {
   }
 }
 
-
-
 export interface ColumnSpecs {
   fieldName: string;
   fieldSchema: SchemaProperty;

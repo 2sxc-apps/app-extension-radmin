@@ -12,6 +12,7 @@ export interface RadminColumnConfig {
 
   fieldValue: string;
   fieldFormat: string;
+  fieldTemplate: string;
 
   horizontalAlignment: "automatic" | "left" | "center" | "right";
   width: number | "automatic";

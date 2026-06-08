@@ -63,7 +63,11 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## History
 
-### 2026-06-04
+### 2026-06-08
+
+1. 2pp: introduce `value templates` for `strings` and `dates`
+
+### 2026-06-05
 
 1. 2pp: generate content types for `Functions`, `Roles` and `Person`
 1. 2pp: add demo `PersonsController` for new `DataWebApiEndpoint`

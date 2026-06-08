@@ -27,6 +27,31 @@ export class TabulatorColumnAdapter extends ServiceBase implements ColumnAdapter
 
     const formatAndSort = this.#formatAndSortHelper.getFormatAndSort(chosenFormat, fieldName, fieldSchema || { type: "string" } as SchemaProperty, !!columnConfig.linkType);
 
+    if (chosenFormat === "template") {
+      formatAndSort.formatter = (cell: CellComponent) => {
+        const data = cell.getData();
+        const valueLookup = new RadTabValueLookup(schema, data);
+
+        return decodeURIComponent(valueLookup.resolveTemplate(columnConfig.fieldTemplate || ""));
+      };
+
+      formatAndSort.sorter = "string";
+    }
+
+    if (chosenFormat === "date-template") {
+      formatAndSort.formatter = (cell: CellComponent) => {
+        const value = cell.getValue();
+
+        if (!value)
+          return "";
+
+        return new RadTabValueLookup(schema, cell.getData())
+          .resolveDateTemplate(value, columnConfig.fieldTemplate || "");
+      };
+
+      formatAndSort.sorter = "datetime";
+    }
+
     // Only set alignment if explicitly specified
     const hAlign = columnConfig.horizontalAlignment !== "automatic"
       ? columnConfig.horizontalAlignment

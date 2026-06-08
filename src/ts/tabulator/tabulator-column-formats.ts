@@ -61,4 +61,12 @@ export const tabulatorFormatConfigs: Record<string, Partial<ColumnDefinition>> =
       color: ["#31B4E8"],
     },
   },
+  "date-template": {
+    hozAlign: "right",
+    sorter: "datetime",
+  },
+
+  "template": {
+    sorter: "string",
+  },
 };

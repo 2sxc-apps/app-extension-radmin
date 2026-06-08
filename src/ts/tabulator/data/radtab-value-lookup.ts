@@ -1,6 +1,7 @@
 import { JsonSchema } from "../../radmin/schema/json-schema-model";
 import { ServiceBase } from '../../shared/service-base';
 import { RadminSchemaHelper } from '../../radmin/schema/radmin-schema-helper';
+import { DateTime } from "luxon";
 
 export class RadTabValueLookup extends ServiceBase {
 
@@ -79,6 +80,24 @@ export class RadTabValueLookup extends ServiceBase {
     }
   }
 
+  public resolveDateTemplate(value: unknown, template: string): string {
+    if (!value || !template)
+      return "";
+
+    try {
+      const dt = DateTime.fromISO(String(value), { zone: "utc" });
+
+      if (!dt.isValid)
+        return "";
+
+      const safeTemplate = template
+        .replace(/DD/g, "dd")
+        .replace(/mm/g, "MM")
+        .replace(/YYYY/g, "yyyy");
+
+      return dt.toFormat(safeTemplate);
+    } catch {
+      return "";
+    }
+  }
 }
-
-

@@ -61,5 +61,4 @@ export class RadTabFormatAndSortHelper extends ServiceBase {
     };
     return this.logAndReturn(result, `getFormatAndSort result for key: ${key}`, { format, colDefinition, isLink });
   }
-
 }

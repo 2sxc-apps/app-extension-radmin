@@ -65,7 +65,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ### 2026-06-09
 
-1. 2pp: Add Tabulator Dataa Export Geature
+1. 2pp: Add Tabulator Data Export Geature
+1. 2pp: Remove `safeTemplate`()` conversion from Date/ Time value template
 
 ### 2026-06-08
 

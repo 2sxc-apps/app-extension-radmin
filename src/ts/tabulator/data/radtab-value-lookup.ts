@@ -90,12 +90,7 @@ export class RadTabValueLookup extends ServiceBase {
       if (!dt.isValid)
         return "";
 
-      const safeTemplate = template
-        .replace(/DD/g, "dd")
-        .replace(/mm/g, "MM")
-        .replace(/YYYY/g, "yyyy");
-
-      return dt.toFormat(safeTemplate);
+      return dt.toFormat(template);
     } catch {
       return "";
     }

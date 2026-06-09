@@ -8,6 +8,8 @@ import {
   Options,
   AjaxModule,
   SortModule,
+  ExportModule,
+  DownloadModule,
 } from "tabulator-tables";
 import { DateTime } from "luxon";
 import { TabulatorConfigService } from "./tabulator-config-service";
@@ -21,6 +23,7 @@ import { SearchSpecs, TableSpecs } from '../radmin/setup-params';
 import { RadTabSetupSort } from './sort/radtab-setup-sort';
 import { RadTabSetupEditActions } from './features/radtab-setup-edit-actions';
 import { VisualizerBootstrapper } from '../radmin/visualizer/visualizer-bootstrapper';
+import { RadTabSetupExport } from "./features/radtab-setup-export";
 
 // Register required modules for Tabulator
 Tabulator.registerModule([
@@ -31,6 +34,8 @@ Tabulator.registerModule([
   FilterModule,
   AjaxModule,
   SortModule,
+  ExportModule,
+  DownloadModule,
 ]);
 
 export class TabulatorTableAdapter extends ServiceBase implements VisualizerBootstrapper {
@@ -104,6 +109,14 @@ export class TabulatorTableAdapter extends ServiceBase implements VisualizerBoot
       const table = new Tabulator(`#${tableName}`, tabulatorOptions);
       this.log("Tabulator instance created", table);
 
+      if (tableConfigData.enableExport) {
+        new RadTabSetupExport().setup(
+          table,
+          specs.exportButtonId,
+          `${tableConfigData.viewId}.csv`
+        );
+      }
+
       // Apply initialSort after data has loaded (avoid calling setSort too early).
       new RadTabSetupSort().setupInitialSort(table, tabulatorOptions, tableName);
 
@@ -123,5 +136,4 @@ export class TabulatorTableAdapter extends ServiceBase implements VisualizerBoot
       throw error; // Re-throw to allow parent to handle specific errors
     }
   }
-
 }

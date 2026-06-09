@@ -14,6 +14,7 @@ export interface RadminTableConfig {
   enableEdit: boolean;
   dataQuery: string;
   dataWebApiEndpoint?: string;
+  enableExport?: boolean;
 
   /** The stream name of the query; if not specified, "Default" is used */
   dataQueryStream: string;

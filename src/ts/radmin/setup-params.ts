@@ -1,4 +1,4 @@
-import { Resources } from '../configs/resources';
+import { Resources } from "../configs/resources";
 
 export interface SetupParams extends TableSpecs, SearchSpecs {
   moduleId: number;
@@ -11,7 +11,7 @@ export interface TableSpecs {
   tableName: string;
   canEditConfig: boolean;
   canEditData: boolean;
-
+  exportButtonId?: string;
   /** The view ID (GUID) */
   viewId: string;
 }

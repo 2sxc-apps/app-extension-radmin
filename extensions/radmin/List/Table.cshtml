@@ -22,6 +22,18 @@
   @* 2.1. Show the Header which will also contain the search *@
   <div class="d-flex justify-content-between align-items-center mb-1">
     <@titleTag>@tableSpecs.Title</@titleTag>
+
+    @if (tableSpecs.EnableExport)
+    {
+      <button
+        id="radmin-id-export-@mid"
+        class="btn btn-sm btn-outline-secondary"
+        type="button"
+      >
+        
+        Export CSV
+      </button>
+    }
     <div id="radmin-id-search-container-@mid" class="w-25">
       @* The filter input will be dynamically inserted here by JavaScript *@
     </div>
@@ -74,7 +86,10 @@
   customizerDistPath = tableSpecs.IsEmpty(nameof(tableSpecs.CustomizersDistPath))
     ? ""
     : urlRoot + tableSpecs.CustomizersDistPath,
-  resources = resources
+  resources = resources,
+  exportButtonId = tableSpecs.EnableExport
+    ? "radmin-id-export-" + mid
+    : null,
 })
 
 @* 6. Activate 2sxc JS Core features so toolbars/edit-buttons will work *@

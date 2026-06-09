@@ -1,17 +1,23 @@
 import { Tabulator } from "tabulator-tables";
 
 export class RadTabSetupExport {
-  setup(table: Tabulator, buttonId?: string, filename = "data.csv") {
-    if (!buttonId) return;
+  setup(table: Tabulator, containerId?: string, fileName?: string) {
+    const container = containerId ? document.getElementById(containerId) : null;
 
-    const btn = document.getElementById(buttonId);
-    if (!btn) return;
+    if (!container) return;
+
+    const btn = document.createElement("button");
+    btn.className = "btn btn-sm btn-outline-secondary";
+    btn.type = "button";
+    btn.innerText = "Export CSV";
 
     btn.addEventListener("click", () => {
-      table.download("csv", filename, {
+      table.download("csv", fileName || "data.csv", {
         bom: true, // UTF-8 fix
         delimiter: ";", // Excel compatibility
       });
     });
+
+    container.appendChild(btn);
   }
 }

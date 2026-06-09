@@ -14,6 +14,7 @@ export interface TableSpecs {
   exportButtonId?: string;
   /** The view ID (GUID) */
   viewId: string;
+  exportButtonContainerId?: string;
 }
 
 export interface SearchSpecs {

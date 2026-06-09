@@ -110,10 +110,11 @@ export class TabulatorTableAdapter extends ServiceBase implements VisualizerBoot
       this.log("Tabulator instance created", table);
 
       if (tableConfigData.enableExport) {
+        const fileName = `${tableConfigData.title} ${new Date().toISOString().slice(0,10)}.csv`;
         new RadTabSetupExport().setup(
           table,
-          specs.exportButtonId,
-          `${tableConfigData.viewId}.csv`
+          specs.exportButtonContainerId,
+          fileName
         );
       }
 

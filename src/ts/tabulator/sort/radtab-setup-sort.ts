@@ -1,4 +1,4 @@
-import { ColumnComponent, Options, Sorter, Tabulator } from "tabulator-tables";
+import { Options, Sorter, Tabulator } from "tabulator-tables";
 import { ServiceBase } from "../../shared/service-base";
 import { ErrorHelper } from "../../shared/error-helper";
 
@@ -7,22 +7,33 @@ export class RadTabSetupSort extends ServiceBase {
     super({ name: "RadTabSetupSort", enableDebug: true });
   }
 
-  // loadSortFromSession(tableName: string): Sorter[] | null {
-  //   const savedSortersJson = sessionStorage.getItem(`${tableName}-sorters`);
-  //   if (!savedSortersJson) return null;
+  /**
+   * Loads saved sorters from the session state.
+   * Maps saved 'field' properties back to the 'column' key Tabulator expects for initial configuration.
+   */
+  loadSortFromSession(tableName: string): any[] | null {
+    const savedSortersJson = sessionStorage.getItem(`${tableName}-sorters`);
+    if (!savedSortersJson) return null;
 
-  //   try {
-  //     const savedSorters = JSON.parse(savedSortersJson) as Sorter[];
-  //     if (Array.isArray(savedSorters) && savedSorters.length > 0)
-  //       return this.logAndReturn(
-  //         savedSorters,
-  //         `Loaded saved sorters for ${tableName}`,
-  //       );
-  //   } catch (err) {
-  //     this.log(`Failed to parse saved sorters for ${tableName}`, err);
-  //   }
-  //   return null;
-  // }
+    try {
+      const savedSorters = JSON.parse(savedSortersJson);
+      if (Array.isArray(savedSorters) && savedSorters.length > 0) {
+        // Map 'field' to 'column' to make it compatible with initialSort and your parser structure
+        const mappedSorters = savedSorters.map((s: any) => ({
+          column: s.field || s.column,
+          dir: s.dir,
+        }));
+
+        return this.logAndReturn(
+          mappedSorters,
+          `Loaded and normalized saved sorters for ${tableName}`,
+        );
+      }
+    } catch (err) {
+      this.log(`Failed to parse saved sorters for ${tableName}`, err);
+    }
+    return null;
+  }
 
   setupInitialSort(
     table: Tabulator,
@@ -30,26 +41,21 @@ export class RadTabSetupSort extends ServiceBase {
     tableName: string,
   ) {
     const initialSortRaw = tabulatorOptions.initialSort as
-      | Array<{ column: string; dir: "asc" | "desc" }>
+      | Array<{ column: string; field?: string; dir: "asc" | "desc" }>
       | undefined;
 
     if (!initialSortRaw?.length) return;
 
-    this.log("Setting up initial sort with config:", initialSortRaw);
-
     try {
       // normalize into Tabulator Sorter[] (must include 'column')
-      const initialSort = initialSortRaw.map(
-        (s: { column: ColumnComponent | string; dir: "asc" | "desc" }) => ({
-          column: s.column,
-          dir: s.dir,
-        }),
-      ) as Sorter[];
+      const initialSort = initialSortRaw.map((s) => ({
+        column: s.column || s.field,
+        dir: s.dir,
+      })) as Sorter[];
 
       this.log("initialSort provided (for Tabulator)", initialSort);
 
       // apply only after dataLoaded to avoid early pipelines errors
-
       table.on("dataLoaded", () => {
         this.log("dataLoaded event — applying initialSort", initialSort);
         try {

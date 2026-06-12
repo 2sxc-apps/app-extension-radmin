@@ -1,58 +1,68 @@
-import { Options, Sorter, Tabulator } from 'tabulator-tables';
-import { ServiceBase } from '../../shared/service-base';
-import { ErrorHelper } from '../../shared/error-helper';
+import { ColumnComponent, Options, Sorter, Tabulator } from "tabulator-tables";
+import { ServiceBase } from "../../shared/service-base";
+import { ErrorHelper } from "../../shared/error-helper";
 
 export class RadTabSetupSort extends ServiceBase {
-
   constructor() {
     super({ name: "RadTabSetupSort", enableDebug: true });
   }
 
-  loadSortFromSession(tableName: string): Sorter[] | null {
-    const savedSortersJson = sessionStorage.getItem(`${tableName}-sorters`);
-    if (!savedSortersJson)
-      return null;
+  // loadSortFromSession(tableName: string): Sorter[] | null {
+  //   const savedSortersJson = sessionStorage.getItem(`${tableName}-sorters`);
+  //   if (!savedSortersJson) return null;
 
-    try {
-      const savedSorters = JSON.parse(savedSortersJson) as Sorter[];
-      if (Array.isArray(savedSorters) && savedSorters.length > 0)
-        return this.logAndReturn(savedSorters, `Loaded saved sorters for ${tableName}`);
-    } catch (err) {
-      this.log(`Failed to parse saved sorters for ${tableName}`, err);
-    }
-    return null;
-  }
+  //   try {
+  //     const savedSorters = JSON.parse(savedSortersJson) as Sorter[];
+  //     if (Array.isArray(savedSorters) && savedSorters.length > 0)
+  //       return this.logAndReturn(
+  //         savedSorters,
+  //         `Loaded saved sorters for ${tableName}`,
+  //       );
+  //   } catch (err) {
+  //     this.log(`Failed to parse saved sorters for ${tableName}`, err);
+  //   }
+  //   return null;
+  // }
 
-  
-  setupInitialSort(table: Tabulator, tabulatorOptions: Options, tableName: string) {
-    const initialSortRaw = tabulatorOptions.initialSort as Array<{ field?: string; column?: string; dir: "asc" | "desc"; }>
+  setupInitialSort(
+    table: Tabulator,
+    tabulatorOptions: Options,
+    tableName: string,
+  ) {
+    const initialSortRaw = tabulatorOptions.initialSort as
+      | Array<{ column: string; dir: "asc" | "desc" }>
       | undefined;
 
-    if (!initialSortRaw?.length)
-      return;
+    if (!initialSortRaw?.length) return;
+
+    this.log("Setting up initial sort with config:", initialSortRaw);
 
     try {
-
       // normalize into Tabulator Sorter[] (must include 'column')
-      const initialSort = initialSortRaw.map((s) => ({
-        column: s.column ?? s.field ?? "",
-        dir: s.dir,
-      })) as Sorter[];
+      const initialSort = initialSortRaw.map(
+        (s: { column: ColumnComponent | string; dir: "asc" | "desc" }) => ({
+          column: s.column,
+          dir: s.dir,
+        }),
+      ) as Sorter[];
 
       this.log("initialSort provided (for Tabulator)", initialSort);
 
       // apply only after dataLoaded to avoid early pipelines errors
+
       table.on("dataLoaded", () => {
         this.log("dataLoaded event — applying initialSort", initialSort);
         try {
           table.setSort(initialSort);
         } catch (error) {
-          this.log("setSort on dataLoaded failed:", ErrorHelper.toErrorString(error));
+          this.log(
+            "setSort on dataLoaded failed:",
+            ErrorHelper.toErrorString(error),
+          );
         }
 
         table.on("dataSorted", function (sorters, rows) {
-          if (sorters.length === 0)
-            return;
+          if (sorters.length === 0) return;
 
           const cleanSorters = sorters.map((s) => ({
             field: s.field || s.column.getField(),
@@ -61,14 +71,14 @@ export class RadTabSetupSort extends ServiceBase {
 
           sessionStorage.setItem(
             `${tableName}-sorters`,
-            JSON.stringify(cleanSorters)
+            JSON.stringify(cleanSorters),
           );
         });
       });
     } catch (error) {
       this.log(
         "error scheduling initialSort application:",
-        ErrorHelper.toErrorString(error)
+        ErrorHelper.toErrorString(error),
       );
     }
   }

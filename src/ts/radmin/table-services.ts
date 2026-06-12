@@ -64,5 +64,4 @@ export class TableServicesFactory extends ServiceBase {
       throw new Error(`Schema loading failed: ${errStr}`);
     }
   }
-
 }

@@ -26,11 +26,13 @@ export class TabulatorConfigService {
       data.columnsAutoShowRemaining
     );
 
+    // @2pp - not sure why you would do this? - it should take the config
     // Figure out initial sort
     // If it's cached in the sessionState, use that (eg. when sorting, editing, then reloading)
     // Otherwise use definition from data
-    const initialSort = new RadTabSetupSort().loadSortFromSession(specs.tableName)
-      ?? new RadTabColumnSortParser().loadFromSettings(
+    const initialSort = // new RadTabSetupSort().loadSortFromSession(specs.tableName)
+      // ??
+      new RadTabColumnSortParser().loadFromSettings(
           schema,
           columns,
           data.columnSort,

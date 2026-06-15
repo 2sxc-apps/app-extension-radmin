@@ -63,6 +63,14 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## History
 
+### 2026-06-15
+
+1. 2pp: Implement Frozen Column Config Option
+
+### 2026-06-12
+
+1. 2pp: Added Sorters to Column Formats to fix Initial Sort
+
 ### 2026-06-09
 
 1. 2pp: Add Tabulator Data Export Geature

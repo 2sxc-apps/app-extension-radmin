@@ -10,6 +10,7 @@ import {
   SortModule,
   ExportModule,
   DownloadModule,
+  FrozenColumnsModule,
 } from "tabulator-tables";
 import { DateTime } from "luxon";
 import { TabulatorConfigService } from "./tabulator-config-service";
@@ -36,6 +37,7 @@ Tabulator.registerModule([
   SortModule,
   ExportModule,
   DownloadModule,
+  FrozenColumnsModule,
 ]);
 
 export class TabulatorTableAdapter extends ServiceBase implements VisualizerBootstrapper {

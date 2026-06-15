@@ -16,6 +16,7 @@ export interface RadminColumnConfig {
 
   horizontalAlignment: "automatic" | "left" | "center" | "right";
   width: number | "automatic";
+  freezeColumn: boolean;
   
   fieldTooltip: string;
   headerTooltip: string;

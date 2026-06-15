@@ -75,6 +75,7 @@ export class TabulatorColumnAdapter extends ServiceBase implements ColumnAdapter
       headerTooltip: columnConfig.headerTooltip || false,
       ...formatAndSort,
       hozAlign: hAlign,
+      frozen: columnConfig.freezeColumn,
       headerHozAlign: hAlign,
       width,
       tooltip,

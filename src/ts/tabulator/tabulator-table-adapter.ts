@@ -133,7 +133,7 @@ export class TabulatorTableAdapter
           `${tableConfigData.title} ${new Date().toISOString().slice(0, 10)}.csv`;
 
         actions.push(
-          exportSetup.createAction(table, fileName)
+          exportSetup.createAction(table, specs, fileName)
         );
       }
 

@@ -4,5 +4,6 @@
  */
 export interface Resources {
   SearchLabel: string;
+  ExportButtonLabel: string;
   ViewConfigModeLabel: string;
 }

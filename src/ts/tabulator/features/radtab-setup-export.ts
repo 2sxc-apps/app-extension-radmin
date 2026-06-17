@@ -1,9 +1,10 @@
 import { Tabulator } from "tabulator-tables";
+import { SearchSpecs } from "../../radmin/setup-params";
 
 export class RadTabSetupExport {
-  createAction(table: Tabulator, fileName?: string) {
+  createAction(table: Tabulator, specs: SearchSpecs, fileName?: string) {
     return {
-      label: "Export CSV",
+      label: specs?.resources.ExportButtonLabel || "Export CSV",
       onClick: () => {
         table.download("csv", fileName || "data.csv", {
           bom: true,
@@ -11,25 +12,5 @@ export class RadTabSetupExport {
         });
       },
     };
-  }
-
-  setup(table: Tabulator, containerId?: string, fileName?: string) {
-    const container = containerId ? document.getElementById(containerId) : null;
-
-    if (!container) return;
-
-    const button = document.createElement("button");
-    button.className = "btn btn-outline-secondary";
-    button.type = "button";
-    button.innerText = "Export CSV";
-
-    button.addEventListener("click", () => {
-      table.download("csv", fileName || "data.csv", {
-        bom: true, // UTF-8 fix
-        delimiter: ";", // Excel compatibility
-      });
-    });
-
-    container.appendChild(button);
   }
 }

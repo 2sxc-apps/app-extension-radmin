@@ -66,6 +66,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ### 2026-06-17
 
 1. 2pp: Introduce Action Menu for Table Actions
+1. 2pp: Add and use Resources for `ExportButtonLabel`
 
 ### 2026-06-15
 

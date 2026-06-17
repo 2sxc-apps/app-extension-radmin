@@ -5,6 +5,8 @@ export interface SetupParams extends TableSpecs, SearchSpecs {
   errorContainerId?: string;
   customizerDistPath?: string; // Optional app URL for dynamic imports
   resources: Resources;
+
+  actionsContainerId?: string;
 }
 
 export interface TableSpecs {
@@ -14,7 +16,6 @@ export interface TableSpecs {
   exportButtonId?: string;
   /** The view ID (GUID) */
   viewId: string;
-  exportButtonContainerId?: string;
 }
 
 export interface SearchSpecs {

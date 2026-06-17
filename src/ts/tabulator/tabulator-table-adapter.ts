@@ -18,15 +18,16 @@ import { RadminTableConfig } from "../configs/radmin-table-config";
 import { RadTabSetupSearch } from "./features/radtab-setup-search";
 import { RadTabRegisterSort } from "./sort/radtab-register-sort";
 import { ErrorHelper } from "../shared/error-helper";
-import { ServiceBase } from '../shared/service-base';
-import { TableServices } from '../radmin/table-services';
-import { SearchSpecs, TableSpecs } from '../radmin/setup-params';
-import { RadTabSetupSort } from './sort/radtab-setup-sort';
-import { RadTabSetupEditActions } from './features/radtab-setup-edit-actions';
-import { VisualizerBootstrapper } from '../radmin/visualizer/visualizer-bootstrapper';
+import { ServiceBase } from "../shared/service-base";
+import { TableServices } from "../radmin/table-services";
+import { SearchSpecs, SetupParams } from "../radmin/setup-params";
+import { RadTabSetupSort } from "./sort/radtab-setup-sort";
+import { RadTabSetupEditActions } from "./features/radtab-setup-edit-actions";
+import { VisualizerBootstrapper } from "../radmin/visualizer/visualizer-bootstrapper";
 import { RadTabSetupExport } from "./features/radtab-setup-export";
+import { RadTabSetupActions, TableAction } from "./features/radtab-setup-actions";
 
-// Register required modules for Tabulator
+// Tabulator modules
 Tabulator.registerModule([
   TooltipModule,
   FormatModule,
@@ -40,7 +41,10 @@ Tabulator.registerModule([
   FrozenColumnsModule,
 ]);
 
-export class TabulatorTableAdapter extends ServiceBase implements VisualizerBootstrapper {
+export class TabulatorTableAdapter
+  extends ServiceBase
+  implements VisualizerBootstrapper
+{
   private configService = new TabulatorConfigService();
 
   constructor() {
@@ -48,7 +52,7 @@ export class TabulatorTableAdapter extends ServiceBase implements VisualizerBoot
   }
 
   async setup(
-    specs: SearchSpecs & TableSpecs,
+    specs: SetupParams,
     services: TableServices,
     tableConfigData: RadminTableConfig,
   ): Promise<unknown> {
@@ -56,12 +60,11 @@ export class TabulatorTableAdapter extends ServiceBase implements VisualizerBoot
     if (tableConfigData.searchEnabled)
       new RadTabSetupSearch().createSearchInput(specs as SearchSpecs);
 
-
     return this.createTable(specs, services, tableConfigData);
   }
 
   async createTable(
-    specs: SearchSpecs & TableSpecs,
+    specs: SetupParams,
     services: TableServices,
     tableConfigData: RadminTableConfig,
   ): Promise<unknown> {
@@ -69,7 +72,12 @@ export class TabulatorTableAdapter extends ServiceBase implements VisualizerBoot
     try {
       this.log("createTable called", { tableName, tableConfigData });
 
-      const tabulatorConfig = await this.configService.createTabulatorConfig(specs, tableConfigData, services.schema);
+      const tabulatorConfig = await this.configService.createTabulatorConfig(
+        specs,
+        tableConfigData,
+        services.schema,
+      );
+
       this.log("tabulatorConfig created", tabulatorConfig);
 
       // Prepare initial options (before customizations)
@@ -81,10 +89,13 @@ export class TabulatorTableAdapter extends ServiceBase implements VisualizerBoot
           method: "GET",
           headers: dataProvider.getHeaders(),
         },
-        ajaxResponse: (_url, _params, response) => dataProvider.processData(response),
+        ajaxResponse: (_url, _params, response) =>
+          dataProvider.processData(response),
       };
 
-      const tabulatorOptionsRaw: Options & { dependencies: Record<string, unknown> } = {
+      const tabulatorOptionsRaw: Options & {
+        dependencies: Record<string, unknown>;
+      } = {
         columnDefaults: {
           maxWidth: 300,
         },
@@ -109,32 +120,49 @@ export class TabulatorTableAdapter extends ServiceBase implements VisualizerBoot
       new RadTabRegisterSort().registerSortObjectAndArray();
 
       const table = new Tabulator(`#${tableName}`, tabulatorOptions);
+
       this.log("Tabulator instance created", table);
 
+      // Setup Action Menu
+      const actions: TableAction[] = [];
+
+      const exportSetup = new RadTabSetupExport();
+
       if (tableConfigData.enableExport) {
-        const fileName = `${tableConfigData.title} ${new Date().toISOString().slice(0,10)}.csv`;
-        new RadTabSetupExport().setup(
-          table,
-          specs.exportButtonContainerId,
-          fileName
+        const fileName =
+          `${tableConfigData.title} ${new Date().toISOString().slice(0, 10)}.csv`;
+
+        actions.push(
+          exportSetup.createAction(table, fileName)
         );
       }
 
-      // Apply initialSort after data has loaded (avoid calling setSort too early).
-      new RadTabSetupSort().setupInitialSort(table, tabulatorOptions, tableName);
+      new RadTabSetupActions().setup(specs.actionsContainerId, actions);
+
+
+      // Setup Sort
+      new RadTabSetupSort().setupInitialSort(
+        table,
+        tabulatorOptions,
+        tableName,
+      );
 
       if (specs.searchDomId && tableConfigData.searchEnabled) {
         this.log("setting up filter input", specs.searchDomId);
         new RadTabSetupSearch().connectSearch(table, specs.searchDomId);
       }
 
-      new RadTabSetupEditActions().setupEditAddDelete(table, tableConfigData, specs);
+      new RadTabSetupEditActions().setupEditAddDelete(
+        table,
+        tableConfigData,
+        specs,
+      );
 
       return table;
     } catch (error) {
       console.error(
         "Failed to create Tabulator table:",
-        ErrorHelper.toErrorString(error)
+        ErrorHelper.toErrorString(error),
       );
       throw error; // Re-throw to allow parent to handle specific errors
     }

@@ -31,8 +31,12 @@
   @* 2.1. Show the Header which will also contain the search *@
   <div class="d-flex justify-content-between align-items-center mb-1">
     <@titleTag>@tableSpecs.Title</@titleTag>
-    <div id="radmin-id-search-container-@mid"></div>
-    <div id="radmin-id-actions-container-@mid"></div>
+    <div class="d-flex gap-2">
+      <div id="radmin-id-search-container-@mid"></div>
+      @if(actionsExist) {
+        <div id="radmin-id-actions-container-@mid"></div>
+      }
+    </div>
   </div>
 
   @* 2.2. Show instructions for new module and View Config Mode *@

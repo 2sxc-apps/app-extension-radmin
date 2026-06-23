@@ -15,18 +15,24 @@
   // 1.2. Prepare some common variables
   var urlRoot = App.Folder.Url;
   var mid = MyContext.Module.Id;
+
+  // 1.3 Toolbar
+  var actionsExist = tableSpecs.EnableExport;
+
+  var toolbar = radminHelper.GetToolbar(tableSpecs).Settings(
+    classes: actionsExist ? "toolbar-margin" : ""
+  );
 }
 
+@* TODO: add classes only if action menu is actually enbled *@
+
 @* 2. Main Container with Header, Search and any Instructions + Toolbar *@
-<div @radminHelper.GetToolbar(tableSpecs)>
+<div @toolbar>
   @* 2.1. Show the Header which will also contain the search *@
   <div class="d-flex justify-content-between align-items-center mb-1">
     <@titleTag>@tableSpecs.Title</@titleTag>
-      <div class="d-flex gap-2">
-        <div id="radmin-id-actions-container-@mid"></div>
-
-        <div id="radmin-id-search-container-@mid"></div>
-      </div>
+    <div id="radmin-id-search-container-@mid"></div>
+    <div id="radmin-id-actions-container-@mid"></div>
   </div>
 
   @* 2.2. Show instructions for new module and View Config Mode *@

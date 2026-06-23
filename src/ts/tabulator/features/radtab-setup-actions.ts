@@ -22,6 +22,9 @@ export class RadTabSetupActions {
     menu.className = "dropdown-menu";
     menu.style.display = "none";
 
+    // Ensure Dropdown opens to the left
+    menu.style.right = "0";
+
     actions.forEach((action) => {
       const item = document.createElement("button");
 

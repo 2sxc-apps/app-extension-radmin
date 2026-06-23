@@ -63,6 +63,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## History
 
+### 2026-06-23
+
+1. 2pp: Move Table Toolbar slightly to the right, so it doesn't block the Actions
+
 ### 2026-06-17
 
 1. 2pp: Introduce Action Menu for Table Actions

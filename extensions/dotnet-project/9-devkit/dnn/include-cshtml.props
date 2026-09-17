@@ -1,0 +1,10 @@
+<Project>
+  <!-- *** Make sure Intellisense loads all the .cshtml files *** -->
+
+  <ItemGroup>
+    <AdditionalFiles Include="**\*.cshtml">
+      <TargetPath>%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+    </AdditionalFiles>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,11 @@
+<Project>
+  <!-- *** Paths for Razor analyzer and helper assemblies from the installed SDK (DNN only) *** -->
+
+  <!-- 1. Paths for Razor analyzer and helper assemblies from the installed SDK -->
+  <PropertyGroup>
+    <RazorSdkPath>$(MSBuildSDKsPath)\Microsoft.NET.Sdk.Razor</RazorSdkPath>
+    <RazorSourceGeneratorsPath>$(RazorSdkPath)\source-generators</RazorSourceGeneratorsPath>
+    <RazorToolsPath>$(RazorSdkPath)\tools</RazorToolsPath>
+  </PropertyGroup>
+
+</Project>

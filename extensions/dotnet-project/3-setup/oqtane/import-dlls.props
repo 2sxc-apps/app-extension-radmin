@@ -1,0 +1,9 @@
+<Project>
+  <!-- *** Import Oqtane DLLs *** -->
+
+  <!-- 1. Import Oqtane DLLs from the resolved PathBin -->
+  <ItemGroup Condition="'$(PathBin)' != ''">
+    <Reference Include="$(PathBin)\Oqtane.*.dll" />
+  </ItemGroup>
+
+</Project>

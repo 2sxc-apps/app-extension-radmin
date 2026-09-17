@@ -1,0 +1,19 @@
+<Project>
+  <!-- *** Import 2sxc DLLs incl. standard helper DLLs which are generally always used *** -->
+
+  <!-- 1. References shared by DNN and Oqtane -->
+  <ItemGroup Condition="'$(PathBin)' != ''">
+    <Reference Include="$(PathBin)\ToSic.*.dll" />
+    <Reference Include="$(PathBin)\Connect.Koi.dll" Condition="Exists('$(PathBin)\Connect.Koi.dll')" />
+    <Reference Include="$(PathBin)\CsvHelper.dll" Condition="Exists('$(PathBin)\CsvHelper.dll')" />
+    <Reference Include="$(PathBin)\System.Collections.Immutable.dll" Condition="Exists('$(PathBin)\System.Collections.Immutable.dll')" />
+    <Reference Include="$(PathBin)\System.Text.Json.dll" Condition="Exists('$(PathBin)\System.Text.Json.dll')" />
+    <Reference Include="$(PathBin)\System.Memory.dll" Condition="Exists('$(PathBin)\System.Memory.dll')" />
+  </ItemGroup>
+
+  <!-- 2. References from the app specific Dependencies folder (this is an incomplete feature) -->
+  <ItemGroup>
+    <Reference Include="Dependencies\*.dll" />
+  </ItemGroup>
+
+</Project>

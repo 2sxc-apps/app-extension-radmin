@@ -63,6 +63,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## History
 
+### 2026-09-17
+
+1. 2dm: Updated the csproj extension
+
 ### 2026-06-23
 
 1. 2pp: Move Table Toolbar slightly to the right, so it doesn't block the Actions

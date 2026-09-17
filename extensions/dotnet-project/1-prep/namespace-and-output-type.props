@@ -1,0 +1,17 @@
+<Project>
+  <!-- *** Set the root namespace and output type (Library aka .dll) *** -->
+
+  <!-- 1. Set the root namespace and output type for the project -->
+  <PropertyGroup>
+    <!-- Set the root namespace to match the AppCode folder -->
+    <!--
+      2026-09-17 @iJungleboy
+      Replaced "AppCode" with "" since it calculates from root, and there the first folder is "AppCode". This will reduce VS-Code warnings.
+    -->
+    <RootNamespace></RootNamespace>
+
+    <!-- Set the output type to Library, which helps VS Code provide IntelliSense -->
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
+</Project>

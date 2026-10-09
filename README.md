@@ -63,6 +63,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## History
 
+### 2026-10-09
+
+1. 2rb: Correct the test partial path for Linux compatibility
+
 ### 2026-09-17
 
 1. 2dm: Updated the csproj extension
